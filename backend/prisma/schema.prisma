@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MembershipStatus {
+  SIM
+  NAO
+  GR
+}
+
+enum Gender {
+  MASCULINO
+  FEMININO
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+model Modality {
+  id                 String         @id @default(cuid())
+  name               String         @unique
+  minAge             Int?           @map("min_age")
+  maxAge             Int?           @map("max_age")
+  requiresMembership Boolean        @default(true) @map("requires_membership")
+  coordinatorName    String         @map("coordinator_name")
+  createdAt          DateTime       @default(now()) @map("created_at")
+  subscriptions      Subscription[]
+
+  @@map("modalities")
+}
+
+model Participant {
+  id            String           @id @default(cuid())
+  isForChild    Boolean          @default(false) @map("is_for_child")
+  isMember      MembershipStatus @map("is_member")
+  birthDate     DateTime         @map("birth_date")
+  fullName      String           @map("full_name")
+  parentName    String?          @map("parent_name")
+  whatsapp      String
+  gender        Gender
+  healthIssues  String?          @map("health_issues")
+  termsAccepted Boolean          @map("terms_accepted")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  subscriptions Subscription[]
+
+  @@map("participants")
+}
+
+model Subscription {
+  id            String      @id @default(cuid())
+  participantId String      @map("participant_id")
+  modalityId    String      @map("modality_id")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  modality      Modality    @relation(fields: [modalityId], references: [id], onDelete: Cascade)
+
+  @@unique([participantId, modalityId])
+  @@map("subscriptions")
+}

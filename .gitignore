@@ -1,0 +1,11 @@
+claude.md
+tasks/Perguntas_Formularo_filhos.md
+tasks/Perguntas_Formularo_mim.md
+backend/node_modules
+frontend/node_modules
+backend/dist/
+frontend/dist/
+backend/src/generated/
+backend/.env
+frontend/.env
+*.local
