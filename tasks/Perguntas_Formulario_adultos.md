@@ -1,3 +1,15 @@
+Bem-vindo(a) ao formulário de inscrição das Olimpíadas IBB 2026!
+
+Antes de tudo, vamos a algumas informações importantes:
+
+- A inscrição e preenchimento deste formulário é individual. Isso significa que cada integrante da sua família deve fazer a inscrição individualmente.
+
+- O valor da inscrição é por pessoa e não por modalidade. Isso significa que você poderá se inscrever em quantas modalidades desejar.
+
+- Com exceção das modalidades "CORRIDA" e "CAMINHADA", só poderão participar das demais modalidades quem for Membro IBB ou quem estiver frequentando algum GR (Grupos de Relacionamento) da IBB.
+
+VAMOS LÁ? ->
+
 Esta inscrição é para você ou para seu filho(a)?
 Para mim
 Para meu filho(a)

@@ -1,121 +1,84 @@
-# Plano de Implementação: Olimpíadas IBB
+# Plano de Implementação: Reformulação do Formulário de Inscrição
 
-Este documento descreve o plano inicial e o levantamento de requisitos para o sistema de gerenciamento das Olimpíadas da Igreja (Olimpíadas IBB). O objetivo é validar o entendimento do projeto e tomar decisões arquiteturais e de negócio antes de iniciarmos o desenvolvimento.
+Este documento detalha as instruções para a reformulação da interface e experiência de usuário (UX) do formulário de inscrição das Olimpíadas IBB 2026. Siga os passos abaixo cuidadosamente.
 
-## Visão Geral
+**Arquivo principal a ser modificado:** `frontend/src/pages/RegistrationPage.tsx`
+**Estilos:** `frontend/src/pages/RegistrationPage.module.css`
 
-Uma plataforma web que permite:
+## 1. Dependências do Frontend
+Primeiramente, instale as bibliotecas necessárias para animações e confetes no diretório `frontend`:
+```bash
+npm install framer-motion canvas-confetti
+npm install -D @types/canvas-confetti
+```
 
-1. **Participantes (Membros da Igreja):** Visualizar os eventos/modalidades disponíveis (pré-cadastrados no banco) e submeter o formulário de inscrição individual de forma dinâmica, sem necessidade de login.
-2. **Administradores:** Acessar um dashboard seguro (via login) para visualizar todas as modalidades e conferir os detalhes dos inscritos para controle e consulta.
+---
 
-## Arquitetura Proposta (Tech Stack)
+## 2. Disclaimers Iniciais (Termos de Aceite)
+Adicione 3 novas etapas logo no início do fluxo do formulário (antes de "Quem vai participar?"). 
+Estas etapas devem possuir um checkbox de confirmação e um botão para avançar (que só é ativado após o checkbox ser marcado).
 
-Conforme solicitado, a stack será dividida em:
+Textos baseados nos requisitos oficiais:
+1. **Etapa 1 (Individual):** "A inscrição e preenchimento deste formulário é individual. Isso significa que cada integrante da sua família deve fazer a inscrição individualmente."
+2. **Etapa 2 (Valor):** "O valor da inscrição é por pessoa e não por modalidade. Isso significa que você poderá se inscrever em quantas modalidades desejar."
+3. **Etapa 3 (Regras):** "Com exceção das modalidades CORRIDA e CAMINHADA, só poderão participar das demais modalidades quem for Membro IBB ou quem estiver frequentando algum GR (Grupos de Relacionamento) da IBB."
 
-- **Frontend:** React com TypeScript.
-  - _Sugestão:_ Utilizar o **Vite** para inicialização rápida e excelente performance de desenvolvimento.
-  - _Estilização:_ CSS Puro (Vanilla CSS) com variáveis e design system moderno para garantir uma interface premium e dinâmica, conforme as melhores práticas.
-- **Backend:** Node.js.
-  - _Sugestão:_ **Express.js** com TypeScript.
-  - _ORM (Object-Relational Mapping):_ **Prisma ORM** pela excelente integração e tipagem estática com TypeScript.
-- **Banco de Dados:** PostgreSQL.
+---
 
-_Estrutura de Pastas (Sugestão - Monorepo simples):_
-No diretório do projeto, criaremos duas pastas principais: `/frontend` e `/backend`.
+## 3. Layout One-by-One e Transições Suaves
+Refatore o componente `RegistrationPage` para exibir apenas UMA etapa por vez, ocupando o centro da tela, em vez do comportamento atual de empilhar tudo verticalmente com scroll.
 
-## Perguntas Abertas (Requisitos de Negócio)
+- Importe `motion` e `AnimatePresence` do `framer-motion`.
+- Envolva o bloco central da pergunta com `<AnimatePresence mode="wait">`.
+- Cada bloco de pergunta deve ser um `<motion.div>` com as propriedades de animação:
+  - `initial={{ x: 300, opacity: 0 }}`
+  - `animate={{ x: 0, opacity: 1 }}`
+  - `exit={{ x: -300, opacity: 0 }}`
+  - `transition={{ duration: 0.3 }}`
 
-Para modelarmos o banco de dados e as telas corretamente, precisamos definir algumas regras de negócio:
+---
 
-**1. Autenticação e Perfis:** [RESOLVIDO]
+## 4. Microinterações nos Componentes
+Torne a interface mais responsiva e fluida:
+- Botões principais de "Avançar" e opções: Adicione efeitos `whileHover={{ scale: 1.05 }}` e `whileTap={{ scale: 0.95 }}` do Framer Motion.
+- `ModalityCard`: Ao interagir (hover ou click), faça o componente escalar levemente ou ganhar um efeito de brilho suave (glow) nas bordas. 
 
-- **Participantes:** Nenhum login necessário. Preenchem o formulário que envia os dados diretamente para o banco.
-- **Administrador:** Acesso via login para visualizar o dashboard com todas as modalidades e inscritos.
-- **Eventos/Modalidades:** Serão pré-cadastrados diretamente no banco de dados (não haverá tela de criação de modalidades no MVP).
+---
 
-**2. Regras de Inscrição:** [RESOLVIDO]
+## 5. Tematização Dinâmica por Modalidade
+Adapte a cor de fundo ou tema da aplicação quando o usuário estiver escolhendo os esportes:
+- Crie um estado `currentThemeColor` na aplicação.
+- Mapeie algumas modalidades para cores específicas (ex: Natação -> tons de azul, Futsal -> tons de verde, Tênis de Mesa -> vermelho, etc.).
+- Quando o usuário passar o mouse (hover) ou selecionar uma modalidade, transicione suavemente a cor de fundo do container principal para refletir a modalidade focada/selecionada. (Nota: Mantenha a cor de fundo sutil para não prejudicar o contraste do texto).
 
-- **Tipo:** As inscrições serão estritamente individuais.
-- **Limites por Membro:** O participante pode se inscrever em mais de uma modalidade, desde que atenda aos limites de idade/critérios de cada uma.
-- **Aprovação:** A inscrição é confirmada automaticamente no momento do envio. O Admin, no entanto, terá o poder de remover ou editar as inscrições pelo dashboard.
-- **Vagas:** As modalidades não possuem limite máximo de vagas (sem lista de espera).
+---
 
-**3. Estrutura e Infraestrutura:** [RESOLVIDO]
+## 6. Gamificação: Barra de Progresso "Pista de Corrida"
+Substitua indicadores estáticos por uma barra de progresso criativa:
+- Crie uma barra fixada no topo ou no rodapé do formulário que se pareça com uma "pista".
+- Use o cálculo `(stepAtual / totalSteps) * 100` para determinar o avanço.
+- Use um ícone de corredor (🏃‍♂️) posicionado no eixo X com base na porcentagem calculada, avançando até uma "linha de chegada" na última etapa.
 
-- ✅ Monorepo (pastas `/frontend` e `/backend`).
-- ✅ Prisma ORM para comunicação com PostgreSQL.
+---
 
-**4. Design e Identidade Visual:**
+## 7. A Grande Finalização
+Na tela de sucesso (após a submissão via API ser concluída e o componente de `registered` ser montado):
+- Importe o `canvas-confetti`.
+- Dispare a função de confetes no `useEffect` de montagem da tela de sucesso.
+- Exiba a mensagem comemorativa solicitada: "Inscrição confirmada! Já pode começar a alongar!" junto às informações do PIX.
 
-- Aguardando definição de logo e paleta de cores da IBB (podemos iniciar com um design moderno genérico e ajustar depois).
+---
 
-**5. Perguntas Estratégicas / Regras Definidas:** [RESOLVIDO]
+**Observações para o Agente Executor:**
+Garanta que as refatorações em `RegistrationPage.tsx` não quebrem a lógica existente de campos opcionais, restrições de idade e o agrupamento condicional dos passos (ex: pular o nome dos pais se for inscrição de adulto). Ajuste o TypeScript onde necessário (novos steps no enum `S`, etc).
 
-- **Membresia e Modalidades Gerais:** "Corrida" e "Caminhada" são gerais (Livre para qualquer idade e abertas para NÃO membros). Todas as demais modalidades são exclusivas para Membros da IBB (ou membros de GR) e possuem restrições de idade.
-- **Categorias e Limites de Idade:** Definidas através das modalidades (ex: Kids 3-9, Pré Teens 10-13, Adulto 14+, Livre).
-- **Dados Médicos e Emergência:** O formulário coleta problemas de saúde e contato de emergência.
-- **Taxa de Inscrição:** R$ 15,09 por pessoa (isento para crianças até 8 anos). Pagamento via PIX externo com envio de comprovante via WhatsApp.
+---
 
-**6. Campos e Validações do Formulário Dinâmico:** [RESOLVIDO]
-
-O formulário terá um fluxo dinâmico inteligente:
-1. **Perfis (Adulto vs Filho):** A primeira pergunta divide o fluxo de coleta de dados.
-2. **Cálculo de Idade:** Após preencher a Data de Nascimento, o sistema calcula a idade.
-3. **Exibição Inteligente:** A lista de modalidades será ordenada, mostrando primeiro (no topo) aquelas em que o participante se enquadra (idade + vínculo IBB). Junto ao nome da modalidade, será exibido o **nome do Coordenador** responsável por ela.
-4. **Validação (Pop-up):** Se o usuário tentar selecionar uma modalidade para a qual não tem a idade permitida (ou restrição de membro), um pop-up de aviso bloqueará a seleção.
-5. **Aceite de Termos (Disclaimers):** Todos os avisos da igreja (sobre taxa de inscrição, envio de PIX, camiseta não inclusa, etc.) aparecerão de forma progressiva. O usuário deverá marcar uma **checkbox obrigatória** ("Estou ciente e desejo prosseguir") para provar que leu antes de conseguir finalizar a inscrição.
-
-## User Review Required
-
-> [!IMPORTANT]
-> O Levantamento de Requisitos e o Plano de Implementação estão **concluídos**. Por favor, revise a estrutura proposta do Banco de Dados abaixo. Se estiver tudo de acordo, **autorize o início do desenvolvimento** para criarmos a lista de tarefas (`task.md`) e começarmos pelo Backend.
-
-## Estrutura do Banco de Dados (Draft)
-
-- **`User` (Admin):** `id`, `email`, `password`, `name`.
-- **`Modality`:** `id`, `name`, `min_age`, `max_age`, `requires_membership` (boolean: Corrida/Caminhada = false, Restantes = true), `coordinator_name` (Nome do responsável físico da modalidade).
-- **`Participant`:** 
-  - `id`, `is_for_child` (boolean)
-  - `is_member` (enum: SIM, NAO, GR)
-  - `birth_date`
-  - `full_name` (Nome do adulto ou da criança)
-  - `parent_name` (Apenas se `is_for_child` = true)
-  - `whatsapp` (Do adulto ou do responsável)
-  - `gender` (Masculino, Feminino)
-  - `health_issues` (Problemas e contato de emergência)
-  - `terms_accepted` (boolean: Obrigatório para confirmar ciência dos avisos)
-  - `created_at`
-- **`Subscription`:** Tabela de relacionamento (N:N) entre `Participant` e `Modality`.
-
-## Funcionalidades Iniciais (MVP)
-
-### Para Participantes Comuns
-
-- Tela pública de listagem de eventos/modalidades (dinâmicos, vindos do banco de dados).
-- Formulário de inscrição individual (sem login).
-- Tela de confirmação de inscrição bem elaborada (feedback visual de sucesso).
-- **Geração de Comprovante em PDF:** Opção para o usuário gerar e baixar um comprovante em PDF assim que finalizar a inscrição.
-
-### Para Administradores
-
-- Tela de login protegida para Admins.
-- Dashboard interno mostrando todas as modalidades disponíveis.
-- Listagem e visualização de detalhes de todos os inscritos separados por modalidade.
-- Capacidade de excluir ou editar as informações de uma inscrição existente.
-- **Exportação para Excel/Planilha:** Funcionalidade para gerar e baixar um arquivo de planilha organizada com os dados dos inscritos de cada modalidade.
-
-## Qualidade e Testes (Obrigatório)
-
-O desenvolvimento deverá ser guiado por testes para garantir a segurança das regras de negócio:
-- **Testes Unitários:** Para a lógica de cálculo de idade, priorização de modalidades e validações de campos.
-- **Testes de Integração:** Para as rotas da API, garantindo que usuários que não preencham os requisitos sejam rejeitados.
-- **Barreira de Execução:** O deploy e o prosseguimento das tarefas só ocorrerão se 100% dos testes forem aprovados com sucesso.
-
-## Infraestrutura e Deploy (Decidido)
-
-A stack de deploy definida para suportar a carga esperada (300 a 400 usuários) de forma performática e com custo otimizado (potencialmente zero) é:
-
-- **Frontend:** Hospedado na **Vercel** (garante CDN global, build automatizado e alta performance para o React/Vite).
-- **Backend:** Hospedado no **Fly.io** (ideal para rodar a API Node.js/Express próxima aos usuários, com excelente suporte à concorrência).
-- **Banco de Dados:** Hospedado no **NeonDB** (PostgreSQL Serverless, que "dorme" quando ocioso para economizar recursos e tem integração nativa com o Prisma ORM).
+## 8. Deploy Efetivo
+Após todas as implementações visuais e de fluxo terem sido validadadas localmente:
+1. **Build do Frontend:** Execute o comando de build na pasta `frontend` para garantir que não existam erros de compilação ou de tipagem (TypeScript):
+   ```bash
+   npm run build
+   ```
+2. **Homologação:** Realize um teste final da build de produção para certificar-se de que as animações e transições funcionam conforme o esperado em um ambiente mimético de produção.
+3. **Subida (Deploy):** Siga o pipeline padrão (Vercel, Netlify, Render ou servidor próprio) para fazer o deploy do frontend. Certifique-se de configurar corretamente as variáveis de ambiente em produção (ex: URL da API).
