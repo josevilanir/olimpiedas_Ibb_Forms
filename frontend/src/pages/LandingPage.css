@@ -1,16 +1,16 @@
 /* ─── TOKENS & GLOBALS SCOPED ─── */
 .landing-page-container {
-  --green: oklch(52% 0.18 142);
-  --green-light: oklch(65% 0.18 142);
-  --green-dim: oklch(35% 0.12 142);
-  --dark: #0a0a0a;
-  --dark2: #111;
-  --dark3: #1a1a1a;
-  --light: #f5f2ec;
-  --mid: #888;
-  --white: #ffffff;
-  --font-display: 'Barlow Condensed', sans-serif;
-  --font-body: 'Barlow', sans-serif;
+  --green: var(--color-primary);
+  --green-light: var(--color-primary-light);
+  --green-dim: var(--color-primary-dark);
+  --dark: var(--color-bg-base);
+  --dark2: #051a36; /* Darker blue */
+  --dark3: #0a3061; /* Lighter blue */
+  --light: var(--color-secondary);
+  --mid: var(--color-secondary-dark);
+  --white: var(--color-white);
+  --font-display: var(--font-family-display);
+  --font-body: var(--font-family);
 
   background: var(--dark);
   color: var(--white);
@@ -72,14 +72,50 @@
 
 .landing-page-container .hero-bg {
   position: absolute; inset: 0;
-  background: linear-gradient(160deg, #0a0a0a 0%, #0f1f10 40%, #0a0a0a 100%);
+  background-image: 
+    linear-gradient(160deg, rgba(8, 38, 77, 0.4) 0%, rgba(8, 38, 77, 0.1) 100%), 
+    url('../assets/background.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.landing-page-container .hero-man {
+  position: absolute;
+  bottom: -18%; /* Mergulha mais para baixo para focar no movimento */
+  right: 10%;   /* Movido 15% para a direita a partir do 25% anterior */
+  width: 90%;
+  height: 125%;
+  background-image: url('../assets/hero-bg.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  z-index: 2;
+  pointer-events: none;
+  animation: man-fade-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+
+.landing-page-container .hero-texture {
+  position: absolute;
+  inset: 0;
+  background-image: url('../assets/texture.png');
+  background-size: cover;
+  background-repeat: repeat;
+  opacity: 0.15;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes man-fade-up {
+  from { opacity: 0; transform: translateY(40px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .landing-page-container .hero-orb {
   position: absolute;
   width: 700px; height: 700px;
   border-radius: 50%;
-  background: radial-gradient(circle, oklch(52% 0.18 142 / 0.25) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(10, 157, 143, 0.25) 0%, transparent 70%);
   top: -100px; right: -100px;
   animation: orb-pulse 6s ease-in-out infinite;
 }
@@ -88,20 +124,14 @@
   50% { transform: scale(1.1); opacity: 1; }
 }
 
-.landing-page-container .hero-grid {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(22,163,74,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(22,163,74,0.05) 1px, transparent 1px);
-  background-size: 80px 80px;
-}
+
 
 .landing-page-container .hero-diagonal {
   position: absolute; bottom: 0; left: 0; right: 0; height: 200px;
   background: linear-gradient(to top, var(--dark) 0%, transparent 100%);
 }
 
-.landing-page-container .hero-content { position: relative; z-index: 2; }
+.landing-page-container .hero-content { position: relative; z-index: 3; }
 
 .landing-page-container .hero-eyebrow {
   font-family: var(--font-display); font-weight: 600; font-size: 14px;
@@ -122,7 +152,7 @@
   letter-spacing: -2px;
   text-transform: uppercase;
   color: var(--white);
-  margin-bottom: 32px;
+  margin-bottom: 160px; /* Sobe o título um pouco mais, totalizando o deslocamento desejado */
 }
 .landing-page-container .hero-title .accent { color: var(--green); }
 .landing-page-container .hero-title .outline {
@@ -199,8 +229,8 @@
 .landing-page-container .ticker {
   background: var(--green);
   overflow: hidden; padding: 12px 0;
-  border-top: 2px solid oklch(40% 0.18 142);
-  border-bottom: 2px solid oklch(40% 0.18 142);
+  border-top: 2px solid #077a6f;
+  border-bottom: 2px solid #077a6f;
 }
 .landing-page-container .ticker-track {
   display: flex; gap: 0;
@@ -324,7 +354,7 @@
   background: var(--green);
   transition: height 0.25s;
 }
-.landing-page-container .mod-card:hover { background: rgba(22,163,74,0.05); border-color: rgba(22,163,74,0.3); }
+.landing-page-container .mod-card:hover { background: rgba(10,157,143,0.05); border-color: rgba(10,157,143,0.3); }
 .landing-page-container .mod-card:hover::before { height: 3px; }
 .landing-page-container .mod-cat {
   font-family: var(--font-display); font-weight: 600; font-size: 11px;
@@ -349,7 +379,7 @@
   letter-spacing: 1.5px; text-transform: uppercase;
   padding: 3px 8px; border-radius: 2px;
 }
-.landing-page-container .mod-tag.open { background: rgba(22,163,74,0.15); color: var(--green); }
+.landing-page-container .mod-tag.open { background: rgba(10,157,143,0.15); color: var(--green); }
 .landing-page-container .mod-tag.member { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
 
 /* ─── INSCRIÇÃO ─── */
@@ -364,11 +394,11 @@
   position: relative; overflow: hidden;
   transition: border-color 0.2s;
 }
-.landing-page-container .step-card:hover { border-color: rgba(22,163,74,0.3); }
+.landing-page-container .step-card:hover { border-color: rgba(10,157,143,0.3); }
 .landing-page-container .step-n {
   font-family: var(--font-display); font-weight: 900;
   font-size: 80px; line-height: 1;
-  color: rgba(22,163,74,0.12); position: absolute;
+  color: rgba(10,157,143,0.12); position: absolute;
   top: 10px; right: 16px; letter-spacing: -4px;
 }
 .landing-page-container .step-title {
@@ -388,8 +418,8 @@
 
 /* PIX */
 .landing-page-container .pix-box {
-  background: linear-gradient(135deg, rgba(22,163,74,0.12) 0%, rgba(22,163,74,0.04) 100%);
-  border: 1px solid rgba(22,163,74,0.25);
+  background: linear-gradient(135deg, rgba(10,157,143,0.12) 0%, rgba(10,157,143,0.04) 100%);
+  border: 1px solid rgba(10,157,143,0.25);
   padding: 40px 48px;
   display: flex; align-items: center; justify-content: space-between;
   flex-wrap: wrap; gap: 24px;
@@ -463,9 +493,23 @@
   .landing-page-container .nav-links { display: none; }
   .landing-page-container section { padding: 60px 20px; }
   .landing-page-container #hero { padding: 0 20px 48px; }
-  .landing-page-container .hero-title { font-size: clamp(56px, 14vw, 80px); }
+  .landing-page-container .hero-title { font-size: clamp(56px, 14vw, 80px); margin-bottom: 360px; }
   .landing-page-container .sobre-grid { grid-template-columns: 1fr; }
   .landing-page-container .steps-grid { grid-template-columns: 1fr 1fr; }
   .landing-page-container .pix-box { padding: 24px; }
   .landing-page-container footer { padding: 40px 20px 24px; }
+  .landing-page-container .hero-sub { max-width: 250px; }
+  .landing-page-container .hero-man { 
+    width: 100%; 
+    height: 100%; 
+    top: 0; 
+    left: 0;
+    right: auto;
+    bottom: auto;
+    transform: none;
+    opacity: 0.5; 
+    z-index: 2; /* Mantém acima da textura no mobile também */
+    background-position: 10% 60%; 
+    background-size: 150%;
+  }
 }

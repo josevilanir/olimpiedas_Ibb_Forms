@@ -51,11 +51,11 @@ ul, ol { list-style: none; }
 .btn-primary { 
   background-color: var(--color-primary); 
   color: var(--color-white); 
-  box-shadow: 0 4px 14px 0 rgba(6, 95, 70, 0.39);
+  box-shadow: 0 4px 14px 0 rgba(10, 157, 143, 0.39);
 }
 .btn-primary:hover:not(:disabled) { 
   background-color: var(--color-primary-dark); 
-  box-shadow: 0 6px 20px rgba(6, 95, 70, 0.5);
+  box-shadow: 0 6px 20px rgba(10, 157, 143, 0.5);
   transform: translateY(-1px);
 }
 .btn-secondary { 

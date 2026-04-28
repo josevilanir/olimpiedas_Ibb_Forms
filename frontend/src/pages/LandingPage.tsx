@@ -103,16 +103,17 @@ export default function LandingPage({ onGoToRegistration, onGoToAdmin }: Landing
       {/* HERO */}
       <section id="hero">
         <div className="hero-bg"></div>
+        <div className="hero-man"></div>
+        <div className="hero-texture"></div>
         <div className="hero-orb"></div>
-        <div className="hero-grid"></div>
         <div className="hero-diagonal"></div>
 
         <div className="hero-content">
           <div className="hero-eyebrow">Igreja Batista de Bonsucesso · Natal/RN</div>
 
           <h1 className="hero-title">
-            OLIMP<span className="accent">ÍADAS</span><br />
-            <span className="outline">IBB</span>
+            OLIMPÍADAS<br />
+            <span className="accent">IBB</span>
           </h1>
 
           <div className="hero-bottom">
@@ -123,9 +124,7 @@ export default function LandingPage({ onGoToRegistration, onGoToAdmin }: Landing
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '16px' }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '11px', letterSpacing: '3px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>
-                Contagem regressiva
-              </div>
+
               <div className="countdown">
                 <div className="cd-unit"><div className="cd-num">{countdown.d}</div><div className="cd-label">Dias</div></div>
                 <div className="cd-sep">:</div>

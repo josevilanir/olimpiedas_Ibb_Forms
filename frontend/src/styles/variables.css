@@ -1,15 +1,15 @@
 :root {
-  /* Main Colors - Church Dark Green (from Landing Page) */
-  --color-primary: oklch(52% 0.18 142);
-  --color-primary-dark: oklch(35% 0.12 142);
-  --color-primary-light: oklch(65% 0.18 142);
-  --color-primary-glow: rgba(22, 163, 74, 0.5);
+  /* Main Colors - Teal (from Visual Identity) */
+  --color-primary: #0a9d8f;
+  --color-primary-dark: #077a6f;
+  --color-primary-light: #3bbfb3;
+  --color-primary-glow: rgba(10, 157, 143, 0.5);
 
-  /* Secondary - Gold/Olympic feel */
-  --color-secondary: #f59e0b;
-  --color-secondary-dark: #d97706;
+  /* Secondary - Light Gray */
+  --color-secondary: #d9d9d9;
+  --color-secondary-dark: #b3b3b3;
 
-  --color-white: #ffffff;
+  --color-white: #d9d9d9;
   
   /* Dark Mode Grays */
   --color-gray-50: #f5f2ec;
@@ -25,9 +25,9 @@
   --color-gray-950: #0a0a0a;
 
   /* Theme Colors */
-  --color-bg-base: var(--color-gray-950);
+  --color-bg-base: #08264d; /* Dark Blue from Visual Identity */
   --color-text-main: var(--color-gray-50);
-  --color-text-muted: var(--color-gray-500);
+  --color-text-muted: var(--color-gray-300);
 
   /* Feedback Colors */
   --color-success: #10b981;
