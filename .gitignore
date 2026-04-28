@@ -1,3 +1,5 @@
+.gitignore
+.claude/
 claude.md
 tasks/Perguntas_Formularo_filhos.md
 tasks/Perguntas_Formularo_mim.md
