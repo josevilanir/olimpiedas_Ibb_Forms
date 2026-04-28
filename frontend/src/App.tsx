@@ -3,12 +3,13 @@ import { useAuth } from "./hooks/useAuth";
 import RegistrationPage from "./pages/RegistrationPage";
 import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import LandingPage from "./pages/LandingPage";
 import styles from "./App.module.css";
 
-type AppView = "registration" | "admin-login" | "admin-dashboard";
+type AppView = "landing" | "registration" | "admin-login" | "admin-dashboard";
 
 export default function App() {
-  const [view, setView] = useState<AppView>("registration");
+  const [view, setView] = useState<AppView>("landing");
   const { token, user, login, logout, error, loading, isAuthenticated } = useAuth();
 
   function handleLogin(email: string, password: string) {
@@ -40,6 +41,10 @@ export default function App() {
         loading={loading}
       />
     );
+  }
+
+  if (view === "landing") {
+    return <LandingPage onGoToRegistration={() => setView("registration")} onGoToAdmin={() => setView("admin-login")} />;
   }
 
   return (
