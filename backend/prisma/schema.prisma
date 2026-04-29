@@ -18,6 +18,11 @@ enum Gender {
   FEMININO
 }
 
+enum PaymentStatus {
+  PENDENTE
+  PAGO
+}
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -33,6 +38,7 @@ model Modality {
   name               String         @unique
   minAge             Int?           @map("min_age")
   maxAge             Int?           @map("max_age")
+  maxSpots           Int?           @map("max_spots")
   requiresMembership Boolean        @default(true) @map("requires_membership")
   coordinatorName    String         @map("coordinator_name")
   createdAt          DateTime       @default(now()) @map("created_at")
@@ -52,6 +58,7 @@ model Participant {
   gender        Gender
   healthIssues  String?          @map("health_issues")
   termsAccepted Boolean          @map("terms_accepted")
+  paymentStatus PaymentStatus    @default(PENDENTE) @map("payment_status")
   createdAt     DateTime         @default(now()) @map("created_at")
   subscriptions Subscription[]
 

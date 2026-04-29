@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma";
+import { MembershipStatus } from "../generated/prisma/client";
 
 function calcAge(birthDate: Date): number {
   const today = new Date();
@@ -8,15 +9,13 @@ function calcAge(birthDate: Date): number {
   return age;
 }
 
-export async function getStats() {
+export async function getStats(isMember?: MembershipStatus) {
   const [participants, modalities] = await Promise.all([
     prisma.participant.findMany({
+      where: isMember ? { isMember } : undefined,
       include: { subscriptions: { include: { modality: true } } },
     }),
-    prisma.modality.findMany({
-      include: { _count: { select: { subscriptions: true } } },
-      orderBy: { name: "asc" },
-    }),
+    prisma.modality.findMany({ orderBy: { name: "asc" } }),
   ]);
 
   const totalParticipants = participants.length;
@@ -24,6 +23,7 @@ export async function getStats() {
   const genderCount = { MASCULINO: 0, FEMININO: 0 };
   const memberCount = { SIM: 0, NAO: 0, GR: 0 };
   const ageGroups = { "3-9": 0, "10-13": 0, "14-17": 0, "18+": 0 };
+  const modalityCountMap = new Map<string, number>();
 
   for (const p of participants) {
     genderCount[p.gender]++;
@@ -33,12 +33,17 @@ export async function getStats() {
     else if (age <= 13) ageGroups["10-13"]++;
     else if (age <= 17) ageGroups["14-17"]++;
     else ageGroups["18+"]++;
+
+    for (const sub of p.subscriptions) {
+      modalityCountMap.set(sub.modalityId, (modalityCountMap.get(sub.modalityId) ?? 0) + 1);
+    }
   }
 
   const modalityStats = modalities.map((m) => ({
     id: m.id,
     name: m.name,
-    count: m._count.subscriptions,
+    count: modalityCountMap.get(m.id) ?? 0,
+    maxSpots: m.maxSpots ?? null,
   }));
 
   return { totalParticipants, genderCount, memberCount, ageGroups, modalityStats };

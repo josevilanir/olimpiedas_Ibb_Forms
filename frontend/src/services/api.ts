@@ -1,4 +1,4 @@
-import type { Modality, Participant, RegistrationFormData } from "../types";
+import type { Modality, Participant, PaymentStatus, RegistrationFormData } from "../types";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001/api/v1";
 
@@ -48,7 +48,11 @@ export const api = {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       }).then((r) => r.json()),
-    updateParticipant: (token: string, id: string, data: Partial<RegistrationFormData>) =>
+    updateParticipant: (
+      token: string,
+      id: string,
+      data: Partial<RegistrationFormData & { paymentStatus: PaymentStatus }>
+    ) =>
       request<Participant>(`/admin/participants/${id}`, {
         method: "PUT",
         headers: {
@@ -64,18 +68,20 @@ export const api = {
           Authorization: `Bearer ${token}`,
         },
       }),
-    getStats: (token: string) =>
-      request<{
+    getStats: (token: string, isMember?: "SIM" | "NAO" | "GR") => {
+      const query = isMember ? `?isMember=${isMember}` : "";
+      return request<{
         totalParticipants: number;
         genderCount: { MASCULINO: number; FEMININO: number };
         memberCount: { SIM: number; NAO: number; GR: number };
         ageGroups: { "3-9": number; "10-13": number; "14-17": number; "18+": number };
-        modalityStats: { id: string; name: string; count: number }[];
-      }>("/admin/stats", {
+        modalityStats: { id: string; name: string; count: number; maxSpots: number | null }[];
+      }>(`/admin/stats${query}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }),
+      });
+    },
   },
 };

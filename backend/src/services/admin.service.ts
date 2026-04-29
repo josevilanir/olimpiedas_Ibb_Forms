@@ -1,7 +1,7 @@
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { Gender, MembershipStatus } from "../generated/prisma/client";
+import { Gender, MembershipStatus, PaymentStatus } from "../generated/prisma/client";
 
 export async function loginAdmin(email: string, password: string) {
   const user = await prisma.user.findUnique({ where: { email } });
@@ -45,6 +45,7 @@ export async function updateParticipant(
     isMember: MembershipStatus;
     healthIssues: string;
     birthDate: string;
+    paymentStatus: PaymentStatus;
     modalityIds: string[];
   }>
 ) {

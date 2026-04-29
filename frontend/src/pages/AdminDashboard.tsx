@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
 } from "recharts";
-import type { Modality, Participant } from "../types";
+import type { Gender, Modality, MembershipStatus, Participant, PaymentStatus } from "../types";
 import { api } from "../services/api";
 import styles from "./AdminDashboard.module.css";
 
@@ -16,13 +15,15 @@ interface Props {
 }
 
 type View = "modalities" | "participants" | "stats";
+type MemberFilter = "ALL" | "SIM" | "NAO" | "GR";
+type ChartMode = "ageGroups" | "modalities";
 
 interface Stats {
   totalParticipants: number;
   genderCount: { MASCULINO: number; FEMININO: number };
   memberCount: { SIM: number; NAO: number; GR: number };
   ageGroups: { "3-9": number; "10-13": number; "14-17": number; "18+": number };
-  modalityStats: { id: string; name: string; count: number }[];
+  modalityStats: { id: string; name: string; count: number; maxSpots: number | null }[];
 }
 
 interface EditState {
@@ -30,6 +31,10 @@ interface EditState {
   fullName: string;
   whatsapp: string;
   healthIssues: string;
+  gender: Gender;
+  isMember: MembershipStatus;
+  birthDate: string;
+  modalityIds: string[];
 }
 
 export default function AdminDashboard({ token, adminName, onLogout }: Props) {
@@ -45,6 +50,9 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
   const [statsData, setStatsData] = useState<Stats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [memberFilter, setMemberFilter] = useState<MemberFilter>("ALL");
+  const [chartMode, setChartMode] = useState<ChartMode>("modalities");
 
   useEffect(() => {
     api.modalities.list()
@@ -52,18 +60,24 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
       .finally(() => setLoadingMod(false));
   }, []);
 
-  function loadStats() {
+  function loadStats(filter?: MemberFilter) {
     setView("stats");
-    if (statsData) return;
+    const isMember = (filter ?? memberFilter) === "ALL" ? undefined : (filter ?? memberFilter) as "SIM" | "NAO" | "GR";
     setLoadingStats(true);
-    api.admin.getStats(token)
+    api.admin.getStats(token, isMember)
       .then(setStatsData)
       .finally(() => setLoadingStats(false));
+  }
+
+  function handleMemberFilterChange(f: MemberFilter) {
+    setMemberFilter(f);
+    loadStats(f);
   }
 
   const loadParticipants = useCallback((modality: Modality) => {
     setSelectedModality(modality);
     setView("participants");
+    setSearchQuery("");
     setLoadingPart(true);
     api.admin.getParticipants(token, modality.id)
       .then(setParticipants)
@@ -85,6 +99,10 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
         fullName: editState.fullName,
         whatsapp: editState.whatsapp,
         healthIssues: editState.healthIssues,
+        gender: editState.gender,
+        isMember: editState.isMember,
+        birthDate: editState.birthDate,
+        modalityIds: editState.modalityIds,
       });
       setParticipants((prev) => prev.map((p) => p.id === updated.id ? updated : p));
       setEditState(null);
@@ -93,6 +111,17 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
       showFeedback("error", "Erro ao salvar alterações.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleTogglePayment(p: Participant) {
+    const newStatus: PaymentStatus = p.paymentStatus === "PAGO" ? "PENDENTE" : "PAGO";
+    try {
+      const updated = await api.admin.updateParticipant(token, p.id, { paymentStatus: newStatus });
+      setParticipants((prev) => prev.map((x) => x.id === updated.id ? updated : x));
+      showFeedback("success", newStatus === "PAGO" ? "Pagamento confirmado." : "Pagamento marcado como pendente.");
+    } catch {
+      showFeedback("error", "Erro ao atualizar pagamento.");
     }
   }
 
@@ -121,6 +150,10 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
       });
   }
 
+  function handlePrint() {
+    window.print();
+  }
+
   function ageLabel(minAge: number | null, maxAge: number | null) {
     if (!minAge && !maxAge) return "Livre";
     if (minAge && maxAge) return `${minAge}–${maxAge} anos`;
@@ -141,6 +174,20 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
     return age;
   }
 
+  function isAgeOutOfRange(birthDate: string, modality: Modality | null): boolean {
+    if (!modality) return false;
+    const { minAge, maxAge } = modality;
+    if (!minAge && !maxAge) return false;
+    const age = calcAge(birthDate);
+    if (minAge && age < minAge) return true;
+    if (maxAge && age > maxAge) return true;
+    return false;
+  }
+
+  const filteredParticipants = participants.filter((p) =>
+    p.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className={styles.layout}>
       <aside className={styles.sidebar}>
@@ -160,7 +207,7 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
           </button>
           <button
             className={`${styles.navBtn} ${view === "stats" ? styles.navBtnActive : ""}`}
-            onClick={loadStats}
+            onClick={() => loadStats()}
           >
             Estatísticas
           </button>
@@ -210,6 +257,11 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
                   <p className={styles.modalityMeta}>
                     Faixa etária: <strong>{ageLabel(m.minAge, m.maxAge)}</strong>
                   </p>
+                  {m.maxSpots && (
+                    <p className={styles.modalityMeta}>
+                      Vagas: <strong>{m.maxSpots}</strong>
+                    </p>
+                  )}
                   <p className={styles.modalityMeta}>
                     Coord: <strong>{m.coordinatorName}</strong>
                   </p>
@@ -237,6 +289,27 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
               </button>
             </div>
 
+            {/* Member filter pills */}
+            <div className={styles.memberFilterRow}>
+              {(["ALL", "SIM", "GR", "NAO"] as MemberFilter[]).map((f) => {
+                const labels: Record<MemberFilter, string> = {
+                  ALL: "Todos",
+                  SIM: "Membro IBB",
+                  GR: "Freq. GR",
+                  NAO: "Não membro",
+                };
+                return (
+                  <button
+                    key={f}
+                    className={`${styles.filterPill} ${memberFilter === f ? styles.filterPillActive : ""}`}
+                    onClick={() => handleMemberFilterChange(f)}
+                  >
+                    {labels[f]}
+                  </button>
+                );
+              })}
+            </div>
+
             {loadingStats && <p className={styles.loading}>Carregando estatísticas...</p>}
 
             {statsData && (
@@ -256,8 +329,12 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
                     <span className={styles.statLabel}>Feminino</span>
                   </div>
                   <div className={styles.statCard}>
-                    <span className={styles.statValue}>{statsData.memberCount.SIM + statsData.memberCount.GR}</span>
-                    <span className={styles.statLabel}>Membros IBB/GR</span>
+                    <span className={styles.statValue}>{statsData.memberCount.SIM}</span>
+                    <span className={styles.statLabel}>Membros IBB</span>
+                  </div>
+                  <div className={styles.statCard}>
+                    <span className={styles.statValue}>{statsData.memberCount.GR}</span>
+                    <span className={styles.statLabel}>Freq. GR</span>
                   </div>
                   <div className={styles.statCard}>
                     <span className={styles.statValue}>{statsData.memberCount.NAO}</span>
@@ -265,102 +342,70 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
                   </div>
                 </div>
 
-                {/* Pie charts */}
-                <div className={styles.chartsRow}>
-                  <div className={styles.chartSection}>
-                    <h3>Gênero</h3>
-                    <ResponsiveContainer width="100%" height={220}>
-                      <PieChart>
-                        <Pie
-                          data={[
-                            { name: "Masculino", value: statsData.genderCount.MASCULINO },
-                            { name: "Feminino",  value: statsData.genderCount.FEMININO },
-                          ]}
-                          cx="50%" cy="50%" outerRadius={80}
-                          dataKey="value" label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                          labelLine={false}
-                        >
-                          <Cell fill="#0aad9f" />
-                          <Cell fill="#667eea" />
-                        </Pie>
-                        <Tooltip
-                          contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
-                        />
-                        <Legend wrapperStyle={{ color: "rgba(200,230,225,0.6)", fontSize: 13 }} />
-                      </PieChart>
-                    </ResponsiveContainer>
+                {/* Single bar chart with mode selector */}
+                <div className={styles.chartSection}>
+                  <div className={styles.chartHeader}>
+                    <div className={styles.chartTabs}>
+                      <button
+                        className={`${styles.chartTab} ${chartMode === "modalities" ? styles.chartTabActive : ""}`}
+                        onClick={() => setChartMode("modalities")}
+                      >
+                        Por modalidade
+                      </button>
+                      <button
+                        className={`${styles.chartTab} ${chartMode === "ageGroups" ? styles.chartTabActive : ""}`}
+                        onClick={() => setChartMode("ageGroups")}
+                      >
+                        Faixas etárias
+                      </button>
+                    </div>
                   </div>
 
-                  <div className={styles.chartSection}>
-                    <h3>Vínculo IBB</h3>
-                    <ResponsiveContainer width="100%" height={220}>
-                      <PieChart>
-                        <Pie
-                          data={[
-                            { name: "Membro IBB", value: statsData.memberCount.SIM },
-                            { name: "Freq. GR",   value: statsData.memberCount.GR },
-                            { name: "Não membro", value: statsData.memberCount.NAO },
-                          ]}
-                          cx="50%" cy="50%" outerRadius={80}
-                          dataKey="value" label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                          labelLine={false}
-                        >
-                          <Cell fill="#0aad9f" />
-                          <Cell fill="#3b82f6" />
-                          <Cell fill="#f59e0b" />
-                        </Pie>
+                  {chartMode === "modalities" && (
+                    <ResponsiveContainer
+                      width="100%"
+                      height={Math.max(260, statsData.modalityStats.length * 36)}
+                    >
+                      <BarChart
+                        data={[...statsData.modalityStats].sort((a, b) => b.count - a.count)}
+                        margin={{ top: 8, right: 24, bottom: 90, left: 0 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                        <XAxis
+                          dataKey="name"
+                          tick={{ fill: "rgba(200,230,225,0.6)", fontSize: 11 }}
+                          axisLine={false} tickLine={false}
+                          interval={0}
+                          angle={-35}
+                          textAnchor="end"
+                        />
+                        <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
                         <Tooltip
                           contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                          cursor={{ fill: "rgba(10,157,143,0.08)" }}
                         />
-                        <Legend wrapperStyle={{ color: "rgba(200,230,225,0.6)", fontSize: 13 }} />
-                      </PieChart>
+                        <Bar dataKey="count" fill="#0aad9f" radius={[4, 4, 0, 0]} name="Inscritos" />
+                      </BarChart>
                     </ResponsiveContainer>
-                  </div>
-                </div>
+                  )}
 
-                {/* Faixas etárias */}
-                <div className={styles.chartSection}>
-                  <h3>Faixas etárias</h3>
-                  <ResponsiveContainer width="100%" height={180}>
-                    <BarChart
-                      data={Object.entries(statsData.ageGroups).map(([label, count]) => ({ label: `${label} anos`, count }))}
-                      margin={{ top: 4, right: 24, bottom: 4, left: 0 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                      <XAxis dataKey="label" tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
-                      <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
-                      <Tooltip
-                        contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
-                        cursor={{ fill: "rgba(10,157,143,0.08)" }}
-                      />
-                      <Bar dataKey="count" fill="#0aad9f" radius={[4, 4, 0, 0]} name="Inscritos" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-
-                {/* Inscritos por modalidade */}
-                <div className={styles.chartSection}>
-                  <h3>Inscritos por modalidade</h3>
-                  <ResponsiveContainer width="100%" height={Math.max(300, statsData.modalityStats.length * 36)}>
-                    <BarChart
-                      layout="vertical"
-                      data={[...statsData.modalityStats].sort((a, b) => b.count - a.count)}
-                      margin={{ top: 4, right: 40, bottom: 4, left: 8 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
-                      <XAxis type="number" allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
-                      <YAxis
-                        type="category" dataKey="name" width={190}
-                        tick={{ fill: "rgba(200,230,225,0.6)", fontSize: 11 }}
-                        axisLine={false} tickLine={false}
-                      />
-                      <Tooltip
-                        contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
-                        cursor={{ fill: "rgba(10,157,143,0.08)" }}
-                      />
-                      <Bar dataKey="count" fill="#0aad9f" radius={[0, 4, 4, 0]} name="Inscritos" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  {chartMode === "ageGroups" && (
+                    <ResponsiveContainer width="100%" height={220}>
+                      <BarChart
+                        data={Object.entries(statsData.ageGroups).map(([label, count]) => ({ label: `${label} anos`, count }))}
+                        margin={{ top: 8, right: 24, bottom: 8, left: 0 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                        <XAxis dataKey="label" tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                        <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                        <Tooltip
+                          contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                          cursor={{ fill: "rgba(10,157,143,0.08)" }}
+                        />
+                        <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Inscritos" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
                 </div>
               </>
             )}
@@ -378,9 +423,24 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
                 <h2>{selectedModality.name}</h2>
                 <p className={styles.participantCount}>{participants.length} inscrito{participants.length !== 1 ? "s" : ""}</p>
               </div>
-              <button className="btn btn-secondary" onClick={() => handleExport(selectedModality.id)}>
-                Exportar Excel
-              </button>
+              <div className={styles.participantActions}>
+                <button className="btn btn-secondary" onClick={handlePrint}>
+                  🖨️ Imprimir lista
+                </button>
+                <button className="btn btn-secondary" onClick={() => handleExport(selectedModality.id)}>
+                  Exportar Excel
+                </button>
+              </div>
+            </div>
+
+            {/* Search bar */}
+            <div className={styles.searchBar}>
+              <input
+                className={`form-input ${styles.searchInput}`}
+                placeholder="Buscar por nome..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
 
             {loadingPart && <p className={styles.loading}>Carregando inscritos...</p>}
@@ -400,49 +460,73 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
                       <th>WhatsApp</th>
                       <th>Sexo</th>
                       <th>Membro</th>
+                      <th>Pagamento</th>
                       <th>Inf. Saúde</th>
                       <th>Inscrito em</th>
                       <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {participants.map((p) => (
-                      <tr key={p.id}>
-                        <td><strong>{p.fullName}</strong></td>
-                        <td>{p.parentName ?? "—"}</td>
-                        <td>{calcAge(p.birthDate)} anos</td>
-                        <td>{p.whatsapp}</td>
-                        <td>{p.gender === "MASCULINO" ? "Masc." : "Fem."}</td>
-                        <td>
-                          <span className={`badge ${p.isMember === "NAO" ? "badge-warning" : "badge-success"}`}>
-                            {p.isMember}
-                          </span>
-                        </td>
-                        <td className={styles.healthCell}>{p.healthIssues || "—"}</td>
-                        <td>{formatDate(p.createdAt)}</td>
-                        <td>
-                          <div className={styles.rowActions}>
+                    {filteredParticipants.map((p) => {
+                      const ageAlert = isAgeOutOfRange(p.birthDate, selectedModality);
+                      return (
+                        <tr key={p.id}>
+                          <td>
+                            <strong>{p.fullName}</strong>
+                            {ageAlert && (
+                              <span className={styles.ageAlert} title="Idade fora do range da modalidade">
+                                {" "}⚠️
+                              </span>
+                            )}
+                          </td>
+                          <td>{p.parentName ?? "—"}</td>
+                          <td>{calcAge(p.birthDate)} anos</td>
+                          <td>{p.whatsapp}</td>
+                          <td>{p.gender === "MASCULINO" ? "Masc." : "Fem."}</td>
+                          <td>
+                            <span className={`badge ${p.isMember === "NAO" ? "badge-warning" : "badge-success"}`}>
+                              {p.isMember}
+                            </span>
+                          </td>
+                          <td>
                             <button
-                              className={`btn ${styles.btnSm} btn-secondary`}
-                              onClick={() => setEditState({
-                                participant: p,
-                                fullName: p.fullName,
-                                whatsapp: p.whatsapp,
-                                healthIssues: p.healthIssues ?? "",
-                              })}
+                              className={`${styles.paymentToggle} ${p.paymentStatus === "PAGO" ? styles.paymentPago : styles.paymentPendente}`}
+                              onClick={() => handleTogglePayment(p)}
+                              title={p.paymentStatus === "PAGO" ? "Clique para marcar como pendente" : "Clique para confirmar pagamento"}
                             >
-                              Editar
+                              {p.paymentStatus === "PAGO" ? "✓ Pago" : "Pendente"}
                             </button>
-                            <button
-                              className={`btn ${styles.btnSm} btn-danger`}
-                              onClick={() => setDeleteId(p.id)}
-                            >
-                              Remover
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td className={styles.healthCell}>{p.healthIssues || "—"}</td>
+                          <td>{formatDate(p.createdAt)}</td>
+                          <td>
+                            <div className={styles.rowActions}>
+                              <button
+                                className={`btn ${styles.btnSm} btn-secondary`}
+                                onClick={() => setEditState({
+                                  participant: p,
+                                  fullName: p.fullName,
+                                  whatsapp: p.whatsapp,
+                                  healthIssues: p.healthIssues ?? "",
+                                  gender: p.gender,
+                                  isMember: p.isMember,
+                                  birthDate: p.birthDate.slice(0, 10),
+                                  modalityIds: p.subscriptions.map((s) => s.modalityId),
+                                })}
+                              >
+                                Editar
+                              </button>
+                              <button
+                                className={`btn ${styles.btnSm} btn-danger`}
+                                onClick={() => setDeleteId(p.id)}
+                              >
+                                Remover
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -450,6 +534,34 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
           </div>
         )}
       </main>
+
+      {/* PRINT LAYOUT */}
+      {view === "participants" && selectedModality && (
+        <div className={styles.printLayout}>
+          <h2>Lista de Chamada — {selectedModality.name}</h2>
+          <p className={styles.printDate}>Gerado em: {new Date().toLocaleDateString("pt-BR")}</p>
+          <table className={styles.printTable}>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Vínculo</th>
+                <th>WhatsApp</th>
+                <th>Assinatura / Obs</th>
+              </tr>
+            </thead>
+            <tbody>
+              {participants.map((p) => (
+                <tr key={p.id}>
+                  <td>{p.fullName}</td>
+                  <td>{p.isMember}</td>
+                  <td>{p.whatsapp}</td>
+                  <td></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* DELETE MODAL */}
       {deleteId && (
@@ -468,33 +580,92 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
       {/* EDIT MODAL */}
       {editState && (
         <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
+          <div className={`${styles.modal} ${styles.modalLarge}`}>
             <h3>Editar inscrição</h3>
             <div className={styles.editForm}>
-              <div className="form-group">
-                <label className="form-label">Nome completo</label>
-                <input
-                  className="form-input"
-                  value={editState.fullName}
-                  onChange={(e) => setEditState((s) => s && ({ ...s, fullName: e.target.value }))}
-                />
+              <div className={styles.editGrid}>
+                <div className="form-group">
+                  <label className="form-label">Nome completo</label>
+                  <input
+                    className="form-input"
+                    value={editState.fullName}
+                    onChange={(e) => setEditState((s) => s && ({ ...s, fullName: e.target.value }))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">WhatsApp</label>
+                  <input
+                    className="form-input"
+                    value={editState.whatsapp}
+                    onChange={(e) => setEditState((s) => s && ({ ...s, whatsapp: e.target.value }))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Data de Nascimento</label>
+                  <input
+                    className="form-input"
+                    type="date"
+                    value={editState.birthDate}
+                    onChange={(e) => setEditState((s) => s && ({ ...s, birthDate: e.target.value }))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Sexo</label>
+                  <select
+                    className="form-input"
+                    value={editState.gender}
+                    onChange={(e) => setEditState((s) => s && ({ ...s, gender: e.target.value as Gender }))}
+                  >
+                    <option value="MASCULINO">Masculino</option>
+                    <option value="FEMININO">Feminino</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Vínculo IBB</label>
+                  <select
+                    className="form-input"
+                    value={editState.isMember}
+                    onChange={(e) => setEditState((s) => s && ({ ...s, isMember: e.target.value as MembershipStatus }))}
+                  >
+                    <option value="SIM">Membro IBB</option>
+                    <option value="GR">Freq. GR</option>
+                    <option value="NAO">Não membro</option>
+                  </select>
+                </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">WhatsApp</label>
-                <input
-                  className="form-input"
-                  value={editState.whatsapp}
-                  onChange={(e) => setEditState((s) => s && ({ ...s, whatsapp: e.target.value }))}
-                />
-              </div>
+
               <div className="form-group">
                 <label className="form-label">Informações de saúde</label>
                 <textarea
                   className="form-textarea"
-                  rows={3}
+                  rows={2}
                   value={editState.healthIssues}
                   onChange={(e) => setEditState((s) => s && ({ ...s, healthIssues: e.target.value }))}
                 />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Modalidades</label>
+                <div className={styles.modalityCheckboxes}>
+                  {modalities.map((m) => (
+                    <label key={m.id} className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={editState.modalityIds.includes(m.id)}
+                        onChange={(e) => {
+                          setEditState((s) => {
+                            if (!s) return s;
+                            const ids = e.target.checked
+                              ? [...s.modalityIds, m.id]
+                              : s.modalityIds.filter((id) => id !== m.id);
+                            return { ...s, modalityIds: ids };
+                          });
+                        }}
+                      />
+                      {m.name}
+                    </label>
+                  ))}
+                </div>
               </div>
             </div>
             <div className={styles.modalActions}>

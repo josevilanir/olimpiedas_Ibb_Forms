@@ -8,6 +8,7 @@ import {
 } from "../services/admin.service";
 import { exportParticipantsToExcel } from "../services/export.service";
 import { getStats } from "../services/stats.service";
+import { MembershipStatus } from "../generated/prisma/client";
 
 export async function login(req: Request, res: Response) {
   try {
@@ -62,8 +63,9 @@ export async function getByModality(_req: Request, res: Response) {
   res.json({ data });
 }
 
-export async function stats(_req: Request, res: Response) {
-  const data = await getStats();
+export async function stats(req: Request, res: Response) {
+  const isMember = req.query.isMember as MembershipStatus | undefined;
+  const data = await getStats(isMember);
   res.json({ data });
 }
 

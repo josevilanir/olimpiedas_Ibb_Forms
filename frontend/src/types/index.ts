@@ -1,11 +1,13 @@
 export type MembershipStatus = "SIM" | "NAO" | "GR";
 export type Gender = "MASCULINO" | "FEMININO";
+export type PaymentStatus = "PENDENTE" | "PAGO";
 
 export interface Modality {
   id: string;
   name: string;
   minAge: number | null;
   maxAge: number | null;
+  maxSpots: number | null;
   requiresMembership: boolean;
   coordinatorName: string;
   createdAt: string;
@@ -30,6 +32,7 @@ export interface Participant {
   gender: Gender;
   healthIssues: string | null;
   termsAccepted: boolean;
+  paymentStatus: PaymentStatus;
   createdAt: string;
   subscriptions: Subscription[];
 }
