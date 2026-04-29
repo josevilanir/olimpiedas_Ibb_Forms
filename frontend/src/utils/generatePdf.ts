@@ -85,6 +85,7 @@ export function generateComprovantePdf(participant: Participant) {
     "• Taxa de inscrição: R$ 15,09 por pessoa (isento até 8 anos).",
     "• Pagamento via PIX. Envie o comprovante pelo WhatsApp ao coordenador.",
     "• A camiseta oficial não está inclusa na taxa.",
+    "• DÚVIDAS? FALE COM SAMUCA PELO WHATSAPP: (84) 99921-5999",
   ];
   for (const aviso of avisos) {
     doc.text(aviso, 20, y);

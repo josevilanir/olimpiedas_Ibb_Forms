@@ -20,6 +20,7 @@
   min-height: 100vh;
 }
 
+
 /* ─── NAV ─── */
 .landing-page-container nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
@@ -265,7 +266,19 @@
 }
 
 /* ─── SOBRE ─── */
-.landing-page-container #sobre { background: var(--dark); }
+.landing-page-container #sobre {
+  background-color: #03142e;
+  background-image:
+    url('../assets/texture.png'),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(10,157,143,0.08) 0%, transparent 70%),
+    linear-gradient(160deg, rgba(3, 14, 35, 0.92) 0%, rgba(2, 10, 28, 0.95) 100%),
+    url('../assets/background.png');
+  background-blend-mode: overlay, normal, normal, normal;
+  background-size: auto, cover, cover, cover;
+  background-attachment: scroll, scroll, scroll, fixed;
+  background-position: center, center, center, center;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+}
 .landing-page-container .sobre-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
 }
@@ -320,7 +333,18 @@
 }
 
 /* ─── MODALIDADES ─── */
-.landing-page-container #modalidades { background: var(--dark2); }
+.landing-page-container #modalidades {
+  background-color: #051a36;
+  background-image:
+    url('../assets/texture.png'),
+    linear-gradient(160deg, rgba(5, 22, 55, 0.93) 0%, rgba(3, 14, 40, 0.96) 100%),
+    url('../assets/background.png');
+  background-blend-mode: overlay, normal, normal;
+  background-size: auto, cover, cover;
+  background-attachment: scroll, scroll, fixed;
+  background-position: center, center, center;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
 .landing-page-container .mod-header {
   display: flex; align-items: flex-end; justify-content: space-between;
   margin-bottom: 48px; flex-wrap: wrap; gap: 24px;
@@ -373,6 +397,10 @@
   position: absolute; top: 20px; right: 20px;
   font-size: 24px; opacity: 0.2;
 }
+.landing-page-container .mod-coord {
+  font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 6px;
+  font-family: var(--font-display); letter-spacing: 0.5px;
+}
 .landing-page-container .mod-tag {
   display: inline-block; margin-top: 10px;
   font-family: var(--font-display); font-size: 10px; font-weight: 700;
@@ -383,7 +411,19 @@
 .landing-page-container .mod-tag.member { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
 
 /* ─── INSCRIÇÃO ─── */
-.landing-page-container #inscricao { background: var(--dark); }
+.landing-page-container #inscricao {
+  background-color: #03142e;
+  background-image:
+    url('../assets/texture.png'),
+    radial-gradient(ellipse 60% 50% at 100% 50%, rgba(10,157,143,0.07) 0%, transparent 70%),
+    linear-gradient(160deg, rgba(3, 14, 35, 0.93) 0%, rgba(2, 10, 28, 0.95) 100%),
+    url('../assets/background.png');
+  background-blend-mode: overlay, normal, normal, normal;
+  background-size: auto, cover, cover, cover;
+  background-attachment: scroll, scroll, scroll, fixed;
+  background-position: center, center, center, center;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+}
 .landing-page-container .steps-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
   margin-bottom: 64px;
@@ -437,8 +477,18 @@
 
 /* ─── FOOTER ─── */
 .landing-page-container footer {
-  background: #050505; padding: 48px 48px 32px;
-  border-top: 1px solid rgba(255,255,255,0.04);
+  background-color: #020a1a;
+  background-image:
+    url('../assets/texture.png'),
+    linear-gradient(to top, rgba(2, 8, 20, 0.97) 0%, rgba(3, 14, 35, 0.95) 100%),
+    url('../assets/background.png');
+  background-blend-mode: overlay, normal, normal;
+  background-size: auto, cover, cover;
+  background-attachment: scroll, scroll, fixed;
+  background-position: center, center, center;
+  background-repeat: repeat, no-repeat, no-repeat;
+  padding: 48px 48px 32px;
+  border-top: 1px solid rgba(10,157,143,0.1);
 }
 .landing-page-container .footer-top {
   display: flex; justify-content: space-between; align-items: flex-start;

@@ -1,17 +1,18 @@
 .layout {
   display: flex;
   min-height: 100vh;
-  background: var(--color-gray-50);
+  background: #0d1b2a;
 }
 
 /* Sidebar */
 .sidebar {
   width: 240px;
-  background: var(--color-gray-900);
+  background: #060f1a;
   color: var(--color-white);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  border-right: 1px solid rgba(10,157,143,0.15);
 }
 
 .sidebarHeader {
@@ -55,8 +56,8 @@
   cursor: pointer;
 }
 
-.navBtn:hover { background: rgba(255,255,255,0.08); color: var(--color-white); }
-.navBtnActive { background: rgba(255,255,255,0.12) !important; color: var(--color-white) !important; }
+.navBtn:hover { background: rgba(10,157,143,0.12); color: var(--color-white); }
+.navBtnActive { background: rgba(10,157,143,0.2) !important; color: #0aad9f !important; border-left: 2px solid #0aad9f; }
 
 .sidebarFooter {
   padding: var(--space-4) var(--space-6);
@@ -93,6 +94,7 @@
   padding: var(--space-8);
   overflow: auto;
   position: relative;
+  background: #0d1b2a;
 }
 
 .pageHeader {
@@ -106,26 +108,8 @@
 .pageHeader h2 {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gray-900);
+  color: #e8f4f3;
 }
-
-.participantCount {
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-500);
-  margin-top: var(--space-1);
-}
-
-.backBtn {
-  background: none;
-  border: none;
-  font-size: var(--font-size-sm);
-  color: var(--color-primary);
-  cursor: pointer;
-  padding: 0;
-  margin-bottom: var(--space-2);
-  display: block;
-}
-.backBtn:hover { text-decoration: underline; }
 
 /* Modality grid */
 .modalityGrid {
@@ -135,17 +119,17 @@
 }
 
 .modalityCard {
-  background: var(--color-white);
-  border: 1px solid var(--color-gray-200);
+  background: #0f2133;
+  border: 1px solid rgba(10,157,143,0.15);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition-base);
+  transition: box-shadow var(--transition-base), border-color var(--transition-base);
 }
-.modalityCard:hover { box-shadow: var(--shadow-md); }
+.modalityCard:hover { box-shadow: 0 0 0 1px rgba(10,157,143,0.4), var(--shadow-md); border-color: rgba(10,157,143,0.4); }
 
 .modalityCardHeader {
   display: flex;
@@ -157,12 +141,12 @@
 .modalityCardHeader h3 {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-gray-800);
+  color: #e8f4f3;
 }
 
 .modalityMeta {
   font-size: var(--font-size-sm);
-  color: var(--color-gray-500);
+  color: rgba(200,230,225,0.5);
 }
 
 .modalityActions {
@@ -175,35 +159,35 @@
 .tableWrapper {
   overflow-x: auto;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-gray-200);
+  border: 1px solid rgba(10,157,143,0.15);
   box-shadow: var(--shadow-sm);
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--color-white);
+  background: #0f2133;
   font-size: var(--font-size-sm);
 }
 
 .table th {
-  background: var(--color-gray-50);
-  color: var(--color-gray-600);
+  background: #091928;
+  color: rgba(200,230,225,0.6);
   font-weight: var(--font-weight-semibold);
   padding: var(--space-3) var(--space-4);
   text-align: left;
-  border-bottom: 1px solid var(--color-gray-200);
+  border-bottom: 1px solid rgba(10,157,143,0.15);
   white-space: nowrap;
 }
 
 .table td {
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-gray-100);
-  color: var(--color-gray-700);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: rgba(200,230,225,0.8);
   vertical-align: middle;
 }
 
-.table tbody tr:hover { background: var(--color-gray-50); }
+.table tbody tr:hover { background: rgba(10,157,143,0.05); }
 .table tbody tr:last-child td { border-bottom: none; }
 
 .healthCell {
@@ -227,7 +211,8 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgb(0 0 0 / 0.5);
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -236,12 +221,13 @@
 }
 
 .modal {
-  background: var(--color-white);
+  background: #0f2133;
+  border: 1px solid rgba(10,157,143,0.2);
   border-radius: var(--radius-xl);
   padding: var(--space-8);
   width: 100%;
   max-width: 480px;
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
@@ -250,12 +236,12 @@
 .modal h3 {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-gray-900);
+  color: #e8f4f3;
 }
 
 .modal p {
   font-size: var(--font-size-sm);
-  color: var(--color-gray-600);
+  color: rgba(200,230,225,0.6);
   line-height: var(--line-height-relaxed);
 }
 
@@ -287,11 +273,11 @@
 .feedbackError { background: var(--color-error-light); color: #991b1b; border: 1px solid #fca5a5; }
 
 /* Misc */
-.loading { color: var(--color-gray-500); font-size: var(--font-size-sm); }
+.loading { color: rgba(200,230,225,0.4); font-size: var(--font-size-sm); }
 .empty {
   text-align: center;
   padding: var(--space-16);
-  color: var(--color-gray-400);
+  color: rgba(200,230,225,0.3);
   font-size: var(--font-size-base);
 }
 
@@ -304,8 +290,8 @@
 }
 
 .statCard {
-  background: var(--color-white);
-  border: 1px solid var(--color-gray-200);
+  background: #0f2133;
+  border: 1px solid rgba(10,157,143,0.15);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   text-align: center;
@@ -318,18 +304,18 @@
 .statValue {
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
+  color: #0aad9f;
 }
 
 .statLabel {
   font-size: var(--font-size-xs);
-  color: var(--color-gray-500);
+  color: rgba(200,230,225,0.5);
   font-weight: var(--font-weight-medium);
 }
 
 .chartSection {
-  background: var(--color-white);
-  border: 1px solid var(--color-gray-200);
+  background: #0f2133;
+  border: 1px solid rgba(10,157,143,0.15);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   margin-bottom: var(--space-6);
@@ -339,8 +325,15 @@
 .chartSection h3 {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-gray-800);
+  color: #e8f4f3;
   margin-bottom: var(--space-5);
+}
+
+.chartsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
 }
 
 .barChart {
@@ -358,7 +351,7 @@
 
 .barLabel {
   font-size: var(--font-size-sm);
-  color: var(--color-gray-600);
+  color: rgba(200,230,225,0.6);
   text-align: right;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -367,14 +360,14 @@
 
 .barTrack {
   height: 18px;
-  background: var(--color-gray-100);
+  background: rgba(255,255,255,0.06);
   border-radius: var(--radius-full);
   overflow: hidden;
 }
 
 .barFill {
   height: 100%;
-  background: var(--color-primary);
+  background: #0aad9f;
   border-radius: var(--radius-full);
   min-width: 4px;
   transition: width 0.5s ease;
@@ -383,12 +376,30 @@
 .barCount {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-gray-700);
+  color: rgba(200,230,225,0.8);
   text-align: right;
 }
 
 /* Badges override */
 .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: var(--radius-full); font-size: 11px; font-weight: var(--font-weight-medium); }
-.badge-primary { background: var(--color-primary-light); color: var(--color-primary-dark); }
-.badge-success { background: var(--color-success-light); color: #065f46; }
-.badge-warning { background: var(--color-warning-light); color: #92400e; }
+.badge-primary { background: rgba(10,157,143,0.15); color: #0aad9f; border: 1px solid rgba(10,157,143,0.25); }
+.badge-success { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+.badge-warning { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+
+.participantCount {
+  font-size: var(--font-size-sm);
+  color: rgba(200,230,225,0.4);
+  margin-top: var(--space-1);
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  font-size: var(--font-size-sm);
+  color: #0aad9f;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: var(--space-2);
+  display: block;
+}
+.backBtn:hover { text-decoration: underline; }

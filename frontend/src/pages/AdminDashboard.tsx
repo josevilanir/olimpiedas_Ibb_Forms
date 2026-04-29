@@ -1,4 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
+import {
+  PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+} from "recharts";
 import type { Modality, Participant } from "../types";
 import { api } from "../services/api";
 import styles from "./AdminDashboard.module.css";
@@ -261,45 +265,102 @@ export default function AdminDashboard({ token, adminName, onLogout }: Props) {
                   </div>
                 </div>
 
+                {/* Pie charts */}
+                <div className={styles.chartsRow}>
+                  <div className={styles.chartSection}>
+                    <h3>Gênero</h3>
+                    <ResponsiveContainer width="100%" height={220}>
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: "Masculino", value: statsData.genderCount.MASCULINO },
+                            { name: "Feminino",  value: statsData.genderCount.FEMININO },
+                          ]}
+                          cx="50%" cy="50%" outerRadius={80}
+                          dataKey="value" label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                          labelLine={false}
+                        >
+                          <Cell fill="#0aad9f" />
+                          <Cell fill="#667eea" />
+                        </Pie>
+                        <Tooltip
+                          contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                        />
+                        <Legend wrapperStyle={{ color: "rgba(200,230,225,0.6)", fontSize: 13 }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className={styles.chartSection}>
+                    <h3>Vínculo IBB</h3>
+                    <ResponsiveContainer width="100%" height={220}>
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: "Membro IBB", value: statsData.memberCount.SIM },
+                            { name: "Freq. GR",   value: statsData.memberCount.GR },
+                            { name: "Não membro", value: statsData.memberCount.NAO },
+                          ]}
+                          cx="50%" cy="50%" outerRadius={80}
+                          dataKey="value" label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                          labelLine={false}
+                        >
+                          <Cell fill="#0aad9f" />
+                          <Cell fill="#3b82f6" />
+                          <Cell fill="#f59e0b" />
+                        </Pie>
+                        <Tooltip
+                          contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                        />
+                        <Legend wrapperStyle={{ color: "rgba(200,230,225,0.6)", fontSize: 13 }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
                 {/* Faixas etárias */}
                 <div className={styles.chartSection}>
                   <h3>Faixas etárias</h3>
-                  <div className={styles.barChart}>
-                    {Object.entries(statsData.ageGroups).map(([label, count]) => {
-                      const pct = statsData.totalParticipants > 0 ? Math.round((count / statsData.totalParticipants) * 100) : 0;
-                      return (
-                        <div key={label} className={styles.barRow}>
-                          <span className={styles.barLabel}>{label} anos</span>
-                          <div className={styles.barTrack}>
-                            <div className={styles.barFill} style={{ width: `${pct}%` }} />
-                          </div>
-                          <span className={styles.barCount}>{count}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <BarChart
+                      data={Object.entries(statsData.ageGroups).map(([label, count]) => ({ label: `${label} anos`, count }))}
+                      margin={{ top: 4, right: 24, bottom: 4, left: 0 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                      <XAxis dataKey="label" tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                      <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                      <Tooltip
+                        contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                        cursor={{ fill: "rgba(10,157,143,0.08)" }}
+                      />
+                      <Bar dataKey="count" fill="#0aad9f" radius={[4, 4, 0, 0]} name="Inscritos" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
 
                 {/* Inscritos por modalidade */}
                 <div className={styles.chartSection}>
                   <h3>Inscritos por modalidade</h3>
-                  <div className={styles.barChart}>
-                    {statsData.modalityStats
-                      .sort((a, b) => b.count - a.count)
-                      .map((m) => {
-                        const max = Math.max(...statsData.modalityStats.map((x) => x.count), 1);
-                        const pct = Math.round((m.count / max) * 100);
-                        return (
-                          <div key={m.id} className={styles.barRow}>
-                            <span className={styles.barLabel}>{m.name}</span>
-                            <div className={styles.barTrack}>
-                              <div className={styles.barFill} style={{ width: `${pct}%` }} />
-                            </div>
-                            <span className={styles.barCount}>{m.count}</span>
-                          </div>
-                        );
-                      })}
-                  </div>
+                  <ResponsiveContainer width="100%" height={Math.max(300, statsData.modalityStats.length * 36)}>
+                    <BarChart
+                      layout="vertical"
+                      data={[...statsData.modalityStats].sort((a, b) => b.count - a.count)}
+                      margin={{ top: 4, right: 40, bottom: 4, left: 8 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
+                      <XAxis type="number" allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                      <YAxis
+                        type="category" dataKey="name" width={190}
+                        tick={{ fill: "rgba(200,230,225,0.6)", fontSize: 11 }}
+                        axisLine={false} tickLine={false}
+                      />
+                      <Tooltip
+                        contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                        cursor={{ fill: "rgba(10,157,143,0.08)" }}
+                      />
+                      <Bar dataKey="count" fill="#0aad9f" radius={[0, 4, 4, 0]} name="Inscritos" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </>
             )}
