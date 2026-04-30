@@ -10,6 +10,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "ts-node --project tsconfig.seed.json prisma/seed.ts",
+    "prisma:populate": "ts-node --project tsconfig.seed.json prisma/populate_data.ts",
     "test": "jest --runInBand --forceExit"
   },
   "dependencies": {
@@ -24,6 +25,7 @@
     "pg": "^8.20.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.4.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
