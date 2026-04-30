@@ -874,6 +874,17 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
   padding-bottom: var(--space-4);
   -webkit-overflow-scrolling: touch;
 }
-.chartScrollWrapper::-webkit-scrollbar { height: 6px; }
-.chartScrollWrapper::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
-.chartScrollWrapper::-webkit-scrollbar-thumb { background: rgba(10,157,143,0.3); border-radius: 10px; }
+.chartScrollWrapper::-webkit-scrollbar { height: 10px; }
+.chartScrollWrapper::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+.chartScrollWrapper::-webkit-scrollbar-thumb { 
+  background: rgba(10,157,143,0.4); 
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.chartScrollWrapper:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(10,157,143,0.7);
+}
+.chartScrollWrapper::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(20,214,197,0.9);
+}

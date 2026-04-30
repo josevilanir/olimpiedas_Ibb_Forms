@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -56,6 +56,30 @@ export default function AdminDashboard() {
   const [pieStatsData, setPieStatsData] = useState<Stats | null>(null);
   const [loadingPieStats, setLoadingPieStats] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Drag-to-scroll for charts
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => setIsDragging(false);
+  const handleMouseUp = () => setIsDragging(false);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll-fast factor
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
@@ -421,8 +445,16 @@ export default function AdminDashboard() {
                   {chartMode === "modalities" && (() => {
                     const sortedData = [...statsData.modalityStats].sort((a, b) => b.count - a.count);
                     return (
-                      <div className={styles.chartScrollWrapper}>
-                        <div style={{ width: "100%", minWidth: Math.max(sortedData.length * 45, 800), cursor: "pointer" }}>
+                      <div 
+                        className={styles.chartScrollWrapper}
+                        ref={scrollRef}
+                        onMouseDown={handleMouseDown}
+                        onMouseLeave={handleMouseLeave}
+                        onMouseUp={handleMouseUp}
+                        onMouseMove={handleMouseMove}
+                        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+                      >
+                        <div style={{ width: "100%", minWidth: Math.max(sortedData.length * 70, 1000), pointerEvents: isDragging ? 'none' : 'auto' }}>
                           <ResponsiveContainer width="100%" height={400}>
                             <BarChart
                               data={sortedData}
