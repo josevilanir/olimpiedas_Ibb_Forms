@@ -57,43 +57,55 @@ export default function AdminDashboard() {
   const [loadingPieStats, setLoadingPieStats] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Drag-to-scroll for charts
+  // Drag-to-scroll for charts — all mutable drag state lives in a ref to avoid
+  // stale closures (state updates from mousedown wouldn't be visible in the
+  // mousemove handler that fires in the same event-loop tick).
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [mouseDownX, setMouseDownX] = useState(0); // Para detectar clique vs drag
+  const dragRef = useRef({ isDown: false, startX: 0, scrollLeft: 0, mouseDownX: 0, dragged: false });
+  const [isDragging, setIsDragging] = useState(false); // cursor style only
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollRef.current) return;
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
-    setMouseDownX(e.pageX);
+    const d = dragRef.current;
+    d.isDown = true;
+    d.dragged = false;
+    d.mouseDownX = e.pageX;
+    d.startX = e.pageX - scrollRef.current.offsetLeft;
+    d.scrollLeft = scrollRef.current.scrollLeft;
   };
 
-  const handleMouseLeave = () => setIsDragging(false);
+  const handleMouseLeave = () => {
+    dragRef.current.isDown = false;
+    dragRef.current.dragged = false;
+    setIsDragging(false);
+  };
+
   const handleMouseUp = () => {
-    // Pequeno delay para permitir que o clique seja processado antes de resetar isDragging?
-    // Na verdade, se não arrastou, isDragging nunca ficou true.
-    setTimeout(() => setIsDragging(false), 50);
+    dragRef.current.isDown = false;
+    // Reset dragged after a tick so the click event (which fires synchronously
+    // after mouseup) can still read the correct dragged=true value.
+    setTimeout(() => {
+      dragRef.current.dragged = false;
+      setIsDragging(false);
+    }, 50);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!scrollRef.current) return;
-    
-    // Só inicia o drag se mover mais de 5px (evita matar o clique)
-    if (!isDragging) {
-      if (Math.abs(e.pageX - mouseDownX) > 5) {
-        setIsDragging(true);
-      } else {
-        return;
-      }
+    const d = dragRef.current;
+    if (!d.isDown || !scrollRef.current) return;
+
+    const delta = Math.abs(e.pageX - d.mouseDownX);
+    if (!d.dragged && delta > 8) {
+      d.dragged = true;
+      setIsDragging(true);
     }
+
+    if (!d.dragged) return;
 
     e.preventDefault();
     const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 2; 
-    scrollRef.current.scrollLeft = scrollLeft - walk;
+    const walk = (x - d.startX) * 2;
+    scrollRef.current.scrollLeft = d.scrollLeft - walk;
   };
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -122,6 +134,8 @@ export default function AdminDashboard() {
   }
 
   function handleBarClick(entry: Record<string, unknown>) {
+    if (dragRef.current.dragged) return;
+    
     const id = entry.id as string | undefined;
     const name = entry.name as string | undefined;
     if (!id || !name) return;
@@ -471,8 +485,7 @@ export default function AdminDashboard() {
                       >
                         <div style={{ 
                           width: "100%", 
-                          minWidth: Math.max(sortedData.length * 120, 1400), 
-                          pointerEvents: isDragging ? 'none' : 'auto' 
+                          minWidth: Math.max(sortedData.length * 120, 1400) 
                         }}>
                           <ResponsiveContainer width="100%" height={400}>
                             <BarChart
@@ -498,7 +511,12 @@ export default function AdminDashboard() {
                                 dataKey="count"
                                 radius={[4, 4, 0, 0]}
                                 name="Inscritos"
-                                onClick={(entry) => handleBarClick(entry as unknown as Record<string, unknown>)}
+                                style={{ cursor: "pointer" }}
+                                onClick={(barData) => {
+                                  if (!dragRef.current.dragged) {
+                                    handleBarClick(barData.payload as Record<string, unknown>);
+                                  }
+                                }}
                               >
                                 {sortedData.map((entry) => (
                                   <Cell
