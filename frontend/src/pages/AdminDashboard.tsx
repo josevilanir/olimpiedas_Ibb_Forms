@@ -164,24 +164,37 @@ export default function AdminDashboard() {
     setTimeout(() => setFeedback(null), 3500);
   }
 
-  function handleExport(modalityId?: string) {
+  async function handleExport(modalityId?: string) {
     const query = modalityId ? `?modalityId=${modalityId}` : "";
     const url = `${BASE_URL}/admin/export${query}`;
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "");
-    Object.assign(link.style, { display: "none" });
-    document.body.appendChild(link);
-    const headers = new Headers({ Authorization: `Bearer ${token}` });
-    fetch(url, { headers })
-      .then((r) => r.blob())
-      .then((blob) => {
-        const blobUrl = URL.createObjectURL(blob);
-        link.href = blobUrl;
-        link.click();
+
+    try {
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        const msg = errorBody?.error ?? `Erro ${response.status}`;
+        showFeedback("error", msg);
+        return;
+      }
+
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `inscritos_olimpiadas_ibb_${Date.now()}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+
+      setTimeout(() => {
         URL.revokeObjectURL(blobUrl);
         document.body.removeChild(link);
-      });
+      }, 1000);
+    } catch {
+      showFeedback("error", "Erro de rede ao exportar. Verifique sua conexão.");
+    }
   }
 
   function handlePrint() {
@@ -409,46 +422,43 @@ export default function AdminDashboard() {
                     const sortedData = [...statsData.modalityStats].sort((a, b) => b.count - a.count);
                     return (
                       <div className={styles.chartScrollWrapper}>
-                        <div style={{ minWidth: Math.max(sortedData.length * 50, 400), cursor: "pointer" }}>
-                          <ResponsiveContainer
-                            width="100%"
+                        <div style={{ width: Math.max(sortedData.length * 50, 400), cursor: "pointer" }}>
+                          <BarChart
+                            width={Math.max(sortedData.length * 50, 400)}
                             height={400}
+                            data={sortedData}
+                            margin={{ top: 8, right: 24, bottom: 120, left: 0 }}
                           >
-                            <BarChart
-                              data={sortedData}
-                              margin={{ top: 8, right: 24, bottom: 120, left: 0 }}
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                            <XAxis
+                              dataKey="name"
+                              tick={{ fill: "rgba(200,230,225,0.6)", fontSize: 11 }}
+                              axisLine={false} tickLine={false}
+                              interval={0}
+                              angle={-45}
+                              textAnchor="end"
+                            />
+                            <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                            <Tooltip
+                              contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                              itemStyle={{ color: "#e8f4f3", fontWeight: "bold" }}
+                              cursor={{ fill: "rgba(10,157,143,0.08)" }}
+                            />
+                            <Bar
+                              dataKey="count"
+                              radius={[4, 4, 0, 0]}
+                              name="Inscritos"
+                              onClick={(entry) => handleBarClick(entry as unknown as Record<string, unknown>)}
                             >
-                              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-                              <XAxis
-                                dataKey="name"
-                                tick={{ fill: "rgba(200,230,225,0.6)", fontSize: 11 }}
-                                axisLine={false} tickLine={false}
-                                interval={0}
-                                angle={-45}
-                                textAnchor="end"
-                              />
-                              <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
-                              <Tooltip
-                                contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
-                                itemStyle={{ color: "#e8f4f3", fontWeight: "bold" }}
-                                cursor={{ fill: "rgba(10,157,143,0.08)" }}
-                              />
-                              <Bar
-                                dataKey="count"
-                                radius={[4, 4, 0, 0]}
-                                name="Inscritos"
-                                onClick={(entry) => handleBarClick(entry as unknown as Record<string, unknown>)}
-                              >
-                                {sortedData.map((entry) => (
-                                  <Cell
-                                    key={entry.id}
-                                    fill={activeBar?.id === entry.id ? "#14d6c5" : "#0aad9f"}
-                                    opacity={activeBar && activeBar.id !== entry.id ? 0.4 : 1}
-                                  />
-                                ))}
-                              </Bar>
-                            </BarChart>
-                          </ResponsiveContainer>
+                              {sortedData.map((entry) => (
+                                <Cell
+                                  key={entry.id}
+                                  fill={activeBar?.id === entry.id ? "#14d6c5" : "#0aad9f"}
+                                  opacity={activeBar && activeBar.id !== entry.id ? 0.4 : 1}
+                                />
+                              ))}
+                            </Bar>
+                          </BarChart>
                         </div>
                       </div>
                     );

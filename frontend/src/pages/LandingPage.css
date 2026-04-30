@@ -275,7 +275,7 @@
     url('../assets/background.png');
   background-blend-mode: overlay, normal, normal, normal;
   background-size: auto, cover, cover, cover;
-  background-attachment: scroll, scroll, scroll, fixed;
+  background-attachment: scroll, scroll, scroll, scroll;
   background-position: center, center, center, center;
   background-repeat: repeat, no-repeat, no-repeat, no-repeat;
 }
@@ -341,7 +341,7 @@
     url('../assets/background.png');
   background-blend-mode: overlay, normal, normal;
   background-size: auto, cover, cover;
-  background-attachment: scroll, scroll, fixed;
+  background-attachment: scroll, scroll, scroll;
   background-position: center, center, center;
   background-repeat: repeat, no-repeat, no-repeat;
 }
@@ -420,7 +420,7 @@
     url('../assets/background.png');
   background-blend-mode: overlay, normal, normal, normal;
   background-size: auto, cover, cover, cover;
-  background-attachment: scroll, scroll, scroll, fixed;
+  background-attachment: scroll, scroll, scroll, scroll;
   background-position: center, center, center, center;
   background-repeat: repeat, no-repeat, no-repeat, no-repeat;
 }
@@ -484,7 +484,7 @@
     url('../assets/background.png');
   background-blend-mode: overlay, normal, normal;
   background-size: auto, cover, cover;
-  background-attachment: scroll, scroll, fixed;
+  background-attachment: scroll, scroll, scroll;
   background-position: center, center, center;
   background-repeat: repeat, no-repeat, no-repeat;
   padding: 48px 48px 32px;
@@ -543,6 +543,14 @@
   .landing-page-container .nav-links { display: none; }
   .landing-page-container section { padding: 60px 20px; }
   .landing-page-container #hero { padding: 0 20px 48px; }
+  .landing-page-container .hero-content {
+    padding-top: 140px; /* Espaço generoso para a nav fixa + respiro */
+  }
+  .landing-page-container .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
   .landing-page-container .hero-title { font-size: clamp(56px, 14vw, 80px); margin-bottom: 360px; }
   .landing-page-container .sobre-grid { grid-template-columns: 1fr; }
   .landing-page-container .steps-grid { grid-template-columns: 1fr 1fr; }
@@ -559,7 +567,85 @@
     transform: none;
     opacity: 0.5; 
     z-index: 2; /* Mantém acima da textura no mobile também */
-    background-position: 10% 60%; 
+    background-position: 10% 60%;
     background-size: 150%;
+  }
+  .landing-page-container .sobre-stats {
+    gap: 1px;
+  }
+  .landing-page-container .mod-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+  .landing-page-container .hero-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .landing-page-container .countdown {
+    align-self: flex-start;
+  }
+  .landing-page-container .hero-cta-group {
+    flex-wrap: wrap;
+  }
+  .landing-page-container .btn-primary,
+  .landing-page-container .btn-ghost {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-page-container .cd-unit {
+    min-width: 56px;
+    padding: 8px 10px;
+  }
+  .landing-page-container .cd-num {
+    font-size: 28px;
+  }
+  .landing-page-container .cd-sep {
+    font-size: 22px;
+  }
+  .landing-page-container .steps-grid {
+    grid-template-columns: 1fr;
+  }
+  .landing-page-container .sobre-stats {
+    grid-template-columns: 1fr;
+  }
+  .landing-page-container .hero-title {
+    font-size: clamp(40px, 14vw, 56px);
+    margin-bottom: 260px;
+  }
+  .landing-page-container section {
+    padding: 40px 16px;
+  }
+  .landing-page-container .pix-box {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px 16px;
+  }
+  .landing-page-container .pix-box > div:nth-child(2) {
+    text-align: center !important;
+  }
+  .landing-page-container .mod-grid {
+    grid-template-columns: 1fr;
+  }
+  .landing-page-container .section-title {
+    font-size: clamp(28px, 8vw, 40px);
+  }
+  .landing-page-container .hero-sub {
+    max-width: 100%;
+  }
+  .landing-page-container .hero-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .landing-page-container .footer-top {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .landing-page-container .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
   }
 }
