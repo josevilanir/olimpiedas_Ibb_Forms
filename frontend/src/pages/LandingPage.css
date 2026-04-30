@@ -35,15 +35,20 @@
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 .landing-page-container .nav-logo {
-  font-family: var(--font-display);
-  font-weight: 900;
-  font-size: 22px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--white);
-  display: flex; align-items: center; gap: 10px;
+  cursor: pointer;
+  display: flex; align-items: center;
 }
-.landing-page-container .nav-logo .dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; }
+.landing-page-container .logo-img {
+  height: 200px; /* Diminuído para um tamanho grande mas equilibrado */
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.2s;
+  margin-top: -30px; 
+  margin-bottom: -30px;
+}
+.landing-page-container .nav-logo:hover .logo-img {
+  transform: scale(1.05);
+}
 .landing-page-container .nav-links {
   display: flex; align-items: center; gap: 32px;
   font-family: var(--font-display); font-weight: 600;
@@ -534,16 +539,19 @@
   .landing-page-container nav.scrolled { padding: 12px 20px; }
   .landing-page-container .nav-links { display: none; }
   .landing-page-container section { padding: 60px 20px; }
-  .landing-page-container #hero { padding: 0 20px 48px; }
+  .landing-page-container #hero { 
+    padding: 100px 20px 48px; 
+    justify-content: flex-start; /* Alinhando ao topo em vez de ao fundo */
+  }
   .landing-page-container .hero-content {
-    padding-top: 140px; /* Espaço generoso para a nav fixa + respiro */
+    padding-top: 0px;
   }
   .landing-page-container .hero-eyebrow {
     font-size: 11px;
     letter-spacing: 2px;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
   }
-  .landing-page-container .hero-title { font-size: clamp(56px, 14vw, 80px); margin-bottom: 360px; }
+  .landing-page-container .hero-title { font-size: clamp(56px, 14vw, 80px); margin-bottom: 80px; }
   .landing-page-container .sobre-grid { grid-template-columns: 1fr; }
   .landing-page-container .steps-grid { grid-template-columns: 1fr 1fr; }
   .landing-page-container .pix-box { padding: 24px; }
@@ -583,6 +591,9 @@
   .landing-page-container .btn-ghost {
     padding: 12px 24px;
     font-size: 14px;
+  }
+  .landing-page-container .logo-img {
+    height: 120px;
   }
 }
 

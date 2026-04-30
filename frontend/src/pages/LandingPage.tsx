@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import './LandingPage.css';
+import logoImg from '../assets/olimpiedas_logo-removebg-preview.png';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ export default function LandingPage() {
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    const EVENT_DATE = new Date(2025, 11, 31, 8, 0, 0);
+    const EVENT_DATE = new Date(2026, 6, 4, 8, 0, 0);
     const updateCountdown = () => {
       const now = new Date();
       const diff = EVENT_DATE.getTime() - now.getTime();
@@ -87,9 +88,8 @@ export default function LandingPage() {
     <div className="landing-page-container">
       {/* NAV */}
       <nav id="navbar" className={scrolled ? 'scrolled' : ''}>
-        <div className="nav-logo">
-          <div className="dot"></div>
-          Olimpíadas IBB
+        <div className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <img src={logoImg} alt="Olimpíadas IBB" className="logo-img" />
         </div>
         <div className="nav-links">
           <a href="#sobre">Sobre</a>
@@ -108,7 +108,7 @@ export default function LandingPage() {
         <div className="hero-diagonal"></div>
 
         <div className="hero-content">
-          <div className="hero-eyebrow">Igreja Batista de Bonsucesso · Natal/RN</div>
+          <div className="hero-eyebrow">Igreja Batista Bereana · Natal/RN</div>
 
           <h1 className="hero-title">
             OLIMPÍADAS<br />
@@ -166,7 +166,7 @@ export default function LandingPage() {
           <div className="sobre-text">
             <div className="section-eyebrow reveal">Sobre o Evento</div>
             <h2 className="section-title reveal reveal-delay-1">Esporte,<br />fé &amp;<br />comunidade</h2>
-            <p className="reveal reveal-delay-2">As Olimpíadas IBB reúnem membros e convidados da Igreja Batista de Bonsucesso em diversas modalidades esportivas e recreativas — de corridas a e-sports, passando por futebol, vôlei, natação e muito mais.</p>
+            <p className="reveal reveal-delay-2">As Olimpíadas IBB reúnem membros e convidados da Igreja Batista Bereana em diversas modalidades esportivas e recreativas — de corridas a e-sports, passando por futebol, vôlei, natação e muito mais.</p>
             <p className="reveal reveal-delay-3">Um evento para todas as idades. Desde os pequenos de 3 anos nas provas Kids até os adultos no circuito de obstáculos — há uma modalidade para cada membro da família IBB.</p>
             <div className="sobre-stats reveal reveal-delay-4">
               <div className="stat"><div className="n">18</div><div className="l">Modalidades</div></div>
@@ -268,7 +268,7 @@ export default function LandingPage() {
           </div>
           <div className="footer-contact">
             <a href="mailto:eventosibbnatal@gmail.com">eventosibbnatal@gmail.com</a>
-            <a href="#">Igreja Batista de Bonsucesso</a>
+            <a href="#">Igreja Batista Bereana</a>
           </div>
         </div>
         <div className="footer-bottom">

@@ -2,6 +2,7 @@ import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { useAuthContext } from "../contexts/AuthContext";
 import styles from "./LoginPage.module.css";
+import logoImg from "../assets/olimpiedas_logo-removebg-preview.png";
 
 export default function LoginPage() {
   const { login, error, loading, isAuthenticated } = useAuthContext();
@@ -26,8 +27,7 @@ export default function LoginPage() {
       <div className={styles.card}>
         <div className={styles.logo}>
           <div className={styles.logoIcon}>
-            <div className={styles.dot}></div>
-            <h1>OLIMPÍADAS <span>IBB</span></h1>
+            <img src={logoImg} alt="Olimpíadas IBB" className={styles.logoImg} />
           </div>
           <p>Painel Administrativo</p>
         </div>

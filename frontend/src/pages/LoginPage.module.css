@@ -75,26 +75,11 @@
   margin-bottom: var(--space-4);
 }
 
-.dot {
-  width: 10px;
-  height: 10px;
-  background: var(--color-primary);
-  border-radius: 50%;
-}
-
-.logo h1 {
-  font-family: var(--font-family-display);
-  font-size: 28px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--color-white);
-  margin: 0;
-  font-style: italic;
-}
-
-.logo h1 span {
-  color: var(--color-primary);
+.logoImg {
+  height: 300px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: var(--space-4);
 }
 
 .logo p {

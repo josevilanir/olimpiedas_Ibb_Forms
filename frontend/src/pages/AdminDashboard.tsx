@@ -8,6 +8,7 @@ import type { Gender, Modality, MembershipStatus, Participant, PaymentStatus, St
 import { api } from "../services/api";
 import { useAuthContext } from "../contexts/AuthContext";
 import styles from "./AdminDashboard.module.css";
+import logoImg from "../assets/olimpiedas_logo-removebg-preview.png";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001/api/v1";
 
@@ -309,10 +310,9 @@ export default function AdminDashboard() {
 
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarActive : ""}`}>
         <div className={styles.sidebarHeader}>
-          <span className={styles.sidebarIcon}>🏆</span>
-          <div>
-            <p className={styles.sidebarTitle}>Olimpíadas IBB</p>
-            <p className={styles.sidebarSub}>Admin</p>
+          <img src={logoImg} alt="Olimpíadas IBB" className={styles.sidebarLogo} />
+          <div className={styles.sidebarHeaderText}>
+            <p className={styles.sidebarSub}>Painel Admin</p>
           </div>
         </div>
         <nav className={styles.nav}>

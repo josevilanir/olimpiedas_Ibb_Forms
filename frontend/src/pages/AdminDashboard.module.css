@@ -15,7 +15,7 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
 
 /* Sidebar */
 .sidebar {
-  width: 240px;
+  width: 350px;
   background: #060f1a;
   color: var(--color-white);
   display: flex;
@@ -26,17 +26,24 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
 
 .sidebarHeader {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-6);
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.sidebarIcon { font-size: 1.75rem; }
+.sidebarLogo {
+  height: 200px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: var(--space-2);
+}
 
-.sidebarTitle {
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-sm);
+.sidebarHeaderText {
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebarSub {
