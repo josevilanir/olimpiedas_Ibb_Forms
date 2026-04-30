@@ -422,43 +422,43 @@ export default function AdminDashboard() {
                     const sortedData = [...statsData.modalityStats].sort((a, b) => b.count - a.count);
                     return (
                       <div className={styles.chartScrollWrapper}>
-                        <div style={{ width: Math.max(sortedData.length * 50, 400), cursor: "pointer" }}>
-                          <BarChart
-                            width={Math.max(sortedData.length * 50, 400)}
-                            height={400}
-                            data={sortedData}
-                            margin={{ top: 8, right: 24, bottom: 120, left: 0 }}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-                            <XAxis
-                              dataKey="name"
-                              tick={{ fill: "rgba(200,230,225,0.6)", fontSize: 11 }}
-                              axisLine={false} tickLine={false}
-                              interval={0}
-                              angle={-45}
-                              textAnchor="end"
-                            />
-                            <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
-                            <Tooltip
-                              contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
-                              itemStyle={{ color: "#e8f4f3", fontWeight: "bold" }}
-                              cursor={{ fill: "rgba(10,157,143,0.08)" }}
-                            />
-                            <Bar
-                              dataKey="count"
-                              radius={[4, 4, 0, 0]}
-                              name="Inscritos"
-                              onClick={(entry) => handleBarClick(entry as unknown as Record<string, unknown>)}
+                        <div style={{ width: "100%", minWidth: Math.max(sortedData.length * 45, 800), cursor: "pointer" }}>
+                          <ResponsiveContainer width="100%" height={400}>
+                            <BarChart
+                              data={sortedData}
+                              margin={{ top: 8, right: 24, bottom: 120, left: 0 }}
                             >
-                              {sortedData.map((entry) => (
-                                <Cell
-                                  key={entry.id}
-                                  fill={activeBar?.id === entry.id ? "#14d6c5" : "#0aad9f"}
-                                  opacity={activeBar && activeBar.id !== entry.id ? 0.4 : 1}
-                                />
-                              ))}
-                            </Bar>
-                          </BarChart>
+                              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                              <XAxis
+                                dataKey="name"
+                                tick={{ fill: "rgba(200,230,225,0.6)", fontSize: 11 }}
+                                axisLine={false} tickLine={false}
+                                interval={0}
+                                angle={-45}
+                                textAnchor="end"
+                              />
+                              <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                              <Tooltip
+                                contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                                itemStyle={{ color: "#e8f4f3", fontWeight: "bold" }}
+                                cursor={{ fill: "rgba(10,157,143,0.08)" }}
+                              />
+                              <Bar
+                                dataKey="count"
+                                radius={[4, 4, 0, 0]}
+                                name="Inscritos"
+                                onClick={(entry) => handleBarClick(entry as unknown as Record<string, unknown>)}
+                              >
+                                {sortedData.map((entry) => (
+                                  <Cell
+                                    key={entry.id}
+                                    fill={activeBar?.id === entry.id ? "#14d6c5" : "#0aad9f"}
+                                    opacity={activeBar && activeBar.id !== entry.id ? 0.4 : 1}
+                                  />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
                         </div>
                       </div>
                     );
