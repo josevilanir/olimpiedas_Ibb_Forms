@@ -69,7 +69,15 @@ Todas as implementações devem seguir rigorosamente as regras de negócios e a 
 - [x] Exportação por modalidade com idade calculada (não mais data de nascimento)
 
 ## Fase 7: Revisão e Deploy
-- [ ] **Homologação E2E:** Testar os formulários para casos práticos de preenchimento (simulação de fluxo de usuário).
+- [x] **Homologação E2E:** Testar os formulários para casos práticos de preenchimento (simulação de fluxo de usuário).
 - [x] **Deploy Banco:** NeonDB configurado e migration aplicada com sucesso.
-- [ ] **Deploy Backend:** Configurar ambiente e deploy no Fly.io.
-- [ ] **Deploy Frontend:** Configurar chamadas de API baseadas em variáveis de ambiente e deploy na Vercel.
+- [x] **Deploy Backend:** Configurar ambiente e deploy no Fly.io.
+- [x] **Deploy Frontend:** Configurar chamadas de API baseadas em variáveis de ambiente e deploy na Vercel.
+
+## Fase 8: Correções de Bugs e Melhorias de UI (30/04/2026)
+- [x] **Persistência de Rota Admin:** Adicionado `vercel.json` para evitar Erro 404 ao atualizar a página.
+- [x] **Bug iOS (Tela Branca):** Removido `background-attachment: fixed` que causava falha de renderização no Safari.
+- [x] **Responsividade Mobile:** Adicionado breakpoint `480px` e ajustes de layout para telas estreitas.
+- [x] **Rolagem de Gráfico:** Corrigida a largura dinâmica do gráfico de barras para permitir scroll no Desktop.
+- [x] **Exportação Excel:** Refatorada a função de exportação com tratamento de erros e download seguro.
+- [x] **UX Mobile:** Ajustado o espaçamento do Hero no mobile para melhor visibilidade e respiro.
