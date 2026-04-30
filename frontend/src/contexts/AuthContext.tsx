@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 import { api } from "../services/api";
 
 interface AdminUser {
@@ -7,10 +7,22 @@ interface AdminUser {
   email: string;
 }
 
+interface AuthContextValue {
+  token: string | null;
+  user: AdminUser | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  error: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+}
+
 const TOKEN_KEY = "ibb_admin_token";
 const USER_KEY = "ibb_admin_user";
 
-export function useAuth() {
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
   const [user, setUser] = useState<AdminUser | null>(() => {
     const stored = localStorage.getItem(USER_KEY);
@@ -42,5 +54,15 @@ export function useAuth() {
     setUser(null);
   }, []);
 
-  return { token, user, login, logout, error, loading, isAuthenticated: !!token };
+  return (
+    <AuthContext.Provider value={{ token, user, isAuthenticated: !!token, loading, error, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuthContext(): AuthContextValue {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuthContext must be used inside AuthProvider");
+  return ctx;
 }

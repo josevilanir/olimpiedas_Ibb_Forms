@@ -1,58 +1,25 @@
-import { useState } from "react";
-import { useAuth } from "./hooks/useAuth";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import LandingPage from "./pages/LandingPage";
 import RegistrationPage from "./pages/RegistrationPage";
 import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
-import LandingPage from "./pages/LandingPage";
-import styles from "./App.module.css";
-
-type AppView = "landing" | "registration" | "admin-login" | "admin-dashboard";
 
 export default function App() {
-  const [view, setView] = useState<AppView>("landing");
-  const { token, user, login, logout, error, loading, isAuthenticated } = useAuth();
-
-  function handleLogin(email: string, password: string) {
-    return login(email, password).then(() => {
-      if (isAuthenticated || token) setView("admin-dashboard");
-    });
-  }
-
-  // After login succeeds the state updates — catch it on next render
-  if (view === "admin-login" && isAuthenticated) {
-    setView("admin-dashboard");
-  }
-
-  if (view === "admin-dashboard" && isAuthenticated && user && token) {
-    return (
-      <AdminDashboard
-        token={token}
-        adminName={user.name}
-        onLogout={() => { logout(); setView("registration"); }}
-      />
-    );
-  }
-
-  if (view === "admin-login") {
-    return (
-      <LoginPage
-        onLogin={handleLogin}
-        error={error}
-        loading={loading}
-      />
-    );
-  }
-
-  if (view === "landing") {
-    return <LandingPage onGoToRegistration={() => setView("registration")} onGoToAdmin={() => setView("admin-login")} />;
-  }
-
   return (
-    <div>
-      <div className={styles.adminLink}>
-        <button onClick={() => setView("admin-login")}>Acesso Admin</button>
-      </div>
-      <RegistrationPage />
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/inscricao" element={<RegistrationPage />} />
+          <Route path="/admin/login" element={<LoginPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }

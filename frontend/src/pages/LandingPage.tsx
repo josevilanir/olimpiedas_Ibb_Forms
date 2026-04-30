@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import './LandingPage.css';
 
-interface LandingPageProps {
-  onGoToRegistration: () => void;
-  onGoToAdmin: () => void;
-}
-
-export default function LandingPage({ onGoToRegistration, onGoToAdmin }: LandingPageProps) {
+export default function LandingPage() {
+  const navigate = useNavigate();
+  const onGoToRegistration = () => navigate('/inscricao');
+  const onGoToAdmin = () => navigate('/admin/login');
   const [scrolled, setScrolled] = useState(false);
   const [countdown, setCountdown] = useState({ d: '--', h: '--', m: '--', s: '--' });
   const [activeFilter, setActiveFilter] = useState('all');

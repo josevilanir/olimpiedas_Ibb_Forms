@@ -1,19 +1,21 @@
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
+import { useNavigate } from "react-router";
+import { useAuthContext } from "../contexts/AuthContext";
 import styles from "./LoginPage.module.css";
 
-interface Props {
-  onLogin: (email: string, password: string) => Promise<void>;
-  error: string | null;
-  loading: boolean;
-}
-
-export default function LoginPage({ onLogin, error, loading }: Props) {
+export default function LoginPage() {
+  const { login, error, loading, isAuthenticated } = useAuthContext();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    if (isAuthenticated) navigate("/admin", { replace: true });
+  }, [isAuthenticated, navigate]);
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    await onLogin(email, password);
+    await login(email, password);
   }
 
   return (

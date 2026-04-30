@@ -1,18 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
 } from "recharts";
 import type { Gender, Modality, MembershipStatus, Participant, PaymentStatus } from "../types";
 import { api } from "../services/api";
+import { useAuthContext } from "../contexts/AuthContext";
 import styles from "./AdminDashboard.module.css";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001/api/v1";
-
-interface Props {
-  token: string;
-  adminName: string;
-  onLogout: () => void;
-}
 
 type View = "modalities" | "participants" | "stats";
 type MemberFilter = "ALL" | "SIM" | "NAO" | "GR";
@@ -37,7 +33,12 @@ interface EditState {
   modalityIds: string[];
 }
 
-export default function AdminDashboard({ token, adminName, onLogout }: Props) {
+export default function AdminDashboard() {
+  const { token: rawToken, user, logout } = useAuthContext();
+  const token = rawToken!; // ProtectedRoute garante autenticação antes deste componente
+  const adminName = user?.name ?? "";
+  const navigate = useNavigate();
+  function onLogout() { logout(); navigate("/"); }
   const [view, setView] = useState<View>("modalities");
   const [modalities, setModalities] = useState<Modality[]>([]);
   const [selectedModality, setSelectedModality] = useState<Modality | null>(null);
