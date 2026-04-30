@@ -1,46 +1,180 @@
 .page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: var(--color-bg-base);
+  background-image: 
+    linear-gradient(160deg, rgba(8, 38, 77, 0.4) 0%, rgba(8, 38, 77, 0.1) 100%), 
+    url('../assets/background.png');
+  background-size: cover;
+  background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
+  position: relative;
+  overflow: hidden;
+  color: var(--color-white);
+  font-family: var(--font-family);
+}
+
+.texture {
+  position: absolute;
+  inset: 0;
+  background-image: url('../assets/texture.png');
+  background-size: cover;
+  background-repeat: repeat;
+  opacity: 0.15;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.orb {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(10, 157, 143, 0.15) 0%, transparent 70%);
+  top: -200px;
+  right: -100px;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .card {
-  background: var(--color-white);
-  border-radius: var(--radius-xl);
-  padding: var(--space-10);
+  background: rgba(10, 30, 60, 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--space-12) var(--space-10);
   width: 100%;
-  max-width: 400px;
-  box-shadow: var(--shadow-xl);
+  max-width: 440px;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--color-primary);
 }
 
 .logo {
   text-align: center;
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-10);
 }
 
 .logoIcon {
-  font-size: 3rem;
-  display: block;
-  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: var(--space-4);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: var(--color-primary);
+  border-radius: 50%;
 }
 
 .logo h1 {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-gray-900);
-  margin-bottom: var(--space-1);
+  font-family: var(--font-family-display);
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-white);
+  margin: 0;
+  font-style: italic;
+}
+
+.logo h1 span {
+  color: var(--color-primary);
 }
 
 .logo p {
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-500);
+  font-family: var(--font-family-display);
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+  font-weight: 600;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-6);
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  font-family: var(--font-family-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 14px 16px;
+  color: #fff;
+  font-family: var(--font-family);
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.submitBtn {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  padding: 16px;
+  cursor: pointer;
+  clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+  transition: all 0.2s;
+  margin-top: var(--space-4);
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--color-primary-light);
+  transform: translateY(-2px);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ff8080;
+  padding: 12px;
+  font-size: 14px;
+  text-align: center;
 }

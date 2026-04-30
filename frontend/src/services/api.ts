@@ -68,8 +68,11 @@ export const api = {
           Authorization: `Bearer ${token}`,
         },
       }),
-    getStats: (token: string, isMember?: "SIM" | "NAO" | "GR") => {
-      const query = isMember ? `?isMember=${isMember}` : "";
+    getStats: (token: string, isMember?: "SIM" | "NAO" | "GR", modalityId?: string) => {
+      const params = new URLSearchParams();
+      if (isMember) params.set("isMember", isMember);
+      if (modalityId) params.set("modalityId", modalityId);
+      const query = params.size ? `?${params}` : "";
       return request<{
         totalParticipants: number;
         genderCount: { MASCULINO: number; FEMININO: number };

@@ -390,6 +390,78 @@
   color: #0aad9f;
 }
 
+/* Active bar filter badge on pie chart header */
+.activeBarBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  background: rgba(20, 214, 197, 0.12);
+  border: 1px solid rgba(20, 214, 197, 0.35);
+  color: #14d6c5;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.activeBarBadge:hover {
+  background: rgba(20, 214, 197, 0.22);
+  border-color: rgba(20, 214, 197, 0.6);
+}
+
+/* Pie chart */
+.pieRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+
+.pieChartWrap {
+  flex: 0 0 260px;
+  min-width: 220px;
+}
+
+.pieLegend {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 160px;
+}
+
+.pieLegendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pieLegendDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pieLegendName {
+  font-size: var(--font-size-sm);
+  color: rgba(200,230,225,0.65);
+  flex: 1;
+}
+
+.pieLegendVal {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: #e8f4f3;
+}
+
+.pieLegendPct {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: rgba(200,230,225,0.45);
+}
+
 .barChart {
   display: flex;
   flex-direction: column;

@@ -9,10 +9,13 @@ function calcAge(birthDate: Date): number {
   return age;
 }
 
-export async function getStats(isMember?: MembershipStatus) {
+export async function getStats(isMember?: MembershipStatus, modalityId?: string) {
   const [participants, modalities] = await Promise.all([
     prisma.participant.findMany({
-      where: isMember ? { isMember } : undefined,
+      where: {
+        ...(isMember ? { isMember } : {}),
+        ...(modalityId ? { subscriptions: { some: { modalityId } } } : {}),
+      },
       include: { subscriptions: { include: { modality: true } } },
     }),
     prisma.modality.findMany({ orderBy: { name: "asc" } }),

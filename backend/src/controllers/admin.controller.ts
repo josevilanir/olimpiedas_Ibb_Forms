@@ -65,7 +65,10 @@ export async function getByModality(_req: Request, res: Response) {
 
 export async function stats(req: Request, res: Response) {
   const isMember = req.query.isMember as MembershipStatus | undefined;
-  const data = await getStats(isMember);
+  const modalityId = Array.isArray(req.query.modalityId)
+    ? (req.query.modalityId[0] as string)
+    : (req.query.modalityId as string | undefined);
+  const data = await getStats(isMember, modalityId);
   res.json({ data });
 }
 

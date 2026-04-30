@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  PieChart, Pie, Cell,
 } from "recharts";
 import type { Gender, Modality, MembershipStatus, Participant, PaymentStatus } from "../types";
 import { api } from "../services/api";
@@ -13,6 +14,7 @@ const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001/api/v1";
 type View = "modalities" | "participants" | "stats";
 type MemberFilter = "ALL" | "SIM" | "NAO" | "GR";
 type ChartMode = "ageGroups" | "modalities";
+type PieMode = "gender" | "membership";
 
 interface Stats {
   totalParticipants: number;
@@ -54,6 +56,10 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [memberFilter, setMemberFilter] = useState<MemberFilter>("ALL");
   const [chartMode, setChartMode] = useState<ChartMode>("modalities");
+  const [pieMode, setPieMode] = useState<PieMode>("gender");
+  const [activeBar, setActiveBar] = useState<{ id: string; name: string } | null>(null);
+  const [pieStatsData, setPieStatsData] = useState<typeof statsData>(null);
+  const [loadingPieStats, setLoadingPieStats] = useState(false);
 
   useEffect(() => {
     api.modalities.list()
@@ -72,7 +78,31 @@ export default function AdminDashboard() {
 
   function handleMemberFilterChange(f: MemberFilter) {
     setMemberFilter(f);
+    setActiveBar(null);
+    setPieStatsData(null);
     loadStats(f);
+  }
+
+  function handleBarClick(entry: Record<string, unknown>) {
+    const id = entry.id as string | undefined;
+    const name = entry.name as string | undefined;
+    if (!id || !name) return;
+    if (activeBar?.id === id) {
+      setActiveBar(null);
+      setPieStatsData(null);
+      return;
+    }
+    setActiveBar({ id, name });
+    const isMember = memberFilter === "ALL" ? undefined : memberFilter as "SIM" | "NAO" | "GR";
+    setLoadingPieStats(true);
+    api.admin.getStats(token, isMember, id)
+      .then(setPieStatsData)
+      .finally(() => setLoadingPieStats(false));
+  }
+
+  function clearBarFilter() {
+    setActiveBar(null);
+    setPieStatsData(null);
   }
 
   const loadParticipants = useCallback((modality: Modality) => {
@@ -315,35 +345,7 @@ export default function AdminDashboard() {
 
             {statsData && (
               <>
-                {/* Summary cards */}
-                <div className={styles.statsCards}>
-                  <div className={styles.statCard}>
-                    <span className={styles.statValue}>{statsData.totalParticipants}</span>
-                    <span className={styles.statLabel}>Total de inscritos</span>
-                  </div>
-                  <div className={styles.statCard}>
-                    <span className={styles.statValue}>{statsData.genderCount.MASCULINO}</span>
-                    <span className={styles.statLabel}>Masculino</span>
-                  </div>
-                  <div className={styles.statCard}>
-                    <span className={styles.statValue}>{statsData.genderCount.FEMININO}</span>
-                    <span className={styles.statLabel}>Feminino</span>
-                  </div>
-                  <div className={styles.statCard}>
-                    <span className={styles.statValue}>{statsData.memberCount.SIM}</span>
-                    <span className={styles.statLabel}>Membros IBB</span>
-                  </div>
-                  <div className={styles.statCard}>
-                    <span className={styles.statValue}>{statsData.memberCount.GR}</span>
-                    <span className={styles.statLabel}>Freq. GR</span>
-                  </div>
-                  <div className={styles.statCard}>
-                    <span className={styles.statValue}>{statsData.memberCount.NAO}</span>
-                    <span className={styles.statLabel}>Não membros</span>
-                  </div>
-                </div>
-
-                {/* Single bar chart with mode selector */}
+                {/* Bar chart with mode selector */}
                 <div className={styles.chartSection}>
                   <div className={styles.chartHeader}>
                     <div className={styles.chartTabs}>
@@ -362,33 +364,51 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  {chartMode === "modalities" && (
-                    <ResponsiveContainer
-                      width="100%"
-                      height={Math.max(260, statsData.modalityStats.length * 36)}
-                    >
-                      <BarChart
-                        data={[...statsData.modalityStats].sort((a, b) => b.count - a.count)}
-                        margin={{ top: 8, right: 24, bottom: 90, left: 0 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-                        <XAxis
-                          dataKey="name"
-                          tick={{ fill: "rgba(200,230,225,0.6)", fontSize: 11 }}
-                          axisLine={false} tickLine={false}
-                          interval={0}
-                          angle={-35}
-                          textAnchor="end"
-                        />
-                        <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
-                        <Tooltip
-                          contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
-                          cursor={{ fill: "rgba(10,157,143,0.08)" }}
-                        />
-                        <Bar dataKey="count" fill="#0aad9f" radius={[4, 4, 0, 0]} name="Inscritos" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  )}
+                  {chartMode === "modalities" && (() => {
+                    const sortedData = [...statsData.modalityStats].sort((a, b) => b.count - a.count);
+                    return (
+                      <div style={{ cursor: "pointer" }}>
+                        <ResponsiveContainer
+                          width="100%"
+                          height={Math.max(260, sortedData.length * 36)}
+                        >
+                          <BarChart
+                            data={sortedData}
+                            margin={{ top: 8, right: 24, bottom: 90, left: 0 }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                            <XAxis
+                              dataKey="name"
+                              tick={{ fill: "rgba(200,230,225,0.6)", fontSize: 11 }}
+                              axisLine={false} tickLine={false}
+                              interval={0}
+                              angle={-35}
+                              textAnchor="end"
+                            />
+                            <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                            <Tooltip
+                              contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                              cursor={{ fill: "rgba(10,157,143,0.08)" }}
+                            />
+                            <Bar
+                              dataKey="count"
+                              radius={[4, 4, 0, 0]}
+                              name="Inscritos"
+                              onClick={(entry) => handleBarClick(entry as unknown as Record<string, unknown>)}
+                            >
+                              {sortedData.map((entry) => (
+                                <Cell
+                                  key={entry.id}
+                                  fill={activeBar?.id === entry.id ? "#14d6c5" : "#0aad9f"}
+                                  opacity={activeBar && activeBar.id !== entry.id ? 0.4 : 1}
+                                />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    );
+                  })()}
 
                   {chartMode === "ageGroups" && (
                     <ResponsiveContainer width="100%" height={220}>
@@ -408,6 +428,105 @@ export default function AdminDashboard() {
                     </ResponsiveContainer>
                   )}
                 </div>
+
+                {/* Demographic pie charts */}
+                {(() => {
+                  const src = pieStatsData ?? statsData;
+                  const pieData = pieMode === "gender"
+                    ? [
+                        { name: "Masculino", value: src.genderCount.MASCULINO, color: "#3b82f6" },
+                        { name: "Feminino", value: src.genderCount.FEMININO, color: "#c084fc" },
+                      ]
+                    : [
+                        { name: "Membro IBB", value: src.memberCount.SIM, color: "#0aad9f" },
+                        { name: "Freq. GR", value: src.memberCount.GR, color: "#3b82f6" },
+                        { name: "Não membro", value: src.memberCount.NAO, color: "#f59e0b" },
+                      ];
+                  const pieTotal = pieData.reduce((acc, d) => acc + d.value, 0);
+                  return (
+                    <div className={styles.chartSection}>
+                      <div className={styles.chartHeader}>
+                        <div className={styles.chartTabs}>
+                          <button
+                            className={`${styles.chartTab} ${pieMode === "gender" ? styles.chartTabActive : ""}`}
+                            onClick={() => setPieMode("gender")}
+                          >
+                            Gênero
+                          </button>
+                          <button
+                            className={`${styles.chartTab} ${pieMode === "membership" ? styles.chartTabActive : ""}`}
+                            onClick={() => setPieMode("membership")}
+                          >
+                            Vínculo
+                          </button>
+                        </div>
+                        {activeBar && (
+                          <button className={styles.activeBarBadge} onClick={clearBarFilter}>
+                            {activeBar.name} ×
+                          </button>
+                        )}
+                      </div>
+                      <div className={styles.pieRow} style={loadingPieStats ? { opacity: 0.45, pointerEvents: "none", transition: "opacity 0.2s" } : { transition: "opacity 0.2s" }}>
+                        <div className={styles.pieChartWrap}>
+                          <ResponsiveContainer width="100%" height={240}>
+                            <PieChart>
+                              <text
+                                x="50%"
+                                y="50%"
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                style={{ pointerEvents: "none" }}
+                              >
+                                <tspan x="50%" dy="-0.4em" fill="#e8f4f3" fontSize="30" fontWeight="700">
+                                  {pieTotal}
+                                </tspan>
+                                <tspan x="50%" dy="1.5em" fill="rgba(200,230,225,0.45)" fontSize="11">
+                                  inscritos
+                                </tspan>
+                              </text>
+                              <Pie
+                                data={pieData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={72}
+                                outerRadius={108}
+                                paddingAngle={3}
+                                dataKey="value"
+                                strokeWidth={0}
+                              >
+                                {pieData.map((entry, i) => (
+                                  <Cell key={i} fill={entry.color} />
+                                ))}
+                              </Pie>
+                              <Tooltip
+                                formatter={(value) => {
+                                  const v = typeof value === "number" ? value : 0;
+                                  return [`${v} (${pieTotal > 0 ? Math.round((v / pieTotal) * 100) : 0}%)`, ""];
+                                }}
+                                contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                                itemStyle={{ color: "#e8f4f3" }}
+                              />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
+                        <div className={styles.pieLegend}>
+                          {pieData.map((entry) => (
+                            <div key={entry.name} className={styles.pieLegendItem}>
+                              <span className={styles.pieLegendDot} style={{ background: entry.color }} />
+                              <span className={styles.pieLegendName}>{entry.name}</span>
+                              <span className={styles.pieLegendVal}>
+                                {entry.value}
+                                <span className={styles.pieLegendPct}>
+                                  {" "}({pieTotal > 0 ? Math.round((entry.value / pieTotal) * 100) : 0}%)
+                                </span>
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </>
             )}
           </div>
