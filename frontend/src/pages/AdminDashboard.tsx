@@ -62,22 +62,37 @@ export default function AdminDashboard() {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [mouseDownX, setMouseDownX] = useState(0); // Para detectar clique vs drag
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollRef.current) return;
-    setIsDragging(true);
     setStartX(e.pageX - scrollRef.current.offsetLeft);
     setScrollLeft(scrollRef.current.scrollLeft);
+    setMouseDownX(e.pageX);
   };
 
   const handleMouseLeave = () => setIsDragging(false);
-  const handleMouseUp = () => setIsDragging(false);
+  const handleMouseUp = () => {
+    // Pequeno delay para permitir que o clique seja processado antes de resetar isDragging?
+    // Na verdade, se não arrastou, isDragging nunca ficou true.
+    setTimeout(() => setIsDragging(false), 50);
+  };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !scrollRef.current) return;
+    if (!scrollRef.current) return;
+    
+    // Só inicia o drag se mover mais de 5px (evita matar o clique)
+    if (!isDragging) {
+      if (Math.abs(e.pageX - mouseDownX) > 5) {
+        setIsDragging(true);
+      } else {
+        return;
+      }
+    }
+
     e.preventDefault();
     const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Scroll-fast factor
+    const walk = (x - startX) * 2; 
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -454,7 +469,11 @@ export default function AdminDashboard() {
                         onMouseMove={handleMouseMove}
                         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
                       >
-                        <div style={{ width: "100%", minWidth: Math.max(sortedData.length * 70, 1000), pointerEvents: isDragging ? 'none' : 'auto' }}>
+                        <div style={{ 
+                          width: "100%", 
+                          minWidth: Math.max(sortedData.length * 120, 1400), 
+                          pointerEvents: isDragging ? 'none' : 'auto' 
+                        }}>
                           <ResponsiveContainer width="100%" height={400}>
                             <BarChart
                               data={sortedData}

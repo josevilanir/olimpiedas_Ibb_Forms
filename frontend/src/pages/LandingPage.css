@@ -269,15 +269,13 @@
 .landing-page-container #sobre {
   background-color: #03142e;
   background-image:
-    url('../assets/texture.png'),
     radial-gradient(ellipse 80% 60% at 50% 0%, rgba(10,157,143,0.08) 0%, transparent 70%),
     linear-gradient(160deg, rgba(3, 14, 35, 0.92) 0%, rgba(2, 10, 28, 0.95) 100%),
     url('../assets/background.png');
-  background-blend-mode: overlay, normal, normal, normal;
-  background-size: auto, cover, cover, cover;
-  background-attachment: scroll, scroll, scroll, scroll;
-  background-position: center, center, center, center;
-  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+  background-size: cover, cover, cover;
+  background-attachment: scroll, scroll, scroll;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
 }
 .landing-page-container .sobre-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
@@ -336,14 +334,12 @@
 .landing-page-container #modalidades {
   background-color: #051a36;
   background-image:
-    url('../assets/texture.png'),
     linear-gradient(160deg, rgba(5, 22, 55, 0.93) 0%, rgba(3, 14, 40, 0.96) 100%),
     url('../assets/background.png');
-  background-blend-mode: overlay, normal, normal;
-  background-size: auto, cover, cover;
-  background-attachment: scroll, scroll, scroll;
-  background-position: center, center, center;
-  background-repeat: repeat, no-repeat, no-repeat;
+  background-size: cover, cover;
+  background-attachment: scroll, scroll;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
 }
 .landing-page-container .mod-header {
   display: flex; align-items: flex-end; justify-content: space-between;
@@ -414,15 +410,13 @@
 .landing-page-container #inscricao {
   background-color: #03142e;
   background-image:
-    url('../assets/texture.png'),
     radial-gradient(ellipse 60% 50% at 100% 50%, rgba(10,157,143,0.07) 0%, transparent 70%),
     linear-gradient(160deg, rgba(3, 14, 35, 0.93) 0%, rgba(2, 10, 28, 0.95) 100%),
     url('../assets/background.png');
-  background-blend-mode: overlay, normal, normal, normal;
-  background-size: auto, cover, cover, cover;
-  background-attachment: scroll, scroll, scroll, scroll;
-  background-position: center, center, center, center;
-  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+  background-size: cover, cover, cover;
+  background-attachment: scroll, scroll, scroll;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
 }
 .landing-page-container .steps-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
@@ -479,14 +473,12 @@
 .landing-page-container footer {
   background-color: #020a1a;
   background-image:
-    url('../assets/texture.png'),
     linear-gradient(to top, rgba(2, 8, 20, 0.97) 0%, rgba(3, 14, 35, 0.95) 100%),
     url('../assets/background.png');
-  background-blend-mode: overlay, normal, normal;
-  background-size: auto, cover, cover;
-  background-attachment: scroll, scroll, scroll;
-  background-position: center, center, center;
-  background-repeat: repeat, no-repeat, no-repeat;
+  background-size: cover, cover;
+  background-attachment: scroll, scroll;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
   padding: 48px 48px 32px;
   border-top: 1px solid rgba(10,157,143,0.1);
 }
