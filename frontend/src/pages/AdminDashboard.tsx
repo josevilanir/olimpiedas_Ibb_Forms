@@ -4,25 +4,18 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   PieChart, Pie, Cell,
 } from "recharts";
-import type { Gender, Modality, MembershipStatus, Participant, PaymentStatus } from "../types";
+import type { Gender, Modality, MembershipStatus, Participant, PaymentStatus, Stats } from "../types";
 import { api } from "../services/api";
 import { useAuthContext } from "../contexts/AuthContext";
 import styles from "./AdminDashboard.module.css";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001/api/v1";
 
-type View = "modalities" | "participants" | "stats";
+type View = "modalities" | "participants" | "stats" | "finance";
 type MemberFilter = "ALL" | "SIM" | "NAO" | "GR";
 type ChartMode = "ageGroups" | "modalities";
-type PieMode = "gender" | "membership";
-
-interface Stats {
-  totalParticipants: number;
-  genderCount: { MASCULINO: number; FEMININO: number };
-  memberCount: { SIM: number; NAO: number; GR: number };
-  ageGroups: { "3-9": number; "10-13": number; "14-17": number; "18+": number };
-  modalityStats: { id: string; name: string; count: number; maxSpots: number | null }[];
-}
+type PaymentFilter = "ALL" | PaymentStatus;
+type PieMode = "gender" | "membership" | "payment";
 
 interface EditState {
   participant: Participant;
@@ -54,12 +47,18 @@ export default function AdminDashboard() {
   const [statsData, setStatsData] = useState<Stats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [modalitySearchQuery, setModalitySearchQuery] = useState("");
   const [memberFilter, setMemberFilter] = useState<MemberFilter>("ALL");
+  const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>("ALL");
   const [chartMode, setChartMode] = useState<ChartMode>("modalities");
   const [pieMode, setPieMode] = useState<PieMode>("gender");
   const [activeBar, setActiveBar] = useState<{ id: string; name: string } | null>(null);
-  const [pieStatsData, setPieStatsData] = useState<typeof statsData>(null);
+  const [pieStatsData, setPieStatsData] = useState<Stats | null>(null);
   const [loadingPieStats, setLoadingPieStats] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const closeSidebar = () => setIsSidebarOpen(false);
 
   useEffect(() => {
     api.modalities.list()
@@ -145,12 +144,16 @@ export default function AdminDashboard() {
     }
   }
 
-  async function handleTogglePayment(p: Participant) {
-    const newStatus: PaymentStatus = p.paymentStatus === "PAGO" ? "PENDENTE" : "PAGO";
+  async function handleUpdatePaymentStatus(p: Participant, newStatus: PaymentStatus) {
     try {
       const updated = await api.admin.updateParticipant(token, p.id, { paymentStatus: newStatus });
       setParticipants((prev) => prev.map((x) => x.id === updated.id ? updated : x));
-      showFeedback("success", newStatus === "PAGO" ? "Pagamento confirmado." : "Pagamento marcado como pendente.");
+      const labels: Record<PaymentStatus, string> = {
+        PAGO: "Pagamento confirmado.",
+        PENDENTE: "Pagamento marcado como pendente.",
+        CANCELADO: "Inscrição marcada como cancelada."
+      };
+      showFeedback("success", labels[newStatus]);
     } catch {
       showFeedback("error", "Erro ao atualizar pagamento.");
     }
@@ -215,13 +218,30 @@ export default function AdminDashboard() {
     return false;
   }
 
-  const filteredParticipants = participants.filter((p) =>
-    p.fullName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredParticipants = participants.filter((p) => {
+    const matchesSearch = p.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesPayment = paymentFilter === "ALL" || p.paymentStatus === paymentFilter;
+    return matchesSearch && matchesPayment;
+  });
 
   return (
     <div className={styles.layout}>
-      <aside className={styles.sidebar}>
+      {/* Overlay for mobile */}
+      <div 
+        className={`${styles.overlay} ${isSidebarOpen ? styles.overlayActive : ""}`} 
+        onClick={closeSidebar}
+      />
+
+      {/* Floating Toggle Button */}
+      <button 
+        className={styles.mobileToggle} 
+        onClick={toggleSidebar}
+        aria-label="Menu"
+      >
+        {isSidebarOpen ? "✕" : "☰"}
+      </button>
+
+      <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarActive : ""}`}>
         <div className={styles.sidebarHeader}>
           <span className={styles.sidebarIcon}>🏆</span>
           <div>
@@ -232,20 +252,26 @@ export default function AdminDashboard() {
         <nav className={styles.nav}>
           <button
             className={`${styles.navBtn} ${view === "modalities" ? styles.navBtnActive : ""}`}
-            onClick={() => setView("modalities")}
+            onClick={() => { setView("modalities"); closeSidebar(); }}
           >
             Modalidades
           </button>
           <button
             className={`${styles.navBtn} ${view === "stats" ? styles.navBtnActive : ""}`}
-            onClick={() => loadStats()}
+            onClick={() => { loadStats(); setPieMode("gender"); setView("stats"); closeSidebar(); }}
           >
             Estatísticas
+          </button>
+          <button
+            className={`${styles.navBtn} ${view === "finance" ? styles.navBtnActive : ""}`}
+            onClick={() => { loadStats(); setView("finance"); closeSidebar(); }}
+          >
+            Financeiro
           </button>
           {selectedModality && (
             <button
               className={`${styles.navBtn} ${view === "participants" ? styles.navBtnActive : ""}`}
-              onClick={() => setView("participants")}
+              onClick={() => { setView("participants"); closeSidebar(); }}
             >
               ↳ {selectedModality.name}
             </button>
@@ -269,15 +295,26 @@ export default function AdminDashboard() {
           <div>
             <div className={styles.pageHeader}>
               <h2>Modalidades</h2>
-              <button className="btn btn-secondary" onClick={() => handleExport()}>
-                Exportar todas (Excel)
-              </button>
+              <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                <input
+                  className={`form-input ${styles.searchInput}`}
+                  style={{ maxWidth: "250px", marginBottom: 0 }}
+                  placeholder="Buscar modalidade..."
+                  value={modalitySearchQuery}
+                  onChange={(e) => setModalitySearchQuery(e.target.value)}
+                />
+                <button className="btn btn-secondary" onClick={() => handleExport()}>
+                  Exportar todas (Excel)
+                </button>
+              </div>
             </div>
 
             {loadingMod && <p className={styles.loading}>Carregando...</p>}
 
             <div className={styles.modalityGrid}>
-              {modalities.map((m) => (
+              {modalities
+                .filter(m => m.name.toLowerCase().includes(modalitySearchQuery.toLowerCase()))
+                .map((m) => (
                 <div key={m.id} className={styles.modalityCard}>
                   <div className={styles.modalityCardHeader}>
                     <h3>{m.name}</h3>
@@ -306,6 +343,9 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               ))}
+              {modalities.filter(m => m.name.toLowerCase().includes(modalitySearchQuery.toLowerCase())).length === 0 && (
+                <p className={styles.noData} style={{ gridColumn: "1 / -1" }}>Nenhuma modalidade encontrada.</p>
+              )}
             </div>
           </div>
         )}
@@ -343,6 +383,7 @@ export default function AdminDashboard() {
 
             {loadingStats && <p className={styles.loading}>Carregando estatísticas...</p>}
 
+
             {statsData && (
               <>
                 {/* Bar chart with mode selector */}
@@ -367,45 +408,48 @@ export default function AdminDashboard() {
                   {chartMode === "modalities" && (() => {
                     const sortedData = [...statsData.modalityStats].sort((a, b) => b.count - a.count);
                     return (
-                      <div style={{ cursor: "pointer" }}>
-                        <ResponsiveContainer
-                          width="100%"
-                          height={Math.max(260, sortedData.length * 36)}
-                        >
-                          <BarChart
-                            data={sortedData}
-                            margin={{ top: 8, right: 24, bottom: 90, left: 0 }}
+                      <div className={styles.chartScrollWrapper}>
+                        <div style={{ minWidth: Math.max(sortedData.length * 50, 400), cursor: "pointer" }}>
+                          <ResponsiveContainer
+                            width="100%"
+                            height={400}
                           >
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-                            <XAxis
-                              dataKey="name"
-                              tick={{ fill: "rgba(200,230,225,0.6)", fontSize: 11 }}
-                              axisLine={false} tickLine={false}
-                              interval={0}
-                              angle={-35}
-                              textAnchor="end"
-                            />
-                            <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
-                            <Tooltip
-                              contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
-                              cursor={{ fill: "rgba(10,157,143,0.08)" }}
-                            />
-                            <Bar
-                              dataKey="count"
-                              radius={[4, 4, 0, 0]}
-                              name="Inscritos"
-                              onClick={(entry) => handleBarClick(entry as unknown as Record<string, unknown>)}
+                            <BarChart
+                              data={sortedData}
+                              margin={{ top: 8, right: 24, bottom: 120, left: 0 }}
                             >
-                              {sortedData.map((entry) => (
-                                <Cell
-                                  key={entry.id}
-                                  fill={activeBar?.id === entry.id ? "#14d6c5" : "#0aad9f"}
-                                  opacity={activeBar && activeBar.id !== entry.id ? 0.4 : 1}
-                                />
-                              ))}
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
+                              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                              <XAxis
+                                dataKey="name"
+                                tick={{ fill: "rgba(200,230,225,0.6)", fontSize: 11 }}
+                                axisLine={false} tickLine={false}
+                                interval={0}
+                                angle={-45}
+                                textAnchor="end"
+                              />
+                              <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                              <Tooltip
+                                contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                                itemStyle={{ color: "#e8f4f3", fontWeight: "bold" }}
+                                cursor={{ fill: "rgba(10,157,143,0.08)" }}
+                              />
+                              <Bar
+                                dataKey="count"
+                                radius={[4, 4, 0, 0]}
+                                name="Inscritos"
+                                onClick={(entry) => handleBarClick(entry as unknown as Record<string, unknown>)}
+                              >
+                                {sortedData.map((entry) => (
+                                  <Cell
+                                    key={entry.id}
+                                    fill={activeBar?.id === entry.id ? "#14d6c5" : "#0aad9f"}
+                                    opacity={activeBar && activeBar.id !== entry.id ? 0.4 : 1}
+                                  />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
                       </div>
                     );
                   })()}
@@ -421,6 +465,7 @@ export default function AdminDashboard() {
                         <YAxis allowDecimals={false} tick={{ fill: "rgba(200,230,225,0.5)", fontSize: 12 }} axisLine={false} tickLine={false} />
                         <Tooltip
                           contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
+                          itemStyle={{ color: "#e8f4f3", fontWeight: "bold" }}
                           cursor={{ fill: "rgba(10,157,143,0.08)" }}
                         />
                         <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Inscritos" />
@@ -432,15 +477,23 @@ export default function AdminDashboard() {
                 {/* Demographic pie charts */}
                 {(() => {
                   const src = pieStatsData ?? statsData;
-                  const pieData = pieMode === "gender"
+                  const currentPieMode = pieMode;
+                  
+                  const pieData = currentPieMode === "gender"
                     ? [
                         { name: "Masculino", value: src.genderCount.MASCULINO, color: "#3b82f6" },
                         { name: "Feminino", value: src.genderCount.FEMININO, color: "#c084fc" },
                       ]
-                    : [
+                    : currentPieMode === "membership"
+                    ? [
                         { name: "Membro IBB", value: src.memberCount.SIM, color: "#0aad9f" },
                         { name: "Freq. GR", value: src.memberCount.GR, color: "#3b82f6" },
                         { name: "Não membro", value: src.memberCount.NAO, color: "#f59e0b" },
+                      ]
+                    : [
+                        { name: "Pago", value: src.paymentCount.PAGO, color: "#10b981" },
+                        { name: "Pendente", value: src.paymentCount.PENDENTE, color: "#f59e0b" },
+                        { name: "Cancelado", value: src.paymentCount.CANCELADO, color: "#ef4444" },
                       ];
                   const pieTotal = pieData.reduce((acc, d) => acc + d.value, 0);
                   return (
@@ -448,16 +501,22 @@ export default function AdminDashboard() {
                       <div className={styles.chartHeader}>
                         <div className={styles.chartTabs}>
                           <button
-                            className={`${styles.chartTab} ${pieMode === "gender" ? styles.chartTabActive : ""}`}
+                            className={`${styles.chartTab} ${currentPieMode === "gender" ? styles.chartTabActive : ""}`}
                             onClick={() => setPieMode("gender")}
                           >
                             Gênero
                           </button>
                           <button
-                            className={`${styles.chartTab} ${pieMode === "membership" ? styles.chartTabActive : ""}`}
+                            className={`${styles.chartTab} ${currentPieMode === "membership" ? styles.chartTabActive : ""}`}
                             onClick={() => setPieMode("membership")}
                           >
                             Vínculo
+                          </button>
+                          <button
+                            className={`${styles.chartTab} ${currentPieMode === "payment" ? styles.chartTabActive : ""}`}
+                            onClick={() => setPieMode("payment")}
+                          >
+                            Pagamento
                           </button>
                         </div>
                         {activeBar && (
@@ -481,7 +540,7 @@ export default function AdminDashboard() {
                                   {pieTotal}
                                 </tspan>
                                 <tspan x="50%" dy="1.5em" fill="rgba(200,230,225,0.45)" fontSize="11">
-                                  inscritos
+                                  {pieTotal === 1 ? "inscrito" : "inscritos"}
                                 </tspan>
                               </text>
                               <Pie
@@ -504,7 +563,7 @@ export default function AdminDashboard() {
                                   return [`${v} (${pieTotal > 0 ? Math.round((v / pieTotal) * 100) : 0}%)`, ""];
                                 }}
                                 contentStyle={{ background: "#0f2133", border: "1px solid rgba(10,157,143,0.3)", borderRadius: 8, color: "#e8f4f3" }}
-                                itemStyle={{ color: "#e8f4f3" }}
+                                itemStyle={{ color: "#e8f4f3", fontWeight: "bold" }}
                               />
                             </PieChart>
                           </ResponsiveContainer>
@@ -532,6 +591,45 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* FINANCE VIEW */}
+        {view === "finance" && (
+          <div>
+            <div className={styles.pageHeader}>
+              <h2>Controle Financeiro</h2>
+              <button className="btn btn-secondary" onClick={() => handleExport()}>
+                Exportar Excel
+              </button>
+            </div>
+
+            {loadingStats && <p className={styles.loading}>Carregando dados financeiros...</p>}
+
+            {statsData && (
+              <>
+                <div className={styles.statsCards}>
+                  <div className={styles.statCard}>
+                    <p className={styles.statLabel}>Total Inscritos (Ativos)</p>
+                    <p className={styles.statValue}>{statsData.totalParticipants}</p>
+                  </div>
+                  <div className={styles.statCard}>
+                    <p className={styles.statLabel}>Pagamentos Confirmados</p>
+                    <p className={styles.statValue}>{statsData.paymentCount.PAGO}</p>
+                  </div>
+                  <div className={styles.statCard}>
+                    <p className={styles.statLabel}>Receita Esperada</p>
+                    <p className={styles.statValue}>R$ {statsData.revenue.estimated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                  </div>
+                  <div className={styles.statCard}>
+                    <p className={styles.statLabel}>Receita Realizada</p>
+                    <p className={`${styles.statValue} ${styles.statValueSuccess}`}>R$ {statsData.revenue.actual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+
+
         {/* PARTICIPANTS VIEW */}
         {view === "participants" && selectedModality && (
           <div>
@@ -553,14 +651,33 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Search bar */}
-            <div className={styles.searchBar}>
+            {/* Search and filters */}
+            <div className={styles.filterBar}>
               <input
                 className={`form-input ${styles.searchInput}`}
                 placeholder="Buscar por nome..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+              <div className={styles.paymentFilterRow}>
+                {(["ALL", "PENDENTE", "PAGO", "CANCELADO"] as PaymentFilter[]).map((f) => {
+                  const labels: Record<PaymentFilter, string> = {
+                    ALL: "Todos Pagamentos",
+                    PENDENTE: "Pendentes",
+                    PAGO: "Pagos",
+                    CANCELADO: "Cancelados",
+                  };
+                  return (
+                    <button
+                      key={f}
+                      className={`${styles.filterPill} ${paymentFilter === f ? styles.filterPillActive : ""}`}
+                      onClick={() => setPaymentFilter(f)}
+                    >
+                      {labels[f]}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {loadingPart && <p className={styles.loading}>Carregando inscritos...</p>}
@@ -609,13 +726,20 @@ export default function AdminDashboard() {
                             </span>
                           </td>
                           <td>
-                            <button
-                              className={`${styles.paymentToggle} ${p.paymentStatus === "PAGO" ? styles.paymentPago : styles.paymentPendente}`}
-                              onClick={() => handleTogglePayment(p)}
-                              title={p.paymentStatus === "PAGO" ? "Clique para marcar como pendente" : "Clique para confirmar pagamento"}
+                            <select
+                              className={`${styles.paymentSelect} ${styles[`paymentStatus-${p.paymentStatus}`]}`}
+                              value={p.paymentStatus}
+                              onChange={(e) => handleUpdatePaymentStatus(p, e.target.value as PaymentStatus)}
                             >
-                              {p.paymentStatus === "PAGO" ? "✓ Pago" : "Pendente"}
-                            </button>
+                              <option value="PENDENTE">Pendente</option>
+                              <option value="PAGO">Pago</option>
+                              <option value="CANCELADO">Cancelado</option>
+                            </select>
+                            {p.paidAt && (
+                              <p className={styles.paidAtLabel} title="Data da confirmação">
+                                {new Date(p.paidAt).toLocaleDateString("pt-BR")}
+                              </p>
+                            )}
                           </td>
                           <td className={styles.healthCell}>{p.healthIssues || "—"}</td>
                           <td>{formatDate(p.createdAt)}</td>

@@ -4,6 +4,15 @@
   background: #0d1b2a;
 }
 
+/* Remove default focus outlines */
+*:focus {
+  outline: none !important;
+}
+
+svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
+  outline: none !important;
+}
+
 /* Sidebar */
 .sidebar {
   width: 240px;
@@ -216,8 +225,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 1200;
   padding: var(--space-4);
+  overflow-y: auto;
 }
 
 .modal {
@@ -227,10 +237,13 @@
   padding: var(--space-8);
   width: 100%;
   max-width: 480px;
+  max-height: calc(100vh - var(--space-12));
+  overflow-y: auto;
   box-shadow: 0 24px 64px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  margin: auto;
 }
 
 .modal h3 {
@@ -284,7 +297,7 @@
 /* Stats */
 .statsCards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: var(--space-4);
   margin-bottom: var(--space-8);
 }
@@ -305,6 +318,10 @@
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   color: #0aad9f;
+}
+
+.statValueSuccess {
+  color: #34d399 !important;
 }
 
 .statLabel {
@@ -372,6 +389,19 @@
   flex-wrap: wrap;
 }
 
+.paymentFilterRow {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.filterBar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
 .filterPill {
   padding: 6px 18px;
   border-radius: var(--radius-full);
@@ -388,6 +418,49 @@
   background: rgba(10,157,143,0.18);
   border-color: rgba(10,157,143,0.45);
   color: #0aad9f;
+}
+
+/* Payment Select */
+.paymentSelect {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  border: 1px solid rgba(10,157,143,0.15);
+  background: #091928;
+  color: rgba(200,230,225,0.8);
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.paymentSelect:hover {
+  border-color: rgba(10,157,143,0.4);
+}
+
+.paymentStatus-PAGO {
+  background: rgba(16,185,129,0.12) !important;
+  color: #34d399 !important;
+  border-color: rgba(16,185,129,0.2) !important;
+}
+
+.paymentStatus-PENDENTE {
+  background: rgba(245,158,11,0.12) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(245,158,11,0.2) !important;
+}
+
+.paymentStatus-CANCELADO {
+  background: rgba(239,68,68,0.12) !important;
+  color: #f87171 !important;
+  border-color: rgba(239,68,68,0.2) !important;
+}
+
+.paidAtLabel {
+  font-size: 10px;
+  color: rgba(200,230,225,0.4);
+  margin-top: 4px;
+  text-align: center;
 }
 
 /* Active bar filter badge on pie chart header */
@@ -618,6 +691,132 @@
 }
 
 /* Print layout (hidden on screen, visible when printing) */
+.mobileToggle {
+  display: none;
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #0aad9f;
+  color: white;
+  border: none;
+  box-shadow: 0 4px 16px rgba(10, 157, 143, 0.4);
+  z-index: 1100;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+.mobileToggle:active { transform: scale(0.9); }
+
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(2px);
+  z-index: 950;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 900px) {
+  .mobileToggle { display: flex; }
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    bottom: 0;
+    z-index: 1000;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  }
+  
+  .sidebarActive {
+    left: 0;
+  }
+  
+  .overlayActive {
+    display: block;
+  }
+  
+  .main {
+    padding: var(--space-4);
+  }
+  
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  
+  .modalityGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .statsCards {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .editGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pieRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-6);
+  }
+  
+  .pieChartWrap {
+    flex: none;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .barRow {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+  
+  .barLabel {
+    text-align: left;
+  }
+  
+  .modal {
+    padding: var(--space-5);
+  }
+}
+
+@media (max-width: 480px) {
+  .statsCards {
+    grid-template-columns: 1fr;
+  }
+  
+  .chartTabs {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .chartTab {
+    width: 100%;
+  }
+  
+  .participantActions {
+    width: 100%;
+  }
+  
+  .participantActions button {
+    width: 100%;
+  }
+}
+
 .printLayout {
   display: none;
 }
@@ -668,3 +867,13 @@
     width: 180px;
   }
 }
+
+.chartScrollWrapper {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: var(--space-4);
+  -webkit-overflow-scrolling: touch;
+}
+.chartScrollWrapper::-webkit-scrollbar { height: 6px; }
+.chartScrollWrapper::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+.chartScrollWrapper::-webkit-scrollbar-thumb { background: rgba(10,157,143,0.3); border-radius: 10px; }

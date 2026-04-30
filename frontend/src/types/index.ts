@@ -1,6 +1,6 @@
 export type MembershipStatus = "SIM" | "NAO" | "GR";
 export type Gender = "MASCULINO" | "FEMININO";
-export type PaymentStatus = "PENDENTE" | "PAGO";
+export type PaymentStatus = "PENDENTE" | "PAGO" | "CANCELADO";
 
 export interface Modality {
   id: string;
@@ -33,6 +33,8 @@ export interface Participant {
   healthIssues: string | null;
   termsAccepted: boolean;
   paymentStatus: PaymentStatus;
+  paidAt: string | null;
+  paymentMethod: string | null;
   createdAt: string;
   subscriptions: Subscription[];
 }
@@ -48,4 +50,14 @@ export interface RegistrationFormData {
   healthIssues?: string;
   termsAccepted: boolean;
   modalityIds: string[];
+}
+
+export interface Stats {
+  totalParticipants: number;
+  genderCount: { MASCULINO: number; FEMININO: number };
+  memberCount: { SIM: number; NAO: number; GR: number };
+  paymentCount: { PENDENTE: number; PAGO: number; CANCELADO: number };
+  ageGroups: { "3-9": number; "10-13": number; "14-17": number; "18+": number };
+  modalityStats: { id: string; name: string; count: number; maxSpots: number | null }[];
+  revenue: { estimated: number; actual: number };
 }

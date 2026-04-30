@@ -44,6 +44,8 @@ export async function exportParticipantsToExcel(modalityId?: string): Promise<Ex
       { header: "Sexo", key: "gender", width: 12 },
       { header: "WhatsApp", key: "whatsapp", width: 18 },
       { header: "Membro IBB", key: "isMember", width: 14 },
+      { header: "Status Pagto", key: "paymentStatus", width: 15 },
+      { header: "Data Pagto", key: "paidAt", width: 18 },
       { header: "Inf. Saúde", key: "healthIssues", width: 35 },
       { header: "Data Inscrição", key: "createdAt", width: 18 },
     ];
@@ -62,6 +64,8 @@ export async function exportParticipantsToExcel(modalityId?: string): Promise<Ex
         gender: p.gender === "MASCULINO" ? "Masculino" : "Feminino",
         whatsapp: p.whatsapp,
         isMember: p.isMember,
+        paymentStatus: p.paymentStatus,
+        paidAt: p.paidAt ? new Date(p.paidAt).toLocaleString("pt-BR") : "—",
         healthIssues: p.healthIssues ?? "—",
         createdAt: new Date(p.createdAt).toLocaleString("pt-BR"),
       });

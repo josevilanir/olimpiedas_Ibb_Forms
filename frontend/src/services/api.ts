@@ -1,4 +1,4 @@
-import type { Modality, Participant, PaymentStatus, RegistrationFormData } from "../types";
+import type { Modality, Participant, PaymentStatus, RegistrationFormData, Stats } from "../types";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001/api/v1";
 
@@ -73,13 +73,7 @@ export const api = {
       if (isMember) params.set("isMember", isMember);
       if (modalityId) params.set("modalityId", modalityId);
       const query = params.size ? `?${params}` : "";
-      return request<{
-        totalParticipants: number;
-        genderCount: { MASCULINO: number; FEMININO: number };
-        memberCount: { SIM: number; NAO: number; GR: number };
-        ageGroups: { "3-9": number; "10-13": number; "14-17": number; "18+": number };
-        modalityStats: { id: string; name: string; count: number; maxSpots: number | null }[];
-      }>(`/admin/stats${query}`, {
+      return request<Stats>(`/admin/stats${query}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

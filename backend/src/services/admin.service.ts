@@ -54,6 +54,15 @@ export async function updateParticipant(
   const updateData: Record<string, unknown> = { ...rest };
   if (birthDate) updateData.birthDate = new Date(birthDate);
 
+  // Logic for paidAt
+  if (data.paymentStatus) {
+    if (data.paymentStatus === "PAGO") {
+      updateData.paidAt = new Date();
+    } else {
+      updateData.paidAt = null;
+    }
+  }
+
   if (modalityIds) {
     await prisma.subscription.deleteMany({ where: { participantId: id } });
     await prisma.subscription.createMany({

@@ -750,7 +750,7 @@ export default function RegistrationPage() {
               <input
                 type="checkbox"
                 checked={termsStep >= 1}
-                onChange={(e) => e.target.checked && setTermsStep(Math.max(termsStep, 1))}
+                onChange={(e) => setTermsStep(e.target.checked ? 1 : 0)}
               />
               <span>Li e entendi tudo sobre o valor e o processo de pagamento.</span>
             </label>
@@ -760,7 +760,7 @@ export default function RegistrationPage() {
                 <input
                   type="checkbox"
                   checked={termsStep >= 2}
-                  onChange={(e) => e.target.checked && setTermsStep(Math.max(termsStep, 2))}
+                  onChange={(e) => setTermsStep(e.target.checked ? 2 : 1)}
                 />
                 <span>
                   Entendi que o PIX deve ser feito para o e-mail <strong>eventosibbnatal@gmail.com</strong>.
@@ -773,7 +773,7 @@ export default function RegistrationPage() {
                 <input
                   type="checkbox"
                   checked={termsStep >= 3}
-                  onChange={(e) => e.target.checked && setTermsStep(Math.max(termsStep, 3))}
+                  onChange={(e) => setTermsStep(e.target.checked ? 3 : 2)}
                 />
                 <span>
                   Entendi que vou enviar somente o <strong>COMPROVANTE</strong> para o contato da Nanda —
@@ -795,7 +795,7 @@ export default function RegistrationPage() {
                   <input
                     type="checkbox"
                     checked={termsStep >= 4}
-                    onChange={(e) => e.target.checked && setTermsStep(Math.max(termsStep, 4))}
+                    onChange={(e) => setTermsStep(e.target.checked ? 4 : 3)}
                   />
                   <span>Li e entendi sobre a camiseta.</span>
                 </label>

@@ -21,6 +21,7 @@ enum Gender {
 enum PaymentStatus {
   PENDENTE
   PAGO
+  CANCELADO
 }
 
 model User {
@@ -59,6 +60,8 @@ model Participant {
   healthIssues  String?          @map("health_issues")
   termsAccepted Boolean          @map("terms_accepted")
   paymentStatus PaymentStatus    @default(PENDENTE) @map("payment_status")
+  paidAt        DateTime?        @map("paid_at")
+  paymentMethod String?          @map("payment_method")
   createdAt     DateTime         @default(now()) @map("created_at")
   subscriptions Subscription[]
 
