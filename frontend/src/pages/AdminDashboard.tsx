@@ -58,6 +58,46 @@ export default function AdminDashboard() {
   const [loadingPieStats, setLoadingPieStats] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  type SortKey = "fullName" | "parentName" | "age" | "whatsapp" | "gender" | "isMember" | "paymentStatus" | "createdAt";
+  type SortDir = "asc" | "desc";
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+
+  function handleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir(d => d === "asc" ? "desc" : "asc");
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  }
+
+  function sortIndicator(key: SortKey) {
+    if (sortKey !== key) return " ↕";
+    return sortDir === "asc" ? " ▲" : " ▼";
+  }
+
+  function getSortedParticipants(list: Participant[]): Participant[] {
+    if (!sortKey) return list;
+    return [...list].sort((a, b) => {
+      let aVal: string | number;
+      let bVal: string | number;
+      if (sortKey === "age") {
+        aVal = calcAge(a.birthDate);
+        bVal = calcAge(b.birthDate);
+      } else if (sortKey === "createdAt") {
+        aVal = new Date(a.createdAt).getTime();
+        bVal = new Date(b.createdAt).getTime();
+      } else {
+        aVal = (a[sortKey] ?? "").toString().toLowerCase();
+        bVal = (b[sortKey] ?? "").toString().toLowerCase();
+      }
+      if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+
   // Drag-to-scroll for charts — all mutable drag state lives in a ref to avoid
   // stale closures (state updates from mousedown wouldn't be visible in the
   // mousemove handler that fires in the same event-loop tick).
@@ -251,6 +291,30 @@ export default function AdminDashboard() {
     }
   }
 
+  async function handleExportFinance() {
+    const url = `${BASE_URL}/admin/export-finance`;
+    try {
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        showFeedback("error", errorBody?.error ?? `Erro ${response.status}`);
+        return;
+      }
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `financeiro_olimpiadas_ibb_${Date.now()}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => { URL.revokeObjectURL(blobUrl); document.body.removeChild(link); }, 1000);
+    } catch {
+      showFeedback("error", "Erro de rede ao exportar.");
+    }
+  }
+
   function handlePrint() {
     window.print();
   }
@@ -285,11 +349,11 @@ export default function AdminDashboard() {
     return false;
   }
 
-  const filteredParticipants = participants.filter((p) => {
+  const filteredParticipants = getSortedParticipants(participants.filter((p) => {
     const matchesSearch = p.fullName.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesPayment = paymentFilter === "ALL" || p.paymentStatus === paymentFilter;
     return matchesSearch && matchesPayment;
-  });
+  }));
 
   return (
     <div className={styles.layout}>
@@ -421,8 +485,8 @@ export default function AdminDashboard() {
           <div>
             <div className={styles.pageHeader}>
               <h2>Estatísticas</h2>
-              <button className="btn btn-secondary" onClick={() => handleExport()}>
-                Exportar tudo (Excel)
+              <button className="btn btn-secondary" onClick={() => window.print()}>
+                🖨️ Imprimir Gráficos
               </button>
             </div>
 
@@ -675,12 +739,17 @@ export default function AdminDashboard() {
           <div>
             <div className={styles.pageHeader}>
               <h2>Controle Financeiro</h2>
-              <button className="btn btn-secondary" onClick={() => handleExport()}>
+              <button className="btn btn-secondary" onClick={() => handleExportFinance()}>
                 Exportar Excel
               </button>
             </div>
 
             {loadingStats && <p className={styles.loading}>Carregando dados financeiros...</p>}
+
+            <div className={styles.financeInfo}>
+              <p><strong>Valor por inscrição:</strong> R$ 15,09 (isento até 8 anos)</p>
+              <p><strong>PIX (e-mail):</strong> eventosibbnatal@gmail.com</p>
+            </div>
 
             {statsData && (
               <>
@@ -698,7 +767,7 @@ export default function AdminDashboard() {
                     <p className={styles.statValue}>R$ {statsData.revenue.estimated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                   </div>
                   <div className={styles.statCard}>
-                    <p className={styles.statLabel}>Receita Realizada</p>
+                    <p className={styles.statLabel}>Entradas Confirmadas</p>
                     <p className={`${styles.statValue} ${styles.statValueSuccess}`}>R$ {statsData.revenue.actual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                   </div>
                 </div>
@@ -770,15 +839,15 @@ export default function AdminDashboard() {
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>Nome</th>
-                      <th>Responsável</th>
-                      <th>Idade</th>
+                      <th onClick={() => handleSort("fullName")} style={{cursor:"pointer"}}>Nome{sortIndicator("fullName")}</th>
+                      <th onClick={() => handleSort("parentName")} style={{cursor:"pointer"}}>Responsável{sortIndicator("parentName")}</th>
+                      <th onClick={() => handleSort("age")} style={{cursor:"pointer"}}>Idade{sortIndicator("age")}</th>
                       <th>WhatsApp</th>
                       <th>Sexo</th>
-                      <th>Membro</th>
-                      <th>Pagamento</th>
+                      <th onClick={() => handleSort("isMember")} style={{cursor:"pointer"}}>Membro{sortIndicator("isMember")}</th>
+                      <th onClick={() => handleSort("paymentStatus")} style={{cursor:"pointer"}}>Pagamento{sortIndicator("paymentStatus")}</th>
                       <th>Inf. Saúde</th>
-                      <th>Inscrito em</th>
+                      <th onClick={() => handleSort("createdAt")} style={{cursor:"pointer"}}>Inscrito em{sortIndicator("createdAt")}</th>
                       <th>Ações</th>
                     </tr>
                   </thead>
@@ -861,21 +930,28 @@ export default function AdminDashboard() {
       {/* PRINT LAYOUT */}
       {view === "participants" && selectedModality && (
         <div className={styles.printLayout}>
-          <h2>Lista de Chamada — {selectedModality.name}</h2>
-          <p className={styles.printDate}>Gerado em: {new Date().toLocaleDateString("pt-BR")}</p>
+          <div className={styles.printHeader}>
+            <img src={logoImg} alt="IBB" className={styles.printLogo} />
+            <div>
+              <h2>Lista de Chamada — {selectedModality.name}</h2>
+              <p className={styles.printDate}>Gerado em: {new Date().toLocaleDateString("pt-BR")}</p>
+            </div>
+          </div>
           <table className={styles.printTable}>
             <thead>
               <tr>
                 <th>Nome</th>
+                <th>Idade</th>
                 <th>Vínculo</th>
                 <th>WhatsApp</th>
                 <th>Assinatura / Obs</th>
               </tr>
             </thead>
             <tbody>
-              {participants.map((p) => (
+              {filteredParticipants.map((p) => (
                 <tr key={p.id}>
                   <td>{p.fullName}</td>
+                  <td>{calcAge(p.birthDate)} anos</td>
                   <td>{p.isMember}</td>
                   <td>{p.whatsapp}</td>
                   <td></td>

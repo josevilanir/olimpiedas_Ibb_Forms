@@ -35,7 +35,7 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
 }
 
 .sidebarLogo {
-  height: 200px;
+  height: 260px;
   width: auto;
   object-fit: contain;
   margin-bottom: var(--space-2);
@@ -874,6 +874,11 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
   .printTable td:last-child {
     width: 180px;
   }
+
+  /* Quando imprimindo gráficos (stats view), mostrar o main */
+  .layout > main .chartSection {
+    break-inside: avoid;
+  }
 }
 
 .chartScrollWrapper {
@@ -898,4 +903,52 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
 }
 .chartScrollWrapper::-webkit-scrollbar-thumb:hover {
   background-color: rgba(20,214,197,1);
+}
+
+/* Print header with logo */
+.printHeader {
+  display: none;
+}
+
+.printLogo {
+  height: 60px;
+  width: auto;
+  filter: brightness(0);
+}
+
+/* Finance info box */
+.financeInfo {
+  background: #0f2133;
+  border: 1px solid rgba(10,157,143,0.15);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.financeInfo p {
+  font-size: var(--font-size-sm);
+  color: rgba(200,230,225,0.7);
+}
+
+.financeInfo strong {
+  color: #0aad9f;
+}
+
+@media print {
+  .printHeader {
+    display: flex !important;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+}
+
+.table th[style*="cursor"] {
+  user-select: none;
+}
+.table th:hover {
+  color: #0aad9f;
 }

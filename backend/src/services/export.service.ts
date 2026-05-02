@@ -86,3 +86,74 @@ export async function exportParticipantsToExcel(modalityId?: string): Promise<Ex
 
   return workbook.xlsx.writeBuffer();
 }
+
+export async function exportFinanceToExcel(): Promise<ExcelJS.Buffer> {
+  const participants = await prisma.participant.findMany({
+    where: { paymentStatus: { not: "CANCELADO" } },
+    orderBy: { fullName: "asc" },
+  });
+
+  const workbook = new ExcelJS.Workbook();
+  workbook.creator = "Olimpíadas IBB";
+  workbook.created = new Date();
+
+  const sheet = workbook.addWorksheet("Controle Financeiro");
+
+  const headerStyle: Partial<ExcelJS.Style> = {
+    font: { bold: true, color: { argb: "FFFFFFFF" } },
+    fill: { type: "pattern", pattern: "solid", fgColor: { argb: "FF1A56DB" } },
+    alignment: { horizontal: "center", vertical: "middle" },
+    border: { bottom: { style: "thin", color: { argb: "FFCCCCCC" } } },
+  };
+
+  sheet.columns = [
+    { header: "Nome completo", key: "fullName", width: 32 },
+    { header: "Vínculo", key: "isMember", width: 14 },
+    { header: "Idade", key: "age", width: 8 },
+    { header: "Status Pagamento", key: "paymentStatus", width: 18 },
+  ];
+
+  sheet.getRow(1).eachCell((cell) => { Object.assign(cell, headerStyle); });
+  sheet.getRow(1).height = 20;
+
+  const FEE = 15.09;
+  let confirmedCount = 0;
+
+  for (const p of participants) {
+    const age = calcAge(new Date(p.birthDate));
+    const isExempt = age <= 8;
+
+    sheet.addRow({
+      fullName: p.fullName,
+      isMember: p.isMember,
+      age,
+      paymentStatus: p.paymentStatus,
+    });
+
+    if (p.paymentStatus === "PAGO" && !isExempt) {
+      confirmedCount++;
+    }
+  }
+
+  // Zebra rows
+  sheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return;
+    row.eachCell((cell) => {
+      cell.fill = {
+        type: "pattern", pattern: "solid",
+        fgColor: { argb: rowNumber % 2 === 0 ? "FFF9FAFB" : "FFFFFFFF" },
+      };
+    });
+  });
+
+  // Linha em branco + resumo
+  sheet.addRow({});
+  const totalRevenue = (confirmedCount * FEE).toFixed(2);
+  const summaryRow = sheet.addRow({
+    fullName: `R$ ${FEE} × ${confirmedCount} pagamentos confirmados = R$ ${totalRevenue}`,
+  });
+  summaryRow.font = { bold: true, size: 12 };
+  summaryRow.getCell(1).alignment = { horizontal: "left" };
+
+  return workbook.xlsx.writeBuffer();
+}

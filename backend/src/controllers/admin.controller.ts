@@ -6,7 +6,7 @@ import {
   updateParticipant,
   getParticipantsByModality,
 } from "../services/admin.service";
-import { exportParticipantsToExcel } from "../services/export.service";
+import { exportParticipantsToExcel, exportFinanceToExcel } from "../services/export.service";
 import { getStats } from "../services/stats.service";
 import { MembershipStatus } from "../generated/prisma/client";
 
@@ -87,5 +87,18 @@ export async function exportExcel(req: Request, res: Response) {
   } catch (error) {
     console.error("[exportExcel]", error);
     res.status(500).json({ error: "Erro ao gerar planilha." });
+  }
+}
+
+export async function exportFinance(_req: Request, res: Response) {
+  try {
+    const buffer = await exportFinanceToExcel();
+    const filename = `financeiro_olimpiadas_ibb_${Date.now()}.xlsx`;
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(Buffer.from(buffer as ArrayBuffer));
+  } catch (error) {
+    console.error("[exportFinance]", error);
+    res.status(500).json({ error: "Erro ao gerar planilha financeira." });
   }
 }
