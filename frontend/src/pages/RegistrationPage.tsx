@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import type { RegistrationFormData, Participant, MembershipStatus, Gender, Modality } from "../types";
@@ -30,9 +31,9 @@ const TOTAL_STEPS = 14;
 
 // ─── Payment disclaimer sub-screens ──────────────────────────────────────────
 const PAYMENT_DISCLAIMER_TITLES = [
+  "Valor por pessoa",
   "Sobre o valor",
   "Sobre a camisa",
-  "Valor por pessoa",
   "Crianças até 8 anos",
   "A partir de 9 anos",
   "Como pagar",
@@ -41,9 +42,9 @@ const PAYMENT_DISCLAIMER_TITLES = [
 ] as const;
 
 const PAYMENT_DISCLAIMER_CHECKBOXES = [
+  "Entendi — pago uma vez e escolho quantas modalidades quiser.",
   "Entendi sobre o propósito do valor.",
   "Entendi que a camisa é vendida separadamente.",
-  "Entendi — pago uma vez e escolho quantas modalidades quiser.",
   "Entendi a regra de isenção para crianças até 8 anos.",
   "Entendi que a partir de 09 anos o valor é R$ 15,09.",
   "Entendi como fazer o pagamento e enviar o comprovante para a Nanda.",
@@ -145,6 +146,53 @@ function ModalityCard({
   );
 }
 
+function UnavailableModalityCard({
+  modality,
+  reasons,
+  ageRangeLabel,
+}: {
+  modality: Modality;
+  reasons: string[];
+  ageRangeLabel: string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <motion.div
+      className={`${styles.modalityCard} ${styles.modalityLocked} ${expanded ? styles.expanded : ""}`}
+      onMouseEnter={() => setExpanded(true)}
+      onMouseLeave={() => setExpanded(false)}
+      onClick={() => setExpanded(!expanded)}
+      layout
+    >
+      <span className={styles.modalityName}>{modality.name}</span>
+      <span className={styles.modalityCoord}>Coord: {modality.coordinatorName}</span>
+      <span className={styles.modalityAge}>{ageRangeLabel}</span>
+      {modality.requiresMembership && (
+        <span className={styles.modalityMember}>Membros IBB/GR</span>
+      )}
+
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className={styles.unavailableReasons}
+          >
+            <div className={styles.reasonsTitle}>Motivo(s) da indisponibilidade:</div>
+            <ul className={styles.reasonsList}>
+              {reasons.map((r, i) => (
+                <li key={i}>{r}</li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
 // ─── Initial form state ───────────────────────────────────────────────────────
 const INITIAL_FORM: RegistrationFormData = {
   isForChild: false,
@@ -161,6 +209,7 @@ const INITIAL_FORM: RegistrationFormData = {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function RegistrationPage() {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<number>(S.DISCLAIMER_1);
   const [direction, setDirection] = useState(1);
   const [form, setForm] = useState<RegistrationFormData>(INITIAL_FORM);
@@ -178,22 +227,32 @@ export default function RegistrationPage() {
   const isMember = form.isMember === "SIM" || form.isMember === "GR";
 
   // ── Modality grouping ──────────────────────────────────────────────────────
-  const { eligibleMods, ageRestrictedMods, memberRestrictedMods } = useMemo(() => {
+  const { availableMods, unavailableMods } = useMemo(() => {
     if (age === null)
-      return { eligibleMods: modalities, ageRestrictedMods: [] as Modality[], memberRestrictedMods: [] as Modality[] };
+      return { availableMods: modalities, unavailableMods: [] as { modality: Modality; reasons: string[] }[] };
 
-    const eligibleMods: Modality[] = [];
-    const ageRestrictedMods: Modality[] = [];
-    const memberRestrictedMods: Modality[] = [];
+    const availableMods: Modality[] = [];
+    const unavailableMods: { modality: Modality; reasons: string[] }[] = [];
 
     for (const m of modalities) {
+      const reasons: string[] = [];
       const ageOk = (m.minAge === null || age >= m.minAge) && (m.maxAge === null || age <= m.maxAge);
       const memberOk = !m.requiresMembership || isMember;
-      if (ageOk && memberOk) eligibleMods.push(m);
-      else if (!ageOk) ageRestrictedMods.push(m);
-      else memberRestrictedMods.push(m);
+      
+      if (!ageOk) {
+        reasons.push(`Sua idade (${age} anos) não atende a faixa exigida (${ageRangeLabel(m.minAge, m.maxAge)}).`);
+      }
+      if (!memberOk) {
+        reasons.push(`Modalidade exclusiva para membros IBB ou GR.`);
+      }
+
+      if (reasons.length === 0) {
+        availableMods.push(m);
+      } else {
+        unavailableMods.push({ modality: m, reasons });
+      }
     }
-    return { eligibleMods, ageRestrictedMods, memberRestrictedMods };
+    return { availableMods, unavailableMods };
   }, [modalities, age, isMember]);
 
   // ── Confetti on success ────────────────────────────────────────────────────
@@ -318,7 +377,7 @@ export default function RegistrationPage() {
           <div className={styles.questionBlock}>
             <div className={styles.questionLabel}>Regras de participação</div>
             <div className={styles.disclaimer}>
-              <p>🏅 Com exceção das modalidades <strong>CORRIDA</strong> e <strong>CAMINHADA</strong>, para participar das demais você precisa ser:</p>
+              <p>🏅 Com exceção das modalidades de <strong>CORRIDA</strong> (Longa e Curtas) e <strong>CAMINHADA</strong>, para participar das demais você precisa ser:</p>
               <ul style={{ marginTop: "var(--space-2)", paddingLeft: "var(--space-5)", display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
                 <li>Membro IBB, <strong>ou</strong></li>
                 <li>Frequentador de algum GR (Grupo de Relacionamento) da IBB.</li>
@@ -337,7 +396,7 @@ export default function RegistrationPage() {
       case S.PROFILE:
         return (
           <div className={styles.questionBlock}>
-            <div className={styles.questionLabel}>Quem vai participar?</div>
+            <div className={styles.questionLabel}>Essa inscrição é para:</div>
             <div className={styles.profileOptions}>
               <motion.button
                 className={styles.profileBtn}
@@ -536,25 +595,25 @@ export default function RegistrationPage() {
 
             {paymentDisclaimerStep === 0 && (
               <div className={styles.disclaimer}>
-                <p>💰 O valor é simbólico e serve para custear despesas e necessidades básicas para a execução do evento.</p>
+                <p>👤 O valor de <strong>R$ 15,09 é por pessoa, e não por modalidade</strong>. Isso significa que você paga somente uma vez e pode se inscrever em quantas modalidades quiser.</p>
               </div>
             )}
 
             {paymentDisclaimerStep === 1 && (
               <div className={styles.disclaimer}>
-                <p>👕 A camisa será vendida à parte e <strong>não está inclusa</strong> no valor acima! Sendo este, somente o valor da <strong>INSCRIÇÃO</strong>.</p>
+                <p>💰 O valor é simbólico e serve para custear despesas e necessidades básicas para a execução do evento.</p>
               </div>
             )}
 
             {paymentDisclaimerStep === 2 && (
               <div className={styles.disclaimer}>
-                <p>👤 O valor de <strong>R$ 15,09 é por pessoa, e não por modalidade</strong>. Isso significa que você paga somente uma vez e pode se inscrever em quantas modalidades quiser.</p>
+                <p>👕 A camisa será vendida à parte e <strong>não está inclusa</strong> no valor apresentado! Sendo este, somente o valor da <strong>INSCRIÇÃO</strong>.</p>
               </div>
             )}
 
             {paymentDisclaimerStep === 3 && (
               <div className={styles.disclaimer}>
-                <p>👶 Crianças até <strong>08 (oito) anos</strong> de idade não precisam pagar o valor acima para se inscrever, estão isentas, mas os pais precisam preencher este formulário e fazer a inscrição da mesma forma.</p>
+                <p>👶 Crianças até <strong>08 (oito) anos</strong> de idade não precisam pagar o valor apresentado para se inscrever, estão isentas, mas os pais precisam preencher este formulário e fazer a inscrição da mesma forma.</p>
               </div>
             )}
 
@@ -640,13 +699,13 @@ export default function RegistrationPage() {
               </div>
             )}
 
-            {eligibleMods.length > 0 && (
+            {availableMods.length > 0 && (
               <div className={styles.modalityGroup}>
                 <div className={`${styles.modalityGroupLabel} ${styles.modalityGroupEligible}`}>
                   ✓ Modalidades disponíveis para você
                 </div>
                 <div className={styles.modalitiesGrid}>
-                  {eligibleMods.map((m) => (
+                  {availableMods.map((m) => (
                     <ModalityCard
                       key={m.id}
                       modality={m}
@@ -661,48 +720,18 @@ export default function RegistrationPage() {
               </div>
             )}
 
-            {ageRestrictedMods.length > 0 && (
+            {unavailableMods.length > 0 && (
               <div className={styles.modalityGroup}>
                 <div className={`${styles.modalityGroupLabel} ${styles.modalityGroupRestricted}`}>
-                  🔒 Não permitidas pela sua idade
+                  🔒 Modalidades indisponíveis
                 </div>
                 <div className={styles.modalitiesGrid}>
-                  {ageRestrictedMods.map((m) => (
-                    <ModalityCard
-                      key={m.id}
-                      modality={m}
-                      selected={false}
-                      eligible={false}
-                      onToggle={() =>
-                        setBlockedModality(
-                          `A modalidade "${m.name}" exige ${ageRangeLabel(m.minAge, m.maxAge)}. Sua idade (${age} anos) não atende esse requisito.`
-                        )
-                      }
-                      onHover={() => {}}
-                      ageRangeLabel={ageRangeLabel(m.minAge, m.maxAge)}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {memberRestrictedMods.length > 0 && (
-              <div className={styles.modalityGroup}>
-                <div className={`${styles.modalityGroupLabel} ${styles.modalityGroupMember}`}>
-                  🔒 Exclusivas para Membros IBB
-                </div>
-                <div className={styles.modalitiesGrid}>
-                  {memberRestrictedMods.map((m) => (
-                    <ModalityCard
-                      key={m.id}
-                      modality={m}
-                      selected={false}
-                      eligible={false}
-                      onToggle={() =>
-                        setBlockedModality(`A modalidade "${m.name}" é exclusiva para membros da IBB ou GR.`)
-                      }
-                      onHover={() => {}}
-                      ageRangeLabel={ageRangeLabel(m.minAge, m.maxAge)}
+                  {unavailableMods.map(({ modality, reasons }) => (
+                    <UnavailableModalityCard
+                      key={modality.id}
+                      modality={modality}
+                      reasons={reasons}
+                      ageRangeLabel={ageRangeLabel(modality.minAge, modality.maxAge)}
                     />
                   ))}
                 </div>
@@ -727,7 +756,7 @@ export default function RegistrationPage() {
       case S.TERMS:
         return (
           <div className={styles.questionBlock}>
-            <div className={styles.questionLabel}>Avisos importantes — leia com atenção</div>
+            <div className={styles.questionLabel}>Antes de finalizar, precisamos frisar bastante as orientações abaixo — leia com atenção para que você não tenha problemas</div>
 
             <div className={styles.disclaimer}>
               <h3>💰 Taxa de inscrição e pagamento via PIX</h3>
@@ -858,7 +887,7 @@ export default function RegistrationPage() {
             </div>
             <div style={{ display: "flex", gap: "var(--space-3)", flexWrap: "wrap", justifyContent: "center" }}>
               <motion.button className="btn btn-primary" onClick={() => generateComprovantePdf(registered)} {...microBtn}>
-                Baixar Comprovante PDF
+                Baixar seu Ingresso PDF
               </motion.button>
               <motion.button
                 className="btn btn-secondary"
@@ -871,6 +900,13 @@ export default function RegistrationPage() {
                 {...microBtn}
               >
                 Nova inscrição
+              </motion.button>
+              <motion.button
+                className="btn btn-secondary"
+                onClick={() => navigate('/')}
+                {...microBtn}
+              >
+                Voltar para página inicial
               </motion.button>
             </div>
           </div>

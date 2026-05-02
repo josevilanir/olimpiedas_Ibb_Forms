@@ -85,12 +85,19 @@ export function generateComprovantePdf(participant: Participant) {
     "• Taxa de inscrição: R$ 15,09 por pessoa (isento até 8 anos).",
     "• Pagamento via PIX. Envie o comprovante pelo WhatsApp ao coordenador.",
     "• A camiseta oficial não está inclusa na taxa.",
-    "• DÚVIDAS? FALE COM SAMUCA PELO WHATSAPP: (84) 99921-5999",
   ];
   for (const aviso of avisos) {
     doc.text(aviso, 20, y);
     y += 7;
   }
+
+  y = 260;
+  doc.setFillColor(240, 244, 255);
+  doc.roundedRect(15, y - 8, 180, 16, 3, 3, "F");
+  doc.setTextColor(...primaryColor);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.text("DÚVIDAS? FALE COM SAMUCA PELO WHATSAPP: (84) 99921-5999", 105, y, { align: "center" });
 
   // Footer
   y = 280;

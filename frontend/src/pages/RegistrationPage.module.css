@@ -96,7 +96,7 @@
 .progressRunner {
   position: absolute;
   top: 50%;
-  transform: translateY(-60%);
+  transform: translateY(-60%) scaleX(-1);
   font-size: 1.25rem;
   line-height: 1;
   transition: left 0.45s cubic-bezier(0.4, 0, 0.2, 1);
@@ -295,7 +295,44 @@
   background: rgba(6, 95, 70, 0.25) !important; 
   box-shadow: inset 0 0 20px rgba(6, 95, 70, 0.2);
 }
-.modalityLocked   { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
+.modalityLocked {
+  opacity: 0.65;
+  cursor: pointer;
+  filter: grayscale(0.8);
+  transition: all 0.3s ease;
+}
+
+.modalityLocked:hover, .modalityLocked.expanded {
+  opacity: 1;
+  filter: grayscale(0);
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.unavailableReasons {
+  margin-top: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
+.reasonsTitle {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: #fca5a5;
+  margin-bottom: var(--space-1);
+}
+
+.reasonsList {
+  margin: 0;
+  padding-left: var(--space-4);
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.reasonsList li {
+  margin-bottom: 2px;
+}
 
 .modalityName   { font-family: var(--font-family-display); font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-white); }
 .modalityCoord  { font-size: var(--font-size-xs); color: var(--color-gray-400); }

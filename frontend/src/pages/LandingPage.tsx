@@ -14,9 +14,9 @@ export default function LandingPage() {
   const modalities = [
     { name: 'Corrida Longa 5km', cat: 'corrida', age: 'Livre', icon: '🏃', tag: 'open', coord: 'Emicarlo Souza e Carlos Mora' },
     { name: 'Caminhada 2,5km', cat: 'livre', age: 'Livre', icon: '🚶', tag: 'open', coord: 'Emicarlo Souza e Carlos Mora' },
-    { name: 'Corrida Curta Adulta', cat: 'corrida', age: '14+ anos', icon: '⚡', tag: 'member', sub: '100m · 150m · 200m', coord: 'Emicarlo Souza e Carlos Mora' },
-    { name: 'Corrida Curta Pré-Teens', cat: 'corrida', age: '10–13 anos', icon: '⚡', tag: 'member', sub: '100m · 150m', coord: 'Emicarlo Souza e Carlos Mora' },
-    { name: 'Corrida Curta Kids', cat: 'kids', age: '3–9 anos', icon: '⚡', tag: 'member', sub: '10m · 20m · 30m', coord: 'Emicarlo Souza e Carlos Mora' },
+    { name: 'Corrida Curta Adulta', cat: 'corrida', age: '14+ anos', icon: '⚡', tag: 'open', sub: '100m · 150m · 200m', coord: 'Emicarlo Souza e Carlos Mora' },
+    { name: 'Corrida Curta Pré-Teens', cat: 'corrida', age: '09–13 anos', icon: '⚡', tag: 'open', sub: '100m · 150m', coord: 'Emicarlo Souza e Carlos Mora' },
+    { name: 'Corrida Curta Kids', cat: 'kids', age: '03–08 anos', icon: '⚡', tag: 'open', sub: '10m · 20m · 30m', coord: 'Emicarlo Souza e Carlos Mora' },
     { name: 'Futsal', cat: 'coletivo', age: '14+ anos', icon: '⚽', tag: 'member', coord: 'Jonatas Silveira (Jow)' },
     { name: 'Futsal Pré-Teens', cat: 'coletivo', age: '10–13 anos', icon: '⚽', tag: 'member', coord: 'Jonatas Silveira (Jow)' },
     { name: 'Vôlei de Quadra', cat: 'coletivo', age: '14+ anos', icon: '🏐', tag: 'member', coord: 'Daniel César' },
@@ -25,11 +25,11 @@ export default function LandingPage() {
     { name: 'Natação', cat: 'livre', age: '9+ anos', icon: '🏊', tag: 'member', coord: 'Jonatas Silveira (Jow)' },
     { name: 'Tênis de Mesa', cat: 'livre', age: '9+ anos', icon: '🏓', tag: 'member', coord: 'Lucas Santos' },
     { name: 'Circuito Adulto', cat: 'corrida', age: '14+ anos', icon: '🏋️', tag: 'member', sub: 'Obstáculos', coord: 'Fran Missionário' },
-    { name: 'Circuito Kids', cat: 'kids', age: '8–13 anos', icon: '🏋️', tag: 'member', sub: 'Obstáculos', coord: 'Fran Missionário' },
+    { name: 'Circuito Kids', cat: 'kids', age: '09–13 anos', icon: '🏋️', tag: 'member', sub: 'Obstáculos', coord: 'Fran Missionário' },
     { name: 'E-Sports FIFA', cat: 'esports', age: '9+ anos', icon: '🎮', tag: 'member', coord: 'Gustavo Felipe e Davi Severiano' },
     { name: 'E-Sports CS', cat: 'esports', age: '9+ anos', icon: '🎮', tag: 'member', sub: 'Counter-Strike', coord: 'Gustavo Felipe e Davi Severiano' },
     { name: 'E-Sports LoL', cat: 'esports', age: '9+ anos', icon: '🎮', tag: 'member', sub: 'League of Legends', coord: 'Gustavo Felipe e Davi Severiano' },
-    { name: 'Treino Funcional', cat: 'livre', age: 'Livre', icon: '💪', tag: 'open', sub: 'Não competitivo', coord: 'Jonatas Silveira (Jow)' },
+    { name: 'Treino Funcional', cat: 'livre', age: 'Livre', icon: '💪', tag: 'member', sub: 'Não competitivo', coord: 'Jonatas Silveira (Jow)' },
   ];
 
   const catLabels: Record<string, string> = { corrida: 'Corrida', coletivo: 'Coletivo', esports: 'E-Sports', kids: 'Kids', livre: 'Livre' };
@@ -140,16 +140,21 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
 
-      {/* TICKER */}
-      <div className="ticker">
-        <div className="ticker-track">
-          {trackItems.map((item, i) => (
-            <span key={i} className="ticker-item">{item}<span className="sep">✦</span></span>
-          ))}
+        <div className="scroll-hint" onClick={() => document.getElementById('sobre')?.scrollIntoView({ behavior: 'smooth' })}>
+          <span className="scroll-chevron">❯</span>
+          <span className="scroll-chevron">❯</span>
         </div>
-      </div>
+
+        {/* TICKER — dentro do hero para aparecer na tela inicial */}
+        <div className="ticker hero-ticker">
+          <div className="ticker-track">
+            {trackItems.map((item, i) => (
+              <span key={i} className="ticker-item">{item}<span className="sep">✦</span></span>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* SOBRE */}
       <section id="sobre">
@@ -168,10 +173,11 @@ export default function LandingPage() {
             <h2 className="section-title reveal reveal-delay-1">Esporte,<br />fé &amp;<br />comunidade</h2>
             <p className="reveal reveal-delay-2">As Olimpíadas IBB reúnem membros e convidados da Igreja Batista Bereana em diversas modalidades esportivas e recreativas — de corridas a e-sports, passando por futebol, vôlei, natação e muito mais.</p>
             <p className="reveal reveal-delay-3">Um evento para todas as idades. Desde os pequenos de 3 anos nas provas Kids até os adultos no circuito de obstáculos — há uma modalidade para cada membro da família IBB.</p>
+            <p className="reveal reveal-delay-3">Incentivando a realização de atividades físicas em ambientes seguros e saudáveis através da comunhão entre os irmãos.</p>
             <div className="sobre-stats reveal reveal-delay-4">
               <div className="stat"><div className="n">18</div><div className="l">Modalidades</div></div>
               <div className="stat"><div className="n">3+</div><div className="l">Anos de idade</div></div>
-              <div className="stat"><div className="n">R$15</div><div className="l">Inscrição</div></div>
+              <div className="stat"><div className="n">R$15,09</div><div className="l">Inscrição</div></div>
             </div>
           </div>
         </div>
@@ -233,7 +239,7 @@ export default function LandingPage() {
           <div className="step-card reveal reveal-delay-3">
             <div className="step-n">3</div>
             <div className="step-title">Pague via PIX</div>
-            <div className="step-desc">R$ 15,09 por pessoa. Crianças de até 8 anos não pagam.</div>
+            <div className="step-desc">R$ 15,09 por pessoa. Crianças de até 8 anos não pagam.<br/>Enviar comprovante para Maria Fernanda (Nanda) para efetivar sua inscrição.</div>
             <div className="step-bar"></div>
           </div>
           <div className="step-card reveal reveal-delay-4">
@@ -252,6 +258,7 @@ export default function LandingPage() {
           <div style={{ textAlign: 'right' }}>
             <div className="pix-key">eventosibbnatal<span>@gmail.com</span></div>
             <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', marginTop: '4px', fontFamily: 'var(--font-display)', letterSpacing: '1px' }}>R$ 15,09 · isento até 8 anos</div>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>Enviar comprovante para Maria Fernanda (Nanda) para efetivar sua inscrição.</div>
           </div>
           <button className="btn-primary" style={{ flexShrink: 0 }} onClick={onGoToRegistration}>Ir para o formulário →</button>
         </div>
@@ -272,7 +279,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© 2025 Olimpíadas IBB — Todos os direitos reservados</span>
+          <span>© 2026 Olimpíadas IBB — Todos os direitos reservados</span>
           <a href="#" className="admin-link" onClick={(e) => { e.preventDefault(); onGoToAdmin(); }}>Acesso Admin</a>
         </div>
       </footer>
