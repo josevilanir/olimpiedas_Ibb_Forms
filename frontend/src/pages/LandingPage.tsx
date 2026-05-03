@@ -175,7 +175,7 @@ export default function LandingPage() {
                   galery5
                 ].map((src, idx) => (
                   <div key={idx} className="sobre-gallery-item">
-                    <img src={src} alt={`galeria-${idx}`} />
+                    <img src={src} alt={`galeria-${idx}`} loading="lazy" decoding="async" />
                   </div>
                 ))}
               </div>
