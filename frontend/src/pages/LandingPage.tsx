@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import './LandingPage.css';
 import logoImg from '../assets/olimpiedas_logo-removebg-preview.png';
+import galery1 from '../assets/galery/20250531_154713.jpg';
+import galery2 from '../assets/galery/20250601_092812.jpg';
+import galery3 from '../assets/galery/DSC06671.jpeg';
+import galery4 from '../assets/galery/IMG_7160.jpg';
+import galery5 from '../assets/galery/IMG_7650.jpg';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -161,7 +166,19 @@ export default function LandingPage() {
         <div className="sobre-grid">
           <div className="sobre-img-block reveal">
             <div className="sobre-img">
-              <div className="img-placeholder">foto do evento<br />atletas / comunidade<br />IBB</div>
+              <div className="sobre-gallery">
+                {[
+                  galery1,
+                  galery2,
+                  galery3,
+                  galery4,
+                  galery5
+                ].map((src, idx) => (
+                  <div key={idx} className="sobre-gallery-item">
+                    <img src={src} alt={`galeria-${idx}`} />
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="sobre-badge">
               <span className="big">18</span>
