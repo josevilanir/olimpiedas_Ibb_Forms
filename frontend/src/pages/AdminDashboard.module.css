@@ -127,7 +127,122 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
   color: #e8f4f3;
 }
 
-/* Modality grid */
+/* Modality groups & carousel */
+.pageSubHeader {
+  font-size: var(--font-size-sm);
+  color: rgba(200,230,225,0.5);
+  margin-top: var(--space-1);
+}
+
+.categoriesWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+.carouselSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.carouselHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.carouselTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.carouselIcon {
+  font-size: var(--font-size-2xl);
+  filter: drop-shadow(0 0 8px rgba(10,157,143,0.3));
+}
+
+.carouselTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: #e8f4f3;
+  letter-spacing: -0.01em;
+}
+
+.carouselBadge {
+  font-size: 10px;
+  background: rgba(10,157,143,0.1);
+  color: #0aad9f;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(10,157,143,0.15);
+  text-transform: uppercase;
+  font-weight: var(--font-weight-bold);
+}
+
+.carouselControls {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.carouselBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(10,157,143,0.15);
+  color: rgba(200,230,225,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.carouselBtn:hover:not(:disabled) {
+  background: rgba(10,157,143,0.15);
+  border-color: #0aad9f;
+  color: #0aad9f;
+  transform: scale(1.05);
+}
+
+.carouselBtnDisabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.carouselContainer {
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  padding: var(--space-2) 0;
+  cursor: grab;
+}
+
+.carouselContainer:active {
+  cursor: grabbing;
+}
+
+.carouselContainer::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.carouselTrack {
+  display: flex;
+  gap: var(--space-4);
+  padding-right: var(--space-12); /* Spacer at the end */
+}
+
+.carouselItem {
+  flex: 0 0 300px;
+  transition: transform var(--transition-base);
+}
+
+.carouselItem:hover {
+  transform: translateY(-4px);
+}
+
 .modalityGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -135,17 +250,21 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
 }
 
 .modalityCard {
-  background: #0f2133;
+  background: linear-gradient(145deg, #0f2133 0%, #0c1a29 100%);
   border: 1px solid rgba(10,157,143,0.15);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition-base), border-color var(--transition-base);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  transition: all var(--transition-base);
+  height: 100%;
 }
-.modalityCard:hover { box-shadow: 0 0 0 1px rgba(10,157,143,0.4), var(--shadow-md); border-color: rgba(10,157,143,0.4); }
+.modalityCard:hover { 
+  box-shadow: 0 0 0 1px #0aad9f, 0 10px 30px rgba(0,0,0,0.4); 
+  border-color: #0aad9f;
+}
 
 .modalityCardHeader {
   display: flex;
