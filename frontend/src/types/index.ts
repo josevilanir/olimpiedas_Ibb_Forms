@@ -2,6 +2,25 @@ export type MembershipStatus = "SIM" | "NAO" | "GR";
 export type Gender = "MASCULINO" | "FEMININO";
 export type PaymentStatus = "PENDENTE" | "PAGO" | "CANCELADO";
 
+export type View = "modalities" | "participants" | "stats" | "finance";
+export type MemberFilter = "ALL" | "SIM" | "NAO" | "GR";
+export type ChartMode = "ageGroups" | "modalities";
+export type PaymentFilter = "ALL" | PaymentStatus;
+export type PieMode = "gender" | "membership" | "payment";
+export type SortKey = "fullName" | "parentName" | "age" | "whatsapp" | "gender" | "isMember" | "paymentStatus" | "createdAt";
+export type SortDir = "asc" | "desc";
+
+export interface EditState {
+  participant: Participant;
+  fullName: string;
+  whatsapp: string;
+  healthIssues: string;
+  gender: Gender;
+  isMember: MembershipStatus;
+  birthDate: string;
+  modalityIds: string[];
+}
+
 export interface Modality {
   id: string;
   name: string;
