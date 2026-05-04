@@ -915,17 +915,34 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
   }
 
   /* Exibir apenas na impressão os gráficos combinados */
-  .printOnlyPies {
+  .printOnlyCharts {
     display: block !important;
   }
 
   .printPiesTitle {
-    text-align: center;
+    text-align: left;
     font-size: 20px;
-    margin-bottom: 20px;
+    margin: 0;
     color: black !important;
+  }
+
+  .printTitleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     border-bottom: 1px solid #ccc;
     padding-bottom: 10px;
+    margin-bottom: 30px;
+  }
+
+  .printFilterBadge {
+    font-size: 14px;
+    font-weight: bold;
+    color: black !important;
+    background: #eee;
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
   }
 
   .printPiesGrid {
@@ -943,6 +960,11 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
     align-items: center;
   }
 
+  .printBarChartSection {
+    margin-bottom: 60px;
+    page-break-after: auto;
+  }
+
   /* Forçar impressão de cores de fundo (para badges e gráficos) */
   * {
     -webkit-print-color-adjust: exact !important;
@@ -950,7 +972,7 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
   }
 }
 
-.printOnlyPies {
+.printOnlyCharts {
   display: none;
 }
 

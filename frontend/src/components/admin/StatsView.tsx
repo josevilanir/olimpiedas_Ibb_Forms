@@ -281,51 +281,117 @@ export function StatsView({
             );
           })()}
 
-          {/* Print-only pies */}
-          <div className={`${styles.chartSection} ${styles.printOnlyPies}`}>
-            <h3 className={styles.printPiesTitle}>
-              {activeBar ? `Modalidade: ${activeBar.name}` : "Geral"}
-            </h3>
-            <div className={styles.printPiesGrid}>
-              {(["gender", "membership", "payment"] as const).map((mode) => {
-                const src = pieStatsData ?? statsData;
-                const pieData = buildPieData(src, mode);
-                const pieTotal = pieData.reduce((acc, d) => acc + d.value, 0);
-                const title = mode === "gender" ? "Gênero" : mode === "membership" ? "Vínculo" : "Pagamento";
-                return (
-                  <div className={styles.printPieItem} key={mode}>
-                    <h4 style={{ textAlign: "center", marginBottom: "16px", color: "black" }}>{title}</h4>
-                    <div className={styles.pieRow}>
-                      <div className={styles.pieChartWrap} style={{ minWidth: 200, width: 200 }}>
-                        <PieChart width={200} height={200}>
-                          <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" style={{ pointerEvents: "none" }}>
-                            <tspan x="50%" dy="-0.4em" fill="black" fontSize="24" fontWeight="700">{pieTotal}</tspan>
-                            <tspan x="50%" dy="1.5em" fill="black" fontSize="11">{pieTotal === 1 ? "inscrito" : "inscritos"}</tspan>
-                          </text>
-                          <Pie isAnimationActive={false} data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value" strokeWidth={0}>
-                            {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                          </Pie>
-                        </PieChart>
+          {/* Print-only charts */}
+          <div className={`${styles.chartSection} ${styles.printOnlyCharts}`}>
+
+            {/* Bar chart - Dynamic based on chartMode */}
+            <div className={styles.printBarChartSection}>
+              {chartMode === "modalities" ? (
+                <>
+                  <h4 style={{ textAlign: "center", marginBottom: "16px", color: "black" }}>
+                    Inscritos por Modalidade: {memberLabels[memberFilter]}
+                  </h4>
+                  {(() => {
+                    const sortedData = [...statsData.modalityStats].sort((a, b) => b.count - a.count);
+                    return (
+                      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                        <BarChart width={750} height={350} data={sortedData} margin={{ top: 20, right: 30, bottom: 100, left: 10 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#eee" vertical={false} />
+                          <XAxis
+                            dataKey="name"
+                            tick={{ fill: "black", fontSize: 10 }}
+                            axisLine={{ stroke: "#ccc" }}
+                            tickLine={false}
+                            interval={0}
+                            angle={-45}
+                            textAnchor="end"
+                          />
+                          <YAxis allowDecimals={false} tick={{ fill: "black", fontSize: 11 }} axisLine={{ stroke: "#ccc" }} tickLine={false} />
+                          <Bar
+                            isAnimationActive={false}
+                            dataKey="count"
+                            fill="#0aad9f"
+                            radius={[4, 4, 0, 0]}
+                            label={{ position: "top", fill: "black", fontSize: 10 }}
+                          />
+                        </BarChart>
                       </div>
-                      <div className={styles.pieLegend}>
-                        {pieData.map((entry) => (
-                          <div key={entry.name} className={styles.pieLegendItem}>
-                            <span className={styles.pieLegendDot} style={{ background: entry.color }} />
-                            <span className={styles.pieLegendName}>{entry.name}</span>
-                            <span className={styles.pieLegendVal}>
-                              {entry.value}
-                              <span className={styles.pieLegendPct}>
-                                {" "}({pieTotal > 0 ? Math.round((entry.value / pieTotal) * 100) : 0}%)
+                    );
+                  })()}
+                </>
+              ) : (
+                <>
+                  <h4 style={{ textAlign: "center", marginBottom: "16px", color: "black" }}>
+                    Inscritos por Faixa Etária: {memberLabels[memberFilter]}
+                  </h4>
+                  <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                    <BarChart
+                      width={750}
+                      height={300}
+                      data={Object.entries(statsData.ageGroups).map(([label, count]) => ({ label: `${label} anos`, count }))}
+                      margin={{ top: 20, right: 30, bottom: 20, left: 10 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#eee" vertical={false} />
+                      <XAxis dataKey="label" tick={{ fill: "black", fontSize: 12 }} axisLine={{ stroke: "#ccc" }} tickLine={false} />
+                      <YAxis allowDecimals={false} tick={{ fill: "black", fontSize: 11 }} axisLine={{ stroke: "#ccc" }} tickLine={false} />
+                      <Bar
+                        isAnimationActive={false}
+                        dataKey="count"
+                        fill="#3b82f6"
+                        radius={[4, 4, 0, 0]}
+                        label={{ position: "top", fill: "black", fontSize: 11 }}
+                      />
+                    </BarChart>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Pie chart - Only the selected one */}
+            {(() => {
+              const src = statsData;
+              const pieData = buildPieData(src, pieMode);
+              const pieTotal = pieData.reduce((acc, d) => acc + d.value, 0);
+              const title = pieMode === "gender" ? "Gênero" : pieMode === "membership" ? "Vínculo" : "Pagamento";
+              return (
+                <>
+                  <h4 style={{ textAlign: "center", marginTop: "40px", marginBottom: "24px", color: "black" }}>
+                    Distribuição por {title}: {memberLabels[memberFilter]}
+                  </h4>
+                  <div className={styles.printPiesGrid} style={{ justifyContent: "center" }}>
+                    <div className={styles.printPieItem}>
+                      <div className={styles.pieRow}>
+                        <div className={styles.pieChartWrap} style={{ minWidth: 200, width: 200 }}>
+                          <PieChart width={200} height={200}>
+                            <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" style={{ pointerEvents: "none" }}>
+                              <tspan x="50%" dy="-0.4em" fill="black" fontSize="24" fontWeight="700">{pieTotal}</tspan>
+                              <tspan x="50%" dy="1.5em" fill="black" fontSize="11">{pieTotal === 1 ? "inscrito" : "inscritos"}</tspan>
+                            </text>
+                            <Pie isAnimationActive={false} data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value" strokeWidth={0}>
+                              {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                            </Pie>
+                          </PieChart>
+                        </div>
+                        <div className={styles.pieLegend}>
+                          {pieData.map((entry) => (
+                            <div key={entry.name} className={styles.pieLegendItem}>
+                              <span className={styles.pieLegendDot} style={{ background: entry.color }} />
+                              <span className={styles.pieLegendName}>{entry.name}</span>
+                              <span className={styles.pieLegendVal}>
+                                {entry.value}
+                                <span className={styles.pieLegendPct}>
+                                  {" "}({pieTotal > 0 ? Math.round((entry.value / pieTotal) * 100) : 0}%)
+                                </span>
                               </span>
-                            </span>
-                          </div>
-                        ))}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                </>
+              );
+            })()}
           </div>
         </>
       )}
