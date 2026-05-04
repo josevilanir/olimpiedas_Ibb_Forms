@@ -1,0 +1,101 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.column {
+  position: relative;
+  overflow: hidden;
+  outline: none;
+  border-radius: var(--radius-md);
+  transition: opacity var(--transition-base);
+}
+
+.column:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.columnDisabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.overlayTop {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(to bottom, var(--color-bg-base) 0%, transparent 100%);
+}
+
+.overlayBottom {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background: linear-gradient(to top, var(--color-bg-base) 0%, transparent 100%);
+}
+
+.selectionHighlight {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  border-top: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.scrollContent {
+  cursor: grab;
+}
+
+.scrollContent:active {
+  cursor: grabbing;
+}
+
+.item {
+  display: flex;
+  user-select: none;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+.itemLabel {
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-fast);
+}
+
+.itemSelected {
+  color: var(--color-primary-light);
+  font-weight: var(--font-weight-bold);
+}
+
+.itemUnselected {
+  color: var(--color-text-muted);
+}
+
+/* Size configs */
+.sizeSm { gap: var(--space-2); font-size: var(--font-size-sm); }
+.sizeMd { gap: var(--space-4); font-size: var(--font-size-base); }
+.sizeLg { gap: var(--space-6); font-size: var(--font-size-lg); }
+
+.wDay { width: 60px; }
+.wMonth { width: 120px; }
+.wYear { width: 80px; }
+
+@media (max-width: 480px) {
+  .sizeLg { gap: var(--space-4); font-size: var(--font-size-base); }
+  .sizeMd { gap: var(--space-2); font-size: var(--font-size-sm); }
+  .wDay { width: 50px; }
+  .wMonth { width: 100px; }
+  .wYear { width: 70px; }
+}
