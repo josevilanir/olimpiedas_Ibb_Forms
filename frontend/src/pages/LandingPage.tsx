@@ -23,8 +23,14 @@ export default function LandingPage() {
     window.addEventListener("scroll", handleScroll);
 
     const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
-    }, { threshold: 0.15 });
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add("visible");
+        } else {
+          e.target.classList.remove("visible");
+        }
+      });
+    }, { threshold: 0 });
     document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
 
     const EVENT_DATE = new Date(2026, 6, 4, 8, 0, 0);
@@ -45,7 +51,7 @@ export default function LandingPage() {
     };
     updateCountdown();
     const cdInterval = setInterval(updateCountdown, 1000);
-
+ 
     return () => {
       window.removeEventListener("scroll", handleScroll);
       clearInterval(cdInterval);

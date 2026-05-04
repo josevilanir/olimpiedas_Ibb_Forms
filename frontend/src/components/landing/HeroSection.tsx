@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 interface HeroSectionProps {
   countdown: { d: string; h: string; m: string; s: string };
   tickerItems: string[];
@@ -10,20 +12,46 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
   return (
     <section id="hero">
       <div className="hero-bg"></div>
-      <div className="hero-man"></div>
+      <motion.div 
+        className="hero-man"
+        initial={{ opacity: 0, y: 40, scale: 0.98 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: false, amount: 0.1 }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+      />
       <div className="hero-texture"></div>
       <div className="hero-orb"></div>
       <div className="hero-diagonal"></div>
 
       <div className="hero-content">
-        <div className="hero-eyebrow">Igreja Batista Bereana · Natal/RN</div>
+        <motion.div 
+          className="hero-eyebrow"
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.1 }}
+          transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+        >
+          Igreja Batista Bereana · Natal/RN
+        </motion.div>
 
-        <h1 className="hero-title">
+        <motion.h1 
+          className="hero-title"
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.1 }}
+          transition={{ duration: 0.7, ease: "easeOut", delay: 0.35 }}
+        >
           OLIMPÍADAS<br />
           <span className="accent">IBB</span>
-        </h1>
+        </motion.h1>
 
-        <div className="hero-bottom">
+        <motion.div 
+          className="hero-bottom"
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.1 }}
+          transition={{ duration: 0.7, ease: "easeOut", delay: 0.5 }}
+        >
           <div>
             <p className="hero-sub">
               <strong>18 modalidades.</strong> Corridas, esportes coletivos, e-sports e muito mais — para toda a família da IBB.
@@ -45,7 +73,7 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
               <button className="btn-ghost" onClick={() => document.getElementById("modalidades")?.scrollIntoView({ behavior: "smooth" })}>Ver modalidades</button>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       <div className="scroll-hint" onClick={() => document.getElementById("sobre")?.scrollIntoView({ behavior: "smooth" })}>
@@ -63,3 +91,4 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
     </section>
   );
 }
+
