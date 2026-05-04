@@ -517,7 +517,7 @@ export default function AdminDashboard() {
             {statsData && (
               <>
                 {/* Bar chart with mode selector */}
-                <div className={styles.chartSection}>
+                <div className={`${styles.chartSection} ${styles.noPrint}`}>
                   <div className={styles.chartHeader}>
                     <div className={styles.chartTabs}>
                       <button
@@ -640,7 +640,7 @@ export default function AdminDashboard() {
                       ];
                   const pieTotal = pieData.reduce((acc, d) => acc + d.value, 0);
                   return (
-                    <div className={styles.chartSection}>
+                    <div className={`${styles.chartSection} ${styles.noPrint}`}>
                       <div className={styles.chartHeader}>
                         <div className={styles.chartTabs}>
                           <button
@@ -729,6 +729,76 @@ export default function AdminDashboard() {
                     </div>
                   );
                 })()}
+
+                {/* Print Only Pies - Vistos apenas ao imprimir os gráficos */}
+                <div className={`${styles.chartSection} ${styles.printOnlyPies}`}>
+                  <h3 className={styles.printPiesTitle}>
+                    {activeBar ? `Modalidade: ${activeBar.name}` : "Geral"}
+                  </h3>
+                  <div className={styles.printPiesGrid}>
+                    {(() => {
+                      const src = pieStatsData ?? statsData;
+                      const renderPie = (mode: "gender" | "membership" | "payment", title: string) => {
+                        const pieData = mode === "gender"
+                          ? [
+                              { name: "Masculino", value: src.genderCount.MASCULINO, color: "#3b82f6" },
+                              { name: "Feminino", value: src.genderCount.FEMININO, color: "#c084fc" },
+                            ]
+                          : mode === "membership"
+                          ? [
+                              { name: "Membro IBB", value: src.memberCount.SIM, color: "#0aad9f" },
+                              { name: "Freq. GR", value: src.memberCount.GR, color: "#3b82f6" },
+                              { name: "Não membro", value: src.memberCount.NAO, color: "#f59e0b" },
+                            ]
+                          : [
+                              { name: "Pago", value: src.paymentCount.PAGO, color: "#10b981" },
+                              { name: "Pendente", value: src.paymentCount.PENDENTE, color: "#f59e0b" },
+                              { name: "Cancelado", value: src.paymentCount.CANCELADO, color: "#ef4444" },
+                            ];
+                        const pieTotal = pieData.reduce((acc, d) => acc + d.value, 0);
+                        return (
+                          <div className={styles.printPieItem} key={mode}>
+                            <h4 style={{ textAlign: 'center', marginBottom: '16px', color: 'black' }}>{title}</h4>
+                            <div className={styles.pieRow}>
+                              <div className={styles.pieChartWrap} style={{ minWidth: 200, width: 200 }}>
+                                <PieChart width={200} height={200}>
+                                  <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" style={{ pointerEvents: "none" }}>
+                                    <tspan x="50%" dy="-0.4em" fill="black" fontSize="24" fontWeight="700">{pieTotal}</tspan>
+                                    <tspan x="50%" dy="1.5em" fill="black" fontSize="11">{pieTotal === 1 ? "inscrito" : "inscritos"}</tspan>
+                                  </text>
+                                  <Pie isAnimationActive={false} data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value" strokeWidth={0}>
+                                    {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                                  </Pie>
+                                </PieChart>
+                              </div>
+                              <div className={styles.pieLegend}>
+                                {pieData.map((entry) => (
+                                  <div key={entry.name} className={styles.pieLegendItem}>
+                                    <span className={styles.pieLegendDot} style={{ background: entry.color }} />
+                                    <span className={styles.pieLegendName}>{entry.name}</span>
+                                    <span className={styles.pieLegendVal}>
+                                      {entry.value}
+                                      <span className={styles.pieLegendPct}>
+                                        {" "}({pieTotal > 0 ? Math.round((entry.value / pieTotal) * 100) : 0}%)
+                                      </span>
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      };
+                      return (
+                        <>
+                          {renderPie("gender", "Gênero")}
+                          {renderPie("membership", "Vínculo")}
+                          {renderPie("payment", "Pagamento")}
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
               </>
             )}
           </div>
