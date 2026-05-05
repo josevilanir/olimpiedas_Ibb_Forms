@@ -20,7 +20,7 @@ export function ModalityGrid({
   const filtered = modalities.filter(m => m.name.toLowerCase().includes(searchQuery.toLowerCase()));
   const groups = groupModalities(filtered);
 
-  const categoriesOrder: ModalityCategory[] = ["corrida", "coletivo", "esports", "kids", "livre", "geral"];
+  const categoriesOrder: ModalityCategory[] = ["corrida", "coletivo", "esports", "individual", "geral"];
 
   return (
     <div>

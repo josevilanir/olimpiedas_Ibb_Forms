@@ -1,13 +1,12 @@
 import type { Modality } from "../types";
 
-export type ModalityCategory = "corrida" | "coletivo" | "esports" | "kids" | "livre" | "geral";
+export type ModalityCategory = "corrida" | "coletivo" | "esports" | "individual" | "geral";
 
 export const categoryLabels: Record<ModalityCategory, string> = {
   corrida: "Corrida",
   coletivo: "Coletivos",
   esports: "E-Sports",
-  kids: "Kids",
-  livre: "Livre",
+  individual: "Individual",
   geral: "Geral",
 };
 
@@ -15,26 +14,22 @@ export const categoryIcons: Record<ModalityCategory, string> = {
   corrida: "🏃",
   coletivo: "⚽",
   esports: "🎮",
-  kids: "🧒",
-  livre: "🌟",
+  individual: "🌟",
   geral: "📦",
 };
 
 export function getModalityCategory(name: string): ModalityCategory {
   const n = name.toLowerCase();
 
-  if (n.includes("corrida") || n.includes("circuito adulto")) {
-    if (n.includes("kids") || n.includes("pré teens")) {
-      if (n.includes("kids")) return "kids";
-      // Pré-teens are grouped with Corrida in landing page for short runs, but some are kids.
-      // Looking at landing page: "Corrida Curta Pré-Teens" is under "corrida".
-      return "corrida";
-    }
+  if (
+    n.includes("corrida") || 
+    n.includes("circuito adulto") ||
+    n.includes("circuito kids") ||
+    n.includes("caminhada") ||
+    n.includes("kids")
+  ) {
     return "corrida";
   }
-
-  if (n.includes("circuito kids")) return "kids";
-  if (n.includes("kids")) return "kids";
 
   if (
     n.includes("futsal") ||
@@ -51,13 +46,12 @@ export function getModalityCategory(name: string): ModalityCategory {
   }
 
   if (
-    n.includes("caminhada") ||
     n.includes("natação") ||
     n.includes("tenis de mesa") ||
     n.includes("tênis de mesa") ||
     n.includes("treino funcional")
   ) {
-    return "livre";
+    return "individual";
   }
 
   return "geral";
@@ -68,8 +62,7 @@ export function groupModalities(modalities: Modality[]) {
     corrida: [],
     coletivo: [],
     esports: [],
-    kids: [],
-    livre: [],
+    individual: [],
     geral: [],
   };
 

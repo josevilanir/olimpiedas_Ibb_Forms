@@ -1,26 +1,26 @@
 const modalities = [
   { name: "Corrida Longa 5km",        cat: "corrida",   age: "Livre",      icon: "🏃", tag: "open",   coord: "Emicarlo Souza e Carlos Mora" },
-  { name: "Caminhada 2,5km",          cat: "livre",     age: "Livre",      icon: "🚶", tag: "open",   coord: "Emicarlo Souza e Carlos Mora" },
+  { name: "Caminhada 2,5km",          cat: "corrida",   age: "Livre",      icon: "🚶", tag: "open",   coord: "Emicarlo Souza e Carlos Mora" },
   { name: "Corrida Curta Adulta",     cat: "corrida",   age: "14+ anos",   icon: "⚡", tag: "open",   sub: "100m · 150m · 200m", coord: "Emicarlo Souza e Carlos Mora" },
   { name: "Corrida Curta Pré-Teens",  cat: "corrida",   age: "09–13 anos", icon: "⚡", tag: "open",   sub: "100m · 150m", coord: "Emicarlo Souza e Carlos Mora" },
-  { name: "Corrida Curta Kids",       cat: "kids",      age: "03–08 anos", icon: "⚡", tag: "open",   sub: "10m · 20m · 30m", coord: "Emicarlo Souza e Carlos Mora" },
+  { name: "Corrida Curta Kids",       cat: "corrida",   age: "03–08 anos", icon: "⚡", tag: "open",   sub: "10m · 20m · 30m", coord: "Emicarlo Souza e Carlos Mora" },
   { name: "Futsal",                   cat: "coletivo",  age: "14+ anos",   icon: "⚽", tag: "member", coord: "Jonatas Silveira (Jow)" },
   { name: "Futsal Pré-Teens",         cat: "coletivo",  age: "10–13 anos", icon: "⚽", tag: "member", coord: "Jonatas Silveira (Jow)" },
   { name: "Vôlei de Quadra",          cat: "coletivo",  age: "14+ anos",   icon: "🏐", tag: "member", coord: "Daniel César" },
   { name: "Queimada",                 cat: "coletivo",  age: "11+ anos",   icon: "🔥", tag: "member", coord: "Jonatas Silveira (Jow)" },
   { name: "Basquete",                 cat: "coletivo",  age: "14+ anos",   icon: "🏀", tag: "member", coord: "Jonatas Silveira (Jow)" },
-  { name: "Natação",                  cat: "livre",     age: "9+ anos",    icon: "🏊", tag: "member", coord: "Jonatas Silveira (Jow)" },
-  { name: "Tênis de Mesa",            cat: "livre",     age: "9+ anos",    icon: "🏓", tag: "member", coord: "Lucas Santos" },
+  { name: "Natação",                  cat: "individual",age: "9+ anos",    icon: "🏊", tag: "member", coord: "Jonatas Silveira (Jow)" },
+  { name: "Tênis de Mesa",            cat: "individual",age: "9+ anos",    icon: "🏓", tag: "member", coord: "Lucas Santos" },
   { name: "Circuito Adulto",          cat: "corrida",   age: "14+ anos",   icon: "🏋️", tag: "member", sub: "Obstáculos", coord: "Fran Missionário" },
-  { name: "Circuito Kids",            cat: "kids",      age: "09–13 anos", icon: "🏋️", tag: "member", sub: "Obstáculos", coord: "Fran Missionário" },
+  { name: "Circuito Kids",            cat: "corrida",   age: "09–13 anos", icon: "🏋️", tag: "member", sub: "Obstáculos", coord: "Fran Missionário" },
   { name: "E-Sports FIFA",            cat: "esports",   age: "9+ anos",    icon: "🎮", tag: "member", coord: "Gustavo Felipe e Davi Severiano" },
   { name: "E-Sports CS",              cat: "esports",   age: "9+ anos",    icon: "🎮", tag: "member", sub: "Counter-Strike", coord: "Gustavo Felipe e Davi Severiano" },
   { name: "E-Sports LoL",             cat: "esports",   age: "9+ anos",    icon: "🎮", tag: "member", sub: "League of Legends", coord: "Gustavo Felipe e Davi Severiano" },
-  { name: "Treino Funcional",         cat: "livre",     age: "Livre",      icon: "💪", tag: "member", sub: "Não competitivo", coord: "Jonatas Silveira (Jow)" },
+  { name: "Treino Funcional",         cat: "individual",age: "Livre",      icon: "💪", tag: "member", sub: "Não competitivo", coord: "Jonatas Silveira (Jow)" },
 ];
 
 const catLabels: Record<string, string> = {
-  corrida: "Corrida", coletivo: "Coletivo", esports: "E-Sports", kids: "Kids", livre: "Livre",
+  corrida: "Corrida", coletivo: "Coletivo", esports: "E-Sports", individual: "Individual",
 };
 
 interface ModalitiesSectionProps {
@@ -39,13 +39,13 @@ export function ModalitiesSection({ activeFilter, onFilterChange }: ModalitiesSe
           <h2 className="section-title reveal reveal-delay-1" style={{ marginBottom: 0 }}>O que você<br />vai disputar</h2>
         </div>
         <div className="mod-filter reveal reveal-delay-2">
-          {["all", "corrida", "coletivo", "esports", "kids", "livre"].map(f => (
+          {["all", "corrida", "coletivo", "esports", "individual"].map(f => (
             <button
               key={f}
               className={`mod-btn ${activeFilter === f ? "active" : ""}`}
               onClick={() => onFilterChange(f)}
             >
-              {f === "all" ? "Todas" : f === "coletivo" ? "Coletivos" : f.charAt(0).toUpperCase() + f.slice(1)}
+              {f === "all" ? "Todas" : f === "coletivo" ? "Coletivos" : f === "individual" ? "Individual" : f.charAt(0).toUpperCase() + f.slice(1)}
             </button>
           ))}
         </div>
