@@ -15,7 +15,9 @@ export function PrintLayout({ modality, participants }: PrintLayoutProps) {
       <div className={styles.printHeader}>
         <img src={logoImg} alt="Olimpíadas" className={styles.printLogo} />
         <div>
+          <h1 className={styles.printMainTitle}>Olimpíadas IBB 2026</h1>
           <h2>Lista de Chamada — {modality.name}</h2>
+          <p className={styles.printParticipantCount}>Total: {participants.length} inscrito{participants.length !== 1 ? "s" : ""}</p>
           <p className={styles.printDate}>Gerado em: {new Date().toLocaleDateString("pt-BR")}</p>
         </div>
         <img src={logoIbb} alt="IBB" className={styles.printLogoIbb} />

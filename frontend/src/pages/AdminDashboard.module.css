@@ -949,6 +949,34 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
 }
 
 @media print {
+  @page {
+    margin: 0; /* Remove cabeçalhos e rodapés automáticos do navegador (Data, URL, etc) */
+  }
+
+  /* Garante fundo branco em toda a página e remove marcações azuis */
+  :global(html), :global(body) {
+    background: white !important;
+    color: black !important;
+  }
+  
+  :global(body::before) {
+    display: none !important;
+  }
+
+  .layout {
+    background: white !important;
+    color: black !important;
+  }
+
+  .printLayout {
+    display: block !important;
+    background: white !important;
+    color: black !important;
+    width: 100%;
+    padding: 1.5cm; /* Adiciona margem interna para o conteúdo não colar na borda do papel */
+    min-height: 100vh;
+  }
+
   /* Oculta barra lateral e botões na impressão */
   .layout > aside,
   .mobileToggle,
@@ -956,16 +984,27 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
   .memberFilterRow,
   .filterBar,
   .chartTabs,
-  .activeBarBadge {
+  .activeBarBadge,
+  .backBtn {
     display: none !important;
   }
 
-  /* Exibe o main com formatação de impressão (fundo branco, texto preto) */
+  /* Oculta a visualização principal de tela quando a lista de impressão está ativa */
+  .main:has(~ .printLayout) {
+    display: none !important;
+  }
+
+  /* Exibe o main com formatação de impressão (caso não haja printLayout) */
   .layout > main {
-    display: block !important;
     background: white !important;
     padding: 0 !important;
     color: black !important;
+  }
+
+  /* Garante que o contador de participantes seja legível */
+  .participantCount {
+    color: black !important;
+    opacity: 0.8;
   }
 
   .pageHeader h2 {
@@ -1134,6 +1173,40 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
   height: 60px;
   width: auto;
   object-fit: contain;
+  filter: brightness(0); /* Garante que logos claras fiquem pretas no papel */
+}
+
+.printTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.printTable th {
+  background: #f2f2f2 !important;
+  color: black !important;
+  border: 1px solid #ccc !important;
+  padding: 10px;
+  text-align: left;
+  font-size: 12px;
+}
+
+.printTable td {
+  border: 1px solid #ccc !important;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: black !important;
+}
+
+.printTable tr:nth-child(even) {
+  background: #fafafa !important;
+}
+
+.printParticipantCount {
+  font-size: 14px;
+  font-weight: bold;
+  color: black !important;
+  margin-top: 4px;
 }
 
 /* Finance info box */
@@ -1166,11 +1239,24 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
     margin-bottom: 24px;
     border-bottom: 1px solid #ddd;
     padding-bottom: 16px;
+    text-align: center;
+  }
+  .printHeader > div {
+    flex: 1;
   }
   .printHeader h2 {
     margin: 0;
-    font-size: 20px;
+    font-size: 18px;
     color: black !important;
+    font-weight: normal;
+  }
+  .printMainTitle {
+    margin: 0 0 4px 0;
+    font-size: 22px;
+    font-weight: bold;
+    color: black !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
 }
 

@@ -34,37 +34,12 @@ export function ParticipantsTable({
   onSearchChange, onPaymentFilterChange, onSort, onBack, onPrint, onExport,
   onEdit, onDelete, onUpdatePayment,
 }: ParticipantsTableProps) {
+  const filtered = participants;
+
   function sortIndicator(key: SortKey) {
     if (sortKey !== key) return " ↕";
     return sortDir === "asc" ? " ▲" : " ▼";
   }
-
-  function getSortedParticipants(list: Participant[]): Participant[] {
-    if (!sortKey) return list;
-    return [...list].sort((a, b) => {
-      let aVal: string | number;
-      let bVal: string | number;
-      if (sortKey === "age") {
-        aVal = calcAge(a.birthDate);
-        bVal = calcAge(b.birthDate);
-      } else if (sortKey === "createdAt") {
-        aVal = new Date(a.createdAt).getTime();
-        bVal = new Date(b.createdAt).getTime();
-      } else {
-        aVal = (a[sortKey] ?? "").toString().toLowerCase();
-        bVal = (b[sortKey] ?? "").toString().toLowerCase();
-      }
-      if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
-      return 0;
-    });
-  }
-
-  const filtered = getSortedParticipants(participants.filter((p) => {
-    const matchesSearch = p.fullName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesPayment = paymentFilter === "ALL" || p.paymentStatus === paymentFilter;
-    return matchesSearch && matchesPayment;
-  }));
 
   return (
     <div>

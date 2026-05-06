@@ -206,11 +206,43 @@ export default function AdminDashboard() {
     }
   }
 
-  const filteredParticipants = participants.filter((p) => {
-    const matchesSearch = p.fullName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesPayment = paymentFilter === "ALL" || p.paymentStatus === paymentFilter;
-    return matchesSearch && matchesPayment;
-  });
+  const filteredAndSortedParticipants = (() => {
+    let list = participants.filter((p) => {
+      const matchesSearch = p.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesPayment = paymentFilter === "ALL" || p.paymentStatus === paymentFilter;
+      return matchesSearch && matchesPayment;
+    });
+
+    if (!sortKey) return list;
+
+    return [...list].sort((a, b) => {
+      let aVal: string | number;
+      let bVal: string | number;
+
+      if (sortKey === "age") {
+        const calcAge = (birthDate: string) => {
+          const today = new Date();
+          const birth = new Date(birthDate);
+          let age = today.getFullYear() - birth.getFullYear();
+          const m = today.getMonth() - birth.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+          return age;
+        };
+        aVal = calcAge(a.birthDate);
+        bVal = calcAge(b.birthDate);
+      } else if (sortKey === "createdAt") {
+        aVal = new Date(a.createdAt).getTime();
+        bVal = new Date(b.createdAt).getTime();
+      } else {
+        aVal = (a[sortKey as keyof Participant] ?? "").toString().toLowerCase();
+        bVal = (b[sortKey as keyof Participant] ?? "").toString().toLowerCase();
+      }
+
+      if (aVal < bVal) return sortDir === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+  })();
 
   return (
     <div className={styles.layout}>
@@ -272,7 +304,7 @@ export default function AdminDashboard() {
         {view === "participants" && selectedModality && (
           <ParticipantsTable
             modality={selectedModality}
-            participants={participants}
+            participants={filteredAndSortedParticipants}
             loading={loadingPart}
             searchQuery={searchQuery}
             paymentFilter={paymentFilter}
@@ -303,7 +335,7 @@ export default function AdminDashboard() {
       {view === "participants" && selectedModality && (
         <PrintLayout
           modality={selectedModality}
-          participants={filteredParticipants}
+          participants={filteredAndSortedParticipants}
         />
       )}
 
