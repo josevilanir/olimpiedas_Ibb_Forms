@@ -42,7 +42,7 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.35 }}
         >
           OLIMPÍADAS<br />
-          <span className="accent">IBB</span>
+          <span className="accent">IBB 2026</span>
         </motion.h1>
 
         <motion.div 

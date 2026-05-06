@@ -30,6 +30,9 @@ export function SuccessScreen({ participant, onNewRegistration, onGoHome }: Succ
         <p>
           Faça o PIX para <strong>eventosibbnatal@gmail.com</strong> e envie o comprovante para
           o contato da Nanda.
+          {participant.isMember !== "SIM" && (
+            <> O WhatsApp dela é: <strong>(84) 99647-9320</strong>.</>
+          )}
         </p>
       </div>
       <div style={{ display: "flex", gap: "var(--space-3)", flexWrap: "wrap", justifyContent: "center" }}>

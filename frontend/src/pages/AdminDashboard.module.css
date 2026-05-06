@@ -35,7 +35,7 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
 }
 
 .sidebarLogo {
-  height: 260px;
+  height: 380px;
   width: auto;
   object-fit: contain;
   margin-bottom: var(--space-2);
@@ -1125,9 +1125,15 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
 }
 
 .printLogo {
-  height: 60px;
+  height: 80px;
   width: auto;
   filter: brightness(0);
+}
+
+.printLogoIbb {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
 }
 
 /* Finance info box */
@@ -1155,8 +1161,16 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
   .printHeader {
     display: flex !important;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 16px;
+  }
+  .printHeader h2 {
+    margin: 0;
+    font-size: 20px;
+    color: black !important;
   }
 }
 

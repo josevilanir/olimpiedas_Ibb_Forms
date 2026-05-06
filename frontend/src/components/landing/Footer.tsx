@@ -8,7 +8,7 @@ export function Footer({ onGoToAdmin }: FooterProps) {
       <div className="footer-top">
         <div>
           <div className="footer-logo">
-            Olimpíadas IBB
+            Olimpíadas IBB 2026
             <div className="sub">Natal · RN</div>
           </div>
         </div>

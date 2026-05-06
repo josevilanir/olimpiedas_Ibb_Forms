@@ -1,6 +1,7 @@
 import type { Modality, Participant } from "../../types";
 import styles from "../../pages/AdminDashboard.module.css";
 import logoImg from "../../assets/olimpiedas_logo-removebg-preview.png";
+import logoIbb from "../../assets/logibb (1).png";
 import { calcAge } from "../../utils/age";
 
 interface PrintLayoutProps {
@@ -12,11 +13,12 @@ export function PrintLayout({ modality, participants }: PrintLayoutProps) {
   return (
     <div className={styles.printLayout}>
       <div className={styles.printHeader}>
-        <img src={logoImg} alt="IBB" className={styles.printLogo} />
+        <img src={logoImg} alt="Olimpíadas" className={styles.printLogo} />
         <div>
           <h2>Lista de Chamada — {modality.name}</h2>
           <p className={styles.printDate}>Gerado em: {new Date().toLocaleDateString("pt-BR")}</p>
         </div>
+        <img src={logoIbb} alt="IBB" className={styles.printLogoIbb} />
       </div>
       <table className={styles.printTable}>
         <thead>

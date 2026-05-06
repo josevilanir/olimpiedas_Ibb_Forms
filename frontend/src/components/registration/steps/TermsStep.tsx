@@ -25,7 +25,7 @@ export function TermsStep({ isMember, termsStep, onTermsStepChange, submitting, 
           O pagamento deve ser feito via <strong>PIX</strong> para o e-mail{" "}
           <strong>eventosibbnatal@gmail.com</strong> e, em seguida, você deve enviar{" "}
           <strong>somente o comprovante</strong> para o contato da Nanda.{" "}
-          {isMember === "NAO" ? (
+          {isMember !== "SIM" ? (
             <>O contato dela é: <strong>(84) 99647-9320</strong>.</>
           ) : (
             <>O contato dela está disponível no nosso grupo dos <strong>INFORMATIVOS IBB</strong> no WhatsApp.</>

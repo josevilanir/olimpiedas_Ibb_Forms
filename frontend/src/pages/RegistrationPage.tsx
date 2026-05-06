@@ -376,7 +376,7 @@ export default function RegistrationPage() {
       <ProgressBar step={currentStep} total={TOTAL_STEPS} />
       <div className={styles.container}>
         <header className={styles.header}>
-          <h1 className={styles.title}>Olimpíadas IBB</h1>
+          <h1 className={styles.title}>Olimpíadas IBB 2026</h1>
           <p className={styles.subtitle}>Formulário de inscrição</p>
         </header>
         {currentStep > S.DISCLAIMER_1 && (
