@@ -276,32 +276,33 @@
 /* ─── SCROLL HINT ─── */
 .landing-page-container .scroll-hint {
   position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%) rotate(90deg);
+  bottom: 240px; /* Acima do botão no desktop */
+  left: 48px;    /* Ao lado do conteúdo (lateral esquerda) */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   z-index: 10;
   cursor: pointer;
-  animation: scrollFade 2s ease-in-out infinite;
+  animation: scrollFadeY 2s ease-in-out infinite;
 }
 
 .landing-page-container .scroll-chevron {
-  font-size: 18px;
-  color: rgba(255,255,255,0.4);
-  line-height: 1;
+  font-size: 34px;
+  color: var(--green); /* Destaque em verde */
+  line-height: 0.8;
+  transform: rotate(90deg); /* Apontando para baixo */
+  display: block;
 }
 
 .landing-page-container .scroll-chevron:last-child {
-  opacity: 0.6;
-  animation: scrollFade 2s ease-in-out infinite 0.3s;
+  opacity: 0.5;
+  margin-top: -8px;
 }
 
-@keyframes scrollFade {
-  0%, 100% { opacity: 0; transform: translateX(0); }
-  50% { opacity: 1; transform: translateX(10px); }
+@keyframes scrollFadeY {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(10px); }
 }
 
 /* ─── SECTIONS ─── */
@@ -619,7 +620,10 @@
     flex-direction: column;
   }
   .landing-page-container .scroll-hint {
-    bottom: 56px; /* acima do ticker sem invadir o conteúdo */
+    bottom: 350px; /* Acima dos botões e countdown no mobile */
+    left: 24px;
+    right: auto;
+    transform: none;
   }
   .landing-page-container .hero-content {
     flex: 1;
@@ -760,8 +764,9 @@
   }
   .landing-page-container .scroll-hint {
     display: flex;
-    bottom: 75px;
-    opacity: 0.6;
+    bottom: 420px; /* Ainda mais alto em telas muito curtas */
+    left: 16px;
+    right: auto;
     z-index: 20;
     pointer-events: none;
   }
