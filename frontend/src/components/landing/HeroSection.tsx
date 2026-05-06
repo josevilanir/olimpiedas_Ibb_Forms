@@ -24,26 +24,28 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
       <div className="hero-diagonal"></div>
 
       <div className="hero-content">
-        <motion.div 
-          className="hero-eyebrow"
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.1 }}
-          transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
-        >
-          Igreja Batista Bereana · Natal/RN
-        </motion.div>
-
-        <motion.h1 
-          className="hero-title"
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.1 }}
-          transition={{ duration: 0.7, ease: "easeOut", delay: 0.35 }}
-        >
-          OLIMPÍADAS<br />
-          <span className="accent">IBB 2026</span>
-        </motion.h1>
+        <div className="hero-top">
+          <motion.div 
+            className="hero-eyebrow"
+            initial={{ opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.1 }}
+            transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+          >
+            Igreja Batista Bereana · Natal/RN
+          </motion.div>
+  
+          <motion.h1 
+            className="hero-title"
+            initial={{ opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.1 }}
+            transition={{ duration: 0.7, ease: "easeOut", delay: 0.35 }}
+          >
+            OLIMPÍADAS<br />
+            <span className="accent">IBB 2026</span>
+          </motion.h1>
+        </div>
 
         <motion.div 
           className="hero-bottom"
@@ -58,7 +60,7 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
             </p>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "16px" }}>
+          <div className="hero-actions">
             <div className="countdown">
               <div className="cd-unit"><div className="cd-num">{countdown.d}</div><div className="cd-label">Dias</div></div>
               <div className="cd-sep">:</div>

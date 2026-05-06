@@ -132,12 +132,14 @@
 
 
 
-.landing-page-container .hero-diagonal {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 200px;
-  background: linear-gradient(to top, var(--dark) 0%, transparent 100%);
-}
+.landing-page-container .hero-diagonal { position: absolute; bottom: 0; left: 0; right: 0; height: 200px; background: linear-gradient(to top, var(--dark) 0%, transparent 100%); }
 
-.landing-page-container .hero-content { position: relative; z-index: 3; }
+.landing-page-container .hero-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+}
 
 .landing-page-container .hero-eyebrow {
   font-family: var(--font-display); font-weight: 600; font-size: 14px;
@@ -175,6 +177,13 @@
   max-width: 380px;
 }
 .landing-page-container .hero-sub strong { color: var(--white); }
+
+.landing-page-container .hero-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+}
 
 .landing-page-container .hero-cta-group { display: flex; align-items: center; gap: 16px; }
 .landing-page-container .btn-primary {
@@ -602,22 +611,30 @@
   .landing-page-container .nav-links { display: none; }
   .landing-page-container section { padding: 60px 20px; }
   .landing-page-container #hero {
-    padding: 100px 20px 48px;
+    padding: 100px 20px 60px;
     justify-content: flex-start;
-    min-height: 100svh; /* exclui barra de endereço do browser no mobile */
+    min-height: 100svh;
+    min-height: 100dvh; /* Dynamic viewport height for better mobile support */
+    display: flex;
+    flex-direction: column;
   }
   .landing-page-container .scroll-hint {
     bottom: 56px; /* acima do ticker sem invadir o conteúdo */
   }
   .landing-page-container .hero-content {
-    padding-top: 0px;
+    flex: 1;
+    justify-content: space-between;
+    padding-bottom: 0px;
+  }
+  .landing-page-container .hero-top {
+    margin-top: 10px;
   }
   .landing-page-container .hero-eyebrow {
     font-size: 11px;
     letter-spacing: 2px;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
   }
-  .landing-page-container .hero-title { font-size: clamp(56px, 14vw, 80px); margin-bottom: 80px; }
+  .landing-page-container .hero-title { font-size: clamp(56px, 14vw, 80px); margin-bottom: 0; }
   .landing-page-container .sobre-grid { grid-template-columns: 1fr; }
   .landing-page-container .steps-grid { grid-template-columns: 1fr 1fr; }
   .landing-page-container .pix-box { padding: 24px; }
@@ -632,9 +649,15 @@
     bottom: auto;
     transform: none;
     opacity: 0.5; 
-    z-index: 2; /* Mantém acima da textura no mobile também */
-    background-position: 10% 60%;
-    background-size: 150%;
+    z-index: 2;
+    /* min() picks the smaller value: on short screens 115svh < 150%,
+       so the image shrinks to fit the viewport height. On tall screens
+       150% of the container width wins, preserving the full visual. */
+    background-size: min(150%, 115svh);
+    /* Lateral position preserved at 10%.
+       Vertical: clamp pushes the image down as the screen gets shorter,
+       keeping the runner's head below the title zone. */
+    background-position: 10% clamp(55%, 60svh - 100px, 65%);
   }
   .landing-page-container .sobre-stats {
     gap: 1px;
@@ -644,19 +667,37 @@
   }
   .landing-page-container .hero-bottom {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 24px;
+    align-items: center;
+    text-align: center;
+    gap: clamp(12px, 4svh, 40px);
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    padding-bottom: 20px;
   }
   .landing-page-container .countdown {
-    align-self: flex-start;
+    align-self: center;
+  }
+  .landing-page-container .hero-actions {
+    align-items: center;
+    width: 100%;
+    margin-top: 8px;
   }
   .landing-page-container .hero-cta-group {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    gap: 8px;
+    width: 100%;
   }
   .landing-page-container .btn-primary,
   .landing-page-container .btn-ghost {
-    padding: 12px 24px;
-    font-size: 14px;
+    padding: 10px 12px;
+    font-size: 12px;
+    flex: 1;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 1px;
   }
   .landing-page-container .logo-img {
     height: 220px;
@@ -665,11 +706,11 @@
 
 @media (max-width: 480px) {
   .landing-page-container .cd-unit {
-    min-width: 56px;
-    padding: 8px 10px;
+    min-width: clamp(50px, 15vw, 80px);
+    padding: clamp(6px, 2svh, 12px) clamp(8px, 2vw, 20px);
   }
   .landing-page-container .cd-num {
-    font-size: 28px;
+    font-size: clamp(24px, 6vw, 40px);
   }
   .landing-page-container .cd-sep {
     font-size: 22px;
@@ -682,7 +723,7 @@
   }
   .landing-page-container .hero-title {
     font-size: clamp(40px, 14vw, 56px);
-    margin-bottom: 260px;
+    margin-bottom: 0;
   }
   .landing-page-container section {
     padding: 40px 16px;
@@ -718,6 +759,27 @@
     gap: 8px;
   }
   .landing-page-container .scroll-hint {
-    display: none; /* hero ultrapassa 100svh com margin-bottom: 260px no título */
+    display: flex;
+    bottom: 75px;
+    opacity: 0.6;
+    z-index: 20;
+    pointer-events: none;
+  }
+}
+
+/* ─── HEIGHT SAFETY NETS (mobile only) ─── */
+/* Short phones (e.g. iPhone SE, Galaxy Fold) — shrink runner further */
+@media (max-width: 900px) and (max-height: 650px) {
+  .landing-page-container .hero-man {
+    background-size: min(130%, 100svh);
+    background-position: 10% 68%;
+  }
+}
+
+/* Very short viewports — aggressive shrink to prevent any overlap */
+@media (max-width: 900px) and (max-height: 550px) {
+  .landing-page-container .hero-man {
+    background-size: min(110%, 90svh);
+    background-position: 10% 75%;
   }
 }
