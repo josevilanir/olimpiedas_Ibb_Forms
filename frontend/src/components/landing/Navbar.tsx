@@ -9,7 +9,11 @@ export function Navbar({ scrolled, onGoToRegistration }: NavbarProps) {
   return (
     <nav id="navbar" className={scrolled ? "scrolled" : ""}>
       <div className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-        <img src={logoImg} alt="Olimpíadas IBB" className="logo-img" />
+        <img src={logoImg} alt="Olimpíadas IBB" className="logo-img hide-on-mobile" />
+        <h1 className="nav-title-mobile show-on-mobile">
+          OLIMPÍADAS<br />
+          <span className="accent">IBB 2026</span>
+        </h1>
       </div>
       <div className="nav-links">
         <a href="#sobre">Sobre</a>

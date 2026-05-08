@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import logoImg from "../../assets/olimpiedas_logo-removebg-preview.png";
 
 interface HeroSectionProps {
   countdown: { d: string; h: string; m: string; s: string };
@@ -36,7 +37,7 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
           </motion.div>
   
           <motion.h1 
-            className="hero-title"
+            className="hero-title hide-on-mobile"
             initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.1 }}
@@ -45,6 +46,16 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
             OLIMPÍADAS<br />
             <span className="accent">IBB 2026</span>
           </motion.h1>
+
+          <motion.div 
+            className="hero-logo-mobile show-on-mobile"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: false, amount: 0.1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <img src={logoImg} alt="Olimpíadas IBB" className="hero-logo-img" />
+          </motion.div>
         </div>
 
         <motion.div 
@@ -93,4 +104,3 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
     </section>
   );
 }
-
