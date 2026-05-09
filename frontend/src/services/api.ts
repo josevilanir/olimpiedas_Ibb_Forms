@@ -3,10 +3,20 @@ import type { Modality, Participant, PaymentStatus, RegistrationFormData, Stats 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001/api/v1";
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      headers: { "Content-Type": "application/json" },
+      ...options,
+    });
+  } catch {
+    throw new Error("Sem conexão com o servidor. Verifique sua internet e tente novamente.");
+  }
+
+  if (res.status === 429) {
+    throw new Error("Muitas tentativas. Aguarde alguns minutos e tente novamente.");
+  }
+
   const body = await res.json() as { data?: T; error?: string };
   if (!res.ok) {
     throw new Error(body.error ?? "Erro desconhecido.");
