@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { createParticipant } from "../services/participant.service";
+import logger from "../lib/logger";
 
 export async function registerParticipant(req: Request, res: Response) {
   try {
@@ -32,7 +33,7 @@ export async function registerParticipant(req: Request, res: Response) {
       return;
     }
 
-    console.error("[registerParticipant]", error);
+    logger.error({ err: error }, "[registerParticipant] unexpected error");
     res.status(500).json({ error: "Erro interno do servidor." });
   }
 }

@@ -9,6 +9,7 @@ import {
 import { exportParticipantsToExcel, exportFinanceToExcel } from "../services/export.service";
 import { getStats } from "../services/stats.service";
 import { MembershipStatus } from "../generated/prisma/client";
+import logger from "../lib/logger";
 
 export async function login(req: Request, res: Response) {
   try {
@@ -25,7 +26,7 @@ export async function login(req: Request, res: Response) {
       res.status(401).json({ error: "Credenciais inválidas." });
       return;
     }
-    console.error("[login]", error);
+    logger.error({ err: error }, "[login] unexpected error");
     res.status(500).json({ error: "Erro interno do servidor." });
   }
 }
@@ -85,7 +86,7 @@ export async function exportExcel(req: Request, res: Response) {
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.send(Buffer.from(buffer as ArrayBuffer));
   } catch (error) {
-    console.error("[exportExcel]", error);
+    logger.error({ err: error }, "[exportExcel] failed");
     res.status(500).json({ error: "Erro ao gerar planilha." });
   }
 }
@@ -98,7 +99,7 @@ export async function exportFinance(_req: Request, res: Response) {
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.send(Buffer.from(buffer as ArrayBuffer));
   } catch (error) {
-    console.error("[exportFinance]", error);
+    logger.error({ err: error }, "[exportFinance] failed");
     res.status(500).json({ error: "Erro ao gerar planilha financeira." });
   }
 }
