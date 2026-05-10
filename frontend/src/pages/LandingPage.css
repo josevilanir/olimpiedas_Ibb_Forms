@@ -28,13 +28,13 @@
 .landing-page-container nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 48px;
+  padding: 10px 48px;
   transition: background 0.3s, padding 0.3s, backdrop-filter 0.3s;
 }
 .landing-page-container nav.scrolled {
   background: rgba(10,10,10,0.9);
   backdrop-filter: blur(12px);
-  padding: 14px 48px;
+  padding: 8px 48px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 .landing-page-container .nav-logo {
@@ -42,15 +42,16 @@
   display: flex; align-items: center;
 }
 .landing-page-container .logo-img {
-  height: 380px;
+  height: 280px;
   width: auto;
   object-fit: contain;
   transition: transform 0.2s;
-  margin-top: -60px;
-  margin-bottom: -60px;
+  margin-top: -95px;
+  margin-bottom: -95px;
+  transform: translateY(20%);
 }
 .landing-page-container .nav-logo:hover .logo-img {
-  transform: scale(1.05);
+  transform: translateY(20%) scale(1.05);
 }
 .landing-page-container .nav-links {
   display: flex; align-items: center; gap: 32px;
