@@ -45,13 +45,22 @@
   height: 280px;
   width: auto;
   object-fit: contain;
-  transition: transform 0.2s;
+  transition: transform 0.3s, height 0.3s, margin 0.3s;
   margin-top: -95px;
   margin-bottom: -95px;
   transform: translateY(20%);
 }
 .landing-page-container .nav-logo:hover .logo-img {
   transform: translateY(20%) scale(1.05);
+}
+.landing-page-container nav.scrolled .logo-img {
+  height: 110px;
+  margin-top: -35px;
+  margin-bottom: -35px;
+  transform: translateY(0);
+}
+.landing-page-container nav.scrolled .nav-logo:hover .logo-img {
+  transform: translateY(0) scale(1.05);
 }
 .landing-page-container .nav-links {
   display: flex; align-items: center; gap: 32px;
