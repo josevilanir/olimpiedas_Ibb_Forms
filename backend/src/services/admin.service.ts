@@ -19,6 +19,15 @@ export async function loginAdmin(email: string, password: string) {
   return { token, admin: { id: user.id, name: user.name, email: user.email } };
 }
 
+export async function getAdminById(id: string) {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: { id: true, name: true, email: true },
+  });
+  if (!user) throw new Error("USER_NOT_FOUND");
+  return user;
+}
+
 export async function listParticipants(modalityId?: string) {
   return prisma.participant.findMany({
     where: modalityId

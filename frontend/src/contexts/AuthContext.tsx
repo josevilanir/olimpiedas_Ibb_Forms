@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
-import { api } from "../services/api";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { api, setUnauthorizedHandler } from "../services/api";
 
 interface AdminUser {
   id: string;
@@ -11,6 +11,7 @@ interface AuthContextValue {
   token: string | null;
   user: AdminUser | null;
   isAuthenticated: boolean;
+  initializing: boolean;
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
@@ -30,6 +31,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(!!token);
+
+  useEffect(() => {
+    if (token) {
+      api.admin.getMe(token)
+        .catch(() => {})
+        .finally(() => setInitializing(false));
+    }
+  }, []); // Only on mount
 
   const login = useCallback(async (email: string, password: string) => {
     setLoading(true);
@@ -54,8 +64,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  useEffect(() => {
+    setUnauthorizedHandler(logout);
+    return () => setUnauthorizedHandler(() => {});
+  }, [logout]);
+
   return (
-    <AuthContext.Provider value={{ token, user, isAuthenticated: !!token, loading, error, login, logout }}>
+    <AuthContext.Provider value={{ token, user, isAuthenticated: !!token, initializing, loading, error, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

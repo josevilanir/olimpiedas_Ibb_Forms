@@ -21,7 +21,7 @@ export default function AdminDashboard() {
   const token = rawToken!;
   const adminName = user?.name ?? "";
   const navigate = useNavigate();
-  function onLogout() { logout(); navigate("/"); }
+  function onLogout() { logout(); navigate("/admin/login"); }
 
   const [view, setView] = useState<View>("modalities");
   const [modalities, setModalities] = useState<Modality[]>([]);
@@ -167,6 +167,10 @@ export default function AdminDashboard() {
     try {
       const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
       if (!response.ok) {
+        if (response.status === 401) {
+          onLogout();
+          return;
+        }
         const errorBody = await response.json().catch(() => null);
         showFeedback("error", errorBody?.error ?? `Erro ${response.status}`);
         return;
@@ -189,6 +193,10 @@ export default function AdminDashboard() {
     try {
       const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
       if (!response.ok) {
+        if (response.status === 401) {
+          onLogout();
+          return;
+        }
         const errorBody = await response.json().catch(() => null);
         showFeedback("error", errorBody?.error ?? `Erro ${response.status}`);
         return;

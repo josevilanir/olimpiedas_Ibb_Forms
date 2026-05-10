@@ -2,6 +2,13 @@ import type { Modality, Participant, PaymentStatus, RegistrationFormData, Stats 
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001/api/v1";
 
+type UnauthorizedHandler = () => void;
+let onUnauthorized: UnauthorizedHandler | null = null;
+
+export const setUnauthorizedHandler = (handler: UnauthorizedHandler) => {
+  onUnauthorized = handler;
+};
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   let res: Response;
   try {
@@ -11,6 +18,11 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     });
   } catch {
     throw new Error("Sem conexão com o servidor. Verifique sua internet e tente novamente.");
+  }
+
+  if (res.status === 401) {
+    onUnauthorized?.();
+    throw new Error("Sessão expirada. Por favor, faça login novamente.");
   }
 
   if (res.status === 429) {
@@ -44,6 +56,10 @@ export const api = {
           body: JSON.stringify({ email, password }),
         }
       ),
+    getMe: (token: string) =>
+      request<{ id: string; name: string; email: string }>("/admin/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
     getParticipants: (token: string, modalityId?: string) => {
       const query = modalityId ? `?modalityId=${modalityId}` : "";
       return request<Participant[]>(`/admin/participants${query}`, {
@@ -54,10 +70,10 @@ export const api = {
       });
     },
     deleteParticipant: (token: string, id: string) =>
-      fetch(`${BASE_URL}/admin/participants/${id}`, {
+      request<{ message: string }>(`/admin/participants/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
-      }).then((r) => r.json()),
+      }),
     updateParticipant: (
       token: string,
       id: string,

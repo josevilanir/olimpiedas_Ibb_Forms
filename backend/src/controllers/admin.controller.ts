@@ -5,10 +5,12 @@ import {
   deleteParticipant,
   updateParticipant,
   getParticipantsByModality,
+  getAdminById,
 } from "../services/admin.service";
 import { exportParticipantsToExcel, exportFinanceToExcel } from "../services/export.service";
 import { getStats } from "../services/stats.service";
 import { MembershipStatus } from "../generated/prisma/client";
+import { AuthRequest } from "../middlewares/auth.middleware";
 import logger from "../lib/logger";
 
 export async function login(req: Request, res: Response) {
@@ -28,6 +30,17 @@ export async function login(req: Request, res: Response) {
     }
     logger.error({ err: error }, "[login] unexpected error");
     res.status(500).json({ error: "Erro interno do servidor." });
+  }
+}
+
+export async function getMe(req: AuthRequest, res: Response) {
+  try {
+    const adminId = req.adminId!;
+    const admin = await getAdminById(adminId);
+    res.json({ data: admin });
+  } catch (error: unknown) {
+    logger.error({ err: error }, "[getMe] failed");
+    res.status(401).json({ error: "Sessão inválida." });
   }
 }
 
