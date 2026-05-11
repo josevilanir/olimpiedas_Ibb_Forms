@@ -19,7 +19,7 @@ export default function LandingPage() {
   const tickerItems = modalities.map(m => m.name);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 60);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
 
     const observer = new IntersectionObserver(entries => {
