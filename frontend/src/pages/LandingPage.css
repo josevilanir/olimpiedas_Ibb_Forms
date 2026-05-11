@@ -721,11 +721,11 @@
     max-width: 450px;
     height: auto;
     object-fit: contain;
-    margin-top: clamp(110px, 13svh, 140px);
+    margin-top: clamp(130px, 16svh, 170px);
     margin-left: 0;
     max-height: clamp(250px, 35svh, 400px);
     transform: scale(1.2);
-    margin-bottom: -40px;
+    margin-bottom: -60px;
   }
   .landing-page-container .sobre-grid { grid-template-columns: 1fr; }
   .landing-page-container .steps-grid { grid-template-columns: 1fr 1fr; }
@@ -756,7 +756,7 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: clamp(12px, 4svh, 40px);
+    gap: clamp(4px, 1.5svh, 12px);
     flex: 1;
     display: flex;
     justify-content: flex-end;
@@ -768,7 +768,7 @@
   .landing-page-container .hero-actions {
     align-items: center;
     width: 100%;
-    margin-top: 8px;
+    margin-top: 0px;
   }
   .landing-page-container .hero-cta-group {
     flex-wrap: nowrap;
