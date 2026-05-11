@@ -717,13 +717,15 @@
   }
 
   .landing-page-container .hero-logo-img {
-    width: 90%;
-    max-width: 420px;
+    width: 100%;
+    max-width: 450px;
     height: auto;
     object-fit: contain;
-    margin-top: clamp(100px, 12svh, 140px);
-    margin-left: -20px;
-    max-height: clamp(280px, 40svh, 450px);
+    margin-top: clamp(110px, 13svh, 140px);
+    margin-left: 0;
+    max-height: clamp(250px, 35svh, 400px);
+    transform: scale(1.2);
+    margin-bottom: -40px;
   }
   .landing-page-container .sobre-grid { grid-template-columns: 1fr; }
   .landing-page-container .steps-grid { grid-template-columns: 1fr 1fr; }
