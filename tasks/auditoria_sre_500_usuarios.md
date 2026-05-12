@@ -324,15 +324,50 @@ loadtest/*.json
 
 ---
 
-## Validação Final
+## Informação do Banco de Dados (NeonDB)
 
-Antes de considerar esta auditoria completa, o agente DEVE verificar:
+O NeonDB retornou `max_connections = 901`. Isso é **mais que suficiente** para o cenário de 500 usuários.
+
+Com `DB_POOL_SIZE=25` por máquina e até 2 máquinas no Fly.io, o consumo máximo será de ~50 conexões — menos de 6% do limite. **Não é necessário nenhum ajuste no pool de conexões.**
+
+---
+
+## Validação Final (Fases 1-5)
+
+Antes de considerar as fases de implementação completas, o agente DEVE verificar:
 
 - [ ] `npm test` no backend passa com todos os testes existentes.
 - [ ] `npm run build` no backend compila sem erros.
 - [ ] O health check retorna dados do banco quando acessado via `curl http://localhost:8080/health`.
 - [ ] O rate limit global não bloqueia um fluxo normal de um usuário (landing → modalities → submit) em menos de 1 minuto.
 - [ ] O `fly.toml` está correto e sem duplicações.
+
+---
+
+## ⚠️ PONTO DE PARADA — Sinalizar o Usuário
+
+Após concluir **todas as fases (1 a 5)** e a **Validação Final** acima, o agente **DEVE PARAR e sinalizar o usuário** com a seguinte mensagem:
+
+> "Todas as otimizações de performance foram implementadas e validadas localmente (build + testes passando). Os próximos passos dependem de ações manuais do usuário:
+> 1. **Deploy no Fly.io** (`fly deploy` no diretório `backend/`)
+> 2. **Rodar os scripts k6** contra produção para validar os SLOs
+>
+> Os scripts k6 estão em `backend/loadtest/` e devem ser executados **após o deploy**."
+
+O agente **NÃO deve** executar `fly deploy` nem rodar os scripts k6 — essas etapas são de responsabilidade do usuário.
+
+---
+
+## Ordem de Execução Completa
+
+```
+1. Agente executa Fases 1-5 (este plano)
+2. Agente roda Validação Final (build + testes)
+3. ⛔ Agente PARA e sinaliza o usuário
+4. Usuário faz deploy: fly deploy (no diretório backend/)
+5. Usuário roda k6:  k6 run -e BASE_URL=https://olimpiedas-ibb-backend.fly.dev loadtest/k6-load-test.js
+6. Usuário analisa resultados e ajusta se necessário
+```
 
 ---
 
