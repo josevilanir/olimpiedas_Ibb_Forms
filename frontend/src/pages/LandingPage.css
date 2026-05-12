@@ -28,7 +28,7 @@
 .landing-page-container nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 48px;
+  padding: 0px 48px; /* Tirando padding vertical para subir os elementos */
   transition: background 0.3s, padding 0.3s, backdrop-filter 0.3s;
 }
 .landing-page-container nav.scrolled {
@@ -46,12 +46,12 @@
   width: auto;
   object-fit: contain;
   transition: transform 0.3s, height 0.3s, margin 0.3s;
-  margin-top: -95px;
-  margin-bottom: -95px;
-  transform: translateY(56px);
+  margin-top: -110px; /* Corta mais do espaço do logo em cima para subir a barra */
+  margin-bottom: -110px;
+  transform: translateY(60px); /* Meio termo entre 40px e 80px */
 }
 .landing-page-container .nav-logo:hover .logo-img {
-  transform: translateY(56px) scale(1.05);
+  transform: translateY(60px) scale(1.05);
 }
 .landing-page-container nav.scrolled .logo-img {
   height: 110px;
@@ -173,7 +173,7 @@
   letter-spacing: -2px;
   text-transform: uppercase;
   color: var(--white);
-  margin-bottom: 160px; /* Sobe o título um pouco mais, totalizando o deslocamento desejado */
+  margin-bottom: clamp(60px, 12vh, 160px); /* Usando clamp para evitar colisão em telas curtas */
 }
 .landing-page-container .hero-title .accent { color: var(--green); }
 .landing-page-container .hero-title .outline {
@@ -617,6 +617,46 @@
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── DESKTOP RESPONSIVENESS (SMALL Laptops & Short screens) ─── */
+@media (min-width: 901px) and (max-width: 1400px), (min-width: 901px) and (max-height: 800px) {
+  .landing-page-container #hero {
+    padding: 120px 48px 90px; /* Evita sobreposição com o ticker (aumentando padding bottom) */
+  }
+  .landing-page-container .hero-title {
+    font-size: clamp(60px, 9vw, 110px);
+    margin-bottom: clamp(40px, 8vh, 80px);
+  }
+  .landing-page-container .hero-man {
+    right: 0%;
+    width: 80%;
+  }
+  .landing-page-container .hero-bottom {
+    gap: 24px;
+    align-items: flex-end;
+  }
+  .landing-page-container .hero-sub {
+    max-width: 320px;
+    font-size: 14px;
+  }
+  .landing-page-container .cd-unit {
+    padding: 10px 14px;
+    min-width: 60px;
+  }
+  .landing-page-container .cd-num {
+    font-size: 28px;
+  }
+  .landing-page-container .cd-sep {
+    font-size: 24px;
+  }
+  .landing-page-container .btn-primary, .landing-page-container .btn-ghost {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+  .landing-page-container .scroll-hint {
+    bottom: 200px;
+  }
 }
 
 @media (max-width: 900px) {
