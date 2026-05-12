@@ -3,3 +3,9 @@ node_modules
 .env
 
 /src/generated/prisma
+
+# Load test results (keep scripts tracked)
+loadtest/results-summary.json
+loadtest/*.json
+!loadtest/k6-load-test.js
+!loadtest/k6-soak-test.js

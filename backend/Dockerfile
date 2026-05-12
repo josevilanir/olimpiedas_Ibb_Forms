@@ -5,6 +5,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY prisma/ ./prisma/
+COPY prisma.config.ts ./
 COPY tsconfig*.json ./
 COPY src/ ./src/
 
@@ -18,6 +19,11 @@ COPY --from=builder /app/package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/src/generated ./dist/generated
 
 EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD wget -qO- http://localhost:8080/health || exit 1
+
 CMD ["node", "dist/server.js"]

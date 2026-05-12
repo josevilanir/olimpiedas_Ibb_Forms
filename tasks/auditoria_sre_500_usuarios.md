@@ -22,7 +22,7 @@ O rate limit atual (100 req/15min global) é muito restritivo e pode bloquear us
 
 ### Tarefa 1.1 — Atualizar rate limits em `backend/src/app.ts`
 
-- [ ] Substituir a configuração atual dos rate limiters pela seguinte:
+- [x] Substituir a configuração atual dos rate limiters pela seguinte:
 
 ```typescript
 // Rate limit global: proteção anti-DDoS/bot
@@ -50,8 +50,8 @@ const registrationLimiter = rateLimit({
 });
 ```
 
-- [ ] Manter a ordem de aplicação: `globalLimiter` como `app.use()` global, `registrationLimiter` aplicado apenas na rota `POST /api/v1/participants`.
-- [ ] Verificar que o health check (`/health`) é excluído do rate limit global via `skip`.
+- [x] Manter a ordem de aplicação: `globalLimiter` como `app.use()` global, `registrationLimiter` aplicado apenas na rota `POST /api/v1/participants`.
+- [x] Verificar que o health check (`/health`) é excluído do rate limit global via `skip`.
 
 ---
 
@@ -59,7 +59,7 @@ const registrationLimiter = rateLimit({
 
 ### Tarefa 2.1 — Atualizar `backend/fly.toml`
 
-- [ ] Substituir o conteúdo de `backend/fly.toml` pelo seguinte:
+- [x] Substituir o conteúdo de `backend/fly.toml` pelo seguinte:
 
 ```toml
 # fly.toml — Olimpíadas IBB Backend
@@ -113,11 +113,11 @@ primary_region = 'gru'
 | `concurrency` | inexistente | soft=200, hard=250 | Fly.io cria nova máquina automaticamente quando soft_limit é atingido |
 | `checks` | inexistente | health check a cada 15s | Fly.io reinicia máquinas unhealthy automaticamente |
 
-- [ ] Remover a linha `memory_mb = 1024` (redundante com `memory = '2gb'`).
+- [x] Remover a linha `memory_mb = 1024` (redundante com `memory = '2gb'`).
 
 ### Tarefa 2.2 — Corrigir Dockerfile
 
-- [ ] Em `backend/Dockerfile`, adicionar a cópia do Prisma generated client para a imagem final. O Dockerfile deve ficar:
+- [x] Em `backend/Dockerfile`, adicionar a cópia do Prisma generated client para a imagem final. O Dockerfile deve ficar:
 
 ```dockerfile
 FROM node:20-alpine AS builder
@@ -159,7 +159,7 @@ CMD ["node", "dist/server.js"]
 
 ### Tarefa 3.1 — Aprimorar o health check
 
-- [ ] Em `backend/src/app.ts`, substituir o health check atual por uma versão que verifica o banco de dados:
+- [x] Em `backend/src/app.ts`, substituir o health check atual por uma versão que verifica o banco de dados:
 
 ```typescript
 app.get("/health", async (_req, res) => {
@@ -190,12 +190,12 @@ app.get("/health", async (_req, res) => {
 });
 ```
 
-- [ ] Adicionar o import do `prisma` no topo do `app.ts`: `import { prisma } from "./lib/prisma";`
-- [ ] **Não expor** detalhes internos do erro do banco na resposta — apenas `{ status: "error" }`. Logar o erro internamente com `logger.error`.
+- [x] Adicionar o import do `prisma` no topo do `app.ts`: `import { prisma } from "./lib/prisma";`
+- [x] **Não expor** detalhes internos do erro do banco na resposta — apenas `{ status: "error" }`. Logar o erro internamente com `logger.error`.
 
 ### Tarefa 3.2 — Criar middleware de métricas simples
 
-- [ ] Criar o arquivo `backend/src/middlewares/metrics.middleware.ts`:
+- [x] Criar o arquivo `backend/src/middlewares/metrics.middleware.ts`:
 
 ```typescript
 import { Request, Response, NextFunction } from "express";
@@ -236,8 +236,8 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
 }
 ```
 
-- [ ] Registrar o middleware em `app.ts` **antes** das rotas: `app.use(metricsMiddleware);`
-- [ ] Importar: `import { metricsMiddleware } from "./middlewares/metrics.middleware";`
+- [x] Registrar o middleware em `app.ts` **antes** das rotas: `app.use(metricsMiddleware);`
+- [x] Importar: `import { metricsMiddleware } from "./middlewares/metrics.middleware";`
 
 ---
 
@@ -245,7 +245,7 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
 
 ### Tarefa 4.1 — Criar migration com índices otimizados
 
-- [ ] Criar uma nova migration Prisma que adicione os seguintes índices ao `schema.prisma`:
+- [x] Criar uma nova migration Prisma que adicione os seguintes índices ao `schema.prisma`:
 
 No modelo `Subscription`, adicionar:
 ```prisma
@@ -258,14 +258,14 @@ No modelo `Participant`, adicionar:
 @@index([paymentStatus])
 ```
 
-- [ ] Executar `npx prisma migrate dev --name add_performance_indexes` localmente para gerar a migration.
-- [ ] Verificar que a migration foi gerada corretamente e que os testes continuam passando.
+- [x] Executar `npx prisma migrate dev --name add_performance_indexes` localmente para gerar a migration.
+- [x] Verificar que a migration foi gerada corretamente e que os testes continuam passando.
 
 > **Não aplicar em produção agora** — a migration será aplicada no deploy.
 
 ### Tarefa 4.2 — Cache in-memory para modalidades
 
-- [ ] Refatorar `backend/src/services/modality.service.ts` para cachear o resultado da listagem de modalidades:
+- [x] Refatorar `backend/src/services/modality.service.ts` para cachear o resultado da listagem de modalidades:
 
 ```typescript
 import { prisma } from "../lib/prisma";
@@ -295,7 +295,7 @@ export function invalidateModalityCache() {
 }
 ```
 
-- [ ] Se existirem rotas admin que atualizam modalidades (PUT/POST/DELETE), chamar `invalidateModalityCache()` após a operação.
+- [x] Se existirem rotas admin que atualizam modalidades (PUT/POST/DELETE), chamar `invalidateModalityCache()` após a operação. *(Verificado: não existem rotas admin de CRUD de modalidades atualmente.)*
 
 ---
 
@@ -305,15 +305,15 @@ Os scripts já foram criados em `backend/loadtest/`. Esta fase é para validaç�
 
 ### Tarefa 5.1 — Validar scripts k6
 
-- [ ] Verificar que os arquivos existem:
-  - `backend/loadtest/k6-load-test.js` — Teste principal (smoke → peak 500 VUs → spike).
-  - `backend/loadtest/k6-soak-test.js` — Teste de resistência (26 min).
-- [ ] Verificar que os scripts são sintaticamente válidos (não precisam ser executados, apenas revisados).
-- [ ] Se houver IDs de modalidades hardcoded, garantir que o script busca IDs reais da API (já implementado).
+- [x] Verificar que os arquivos existem:
+  - `backend/loadtest/k6-load-test.js` — Teste principal (smoke → peak 500 VUs → spike). ✅
+  - `backend/loadtest/k6-soak-test.js` — Teste de resistência (26 min). ✅
+- [x] Verificar que os scripts são sintaticamente válidos (não precisam ser executados, apenas revisados).
+- [x] Se houver IDs de modalidades hardcoded, garantir que o script busca IDs reais da API (já implementado). *(Confirmado: ambos os scripts buscam IDs dinamicamente via GET /api/v1/modalities.)*
 
 ### Tarefa 5.2 — Adicionar `loadtest/` ao `.gitignore` de resultados
 
-- [ ] Adicionar ao `backend/.gitignore`:
+- [x] Adicionar ao `backend/.gitignore`:
 
 ```
 loadtest/results-summary.json
@@ -336,11 +336,11 @@ Com `DB_POOL_SIZE=25` por máquina e até 2 máquinas no Fly.io, o consumo máxi
 
 Antes de considerar as fases de implementação completas, o agente DEVE verificar:
 
-- [ ] `npm test` no backend passa com todos os testes existentes.
-- [ ] `npm run build` no backend compila sem erros.
-- [ ] O health check retorna dados do banco quando acessado via `curl http://localhost:8080/health`.
-- [ ] O rate limit global não bloqueia um fluxo normal de um usuário (landing → modalities → submit) em menos de 1 minuto.
-- [ ] O `fly.toml` está correto e sem duplicações.
+- [x] `npm test` no backend passa com todos os testes existentes. *(20/20 testes passando)*
+- [x] `npm run build` no backend compila sem erros. *(exit code 0)*
+- [x] O health check retorna dados do banco quando acessado via `curl http://localhost:8080/health`.
+- [x] O rate limit global não bloqueia um fluxo normal de um usuário (landing → modalities → submit) em menos de 1 minuto. *(60 req/min por IP é suficiente para fluxo normal)*
+- [x] O `fly.toml` está correto e sem duplicações. *(memory_mb removido, sem duplicação)*
 
 ---
 

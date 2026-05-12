@@ -65,6 +65,8 @@ model Participant {
   createdAt     DateTime         @default(now()) @map("created_at")
   subscriptions Subscription[]
 
+  @@index([whatsapp])
+  @@index([paymentStatus])
   @@map("participants")
 }
 
@@ -77,5 +79,6 @@ model Subscription {
   modality      Modality    @relation(fields: [modalityId], references: [id], onDelete: Cascade)
 
   @@unique([participantId, modalityId])
+  @@index([modalityId])
   @@map("subscriptions")
 }
