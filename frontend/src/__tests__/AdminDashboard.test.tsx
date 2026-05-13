@@ -4,6 +4,7 @@ import { renderWithProviders } from '../test/renderWithProviders';
 import AdminDashboard from '../pages/AdminDashboard';
 
 vi.mock('../services/api', () => ({
+  setUnauthorizedHandler: vi.fn(),
   api: {
     modalities: {
       list: vi.fn().mockResolvedValue([

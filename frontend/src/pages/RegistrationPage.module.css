@@ -478,6 +478,37 @@
 }
 .backBtn:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
+/* ── Filter Tabs ───────────────────────────────────────────── */
+.filterTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  justify-content: center;
+}
+.filterBtn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--color-gray-300);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 99px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.filterBtn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--color-white);
+  border-color: rgba(255,255,255,0.3);
+}
+.filterBtn.active {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: var(--color-primary);
+  color: #34d399;
+  box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
 /* ── Responsive ────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .profileOptions { grid-template-columns: 1fr; }

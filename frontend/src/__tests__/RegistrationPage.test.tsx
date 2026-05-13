@@ -15,6 +15,7 @@ vi.mock('../hooks/useModalities', () => ({
 }));
 
 vi.mock('../services/api', () => ({
+  setUnauthorizedHandler: vi.fn(),
   api: {
     modalities: { list: vi.fn().mockResolvedValue([]) },
     participants: {
@@ -120,7 +121,7 @@ describe('RegistrationPage', () => {
   });
 
   it('renders the page header', () => {
-    expect(screen.getByText('Olimpíadas IBB')).toBeInTheDocument();
+    expect(screen.getByText(/Olimpíadas IBB/i)).toBeInTheDocument();
     expect(screen.getByText('Formulário de inscrição')).toBeInTheDocument();
   });
 });

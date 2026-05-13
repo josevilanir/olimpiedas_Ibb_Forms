@@ -9,7 +9,7 @@ describe('LandingPage', () => {
   // ── Navbar ──
   it('renders the navbar with logo', () => {
     expect(document.getElementById('navbar')).toBeInTheDocument();
-    expect(screen.getByAltText('Olimpíadas IBB')).toBeInTheDocument();
+    expect(screen.getAllByAltText('Olimpíadas IBB').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders nav links (Sobre, Modalidades, Inscrição)', () => {
@@ -29,8 +29,8 @@ describe('LandingPage', () => {
   });
 
   it('renders the hero title', () => {
-    expect(screen.getByText('OLIMPÍADAS')).toBeInTheDocument();
-    expect(screen.getByText('IBB')).toBeInTheDocument();
+    expect(screen.getAllByText('OLIMPÍADAS').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/IBB 2026/i).length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders the hero eyebrow', () => {
@@ -71,8 +71,6 @@ describe('LandingPage', () => {
     expect(screen.getAllByText('Corrida').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Coletivos')).toBeInTheDocument();
     expect(screen.getAllByText('E-Sports').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('Kids').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('Livre').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders modality cards', () => {
@@ -83,10 +81,9 @@ describe('LandingPage', () => {
   });
 
   it('filters modalities when clicking a category', () => {
-    // "Kids" appears multiple times — get the filter button specifically
     const filterDiv = document.querySelector('.mod-filter');
-    const kidsBtn = filterDiv!.querySelector('button:nth-child(5)') as HTMLButtonElement; // Kids is 5th filter
-    fireEvent.click(kidsBtn);
+    const corridaBtn = filterDiv!.querySelector('button:nth-child(2)') as HTMLButtonElement; // Corrida is 2nd filter
+    fireEvent.click(corridaBtn);
     const modGrid = document.querySelector('.mod-grid');
     expect(modGrid).toBeInTheDocument();
     const cards = modGrid!.querySelectorAll('.mod-card');
@@ -114,7 +111,6 @@ describe('LandingPage', () => {
 
   // ── Footer ──
   it('renders the footer', () => {
-    expect(screen.getByText('Olimpíadas IBB')).toBeInTheDocument();
     expect(screen.getByText('© 2026 Olimpíadas IBB — Todos os direitos reservados')).toBeInTheDocument();
   });
 

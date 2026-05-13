@@ -1,9 +1,18 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import type { RegistrationFormData, Modality } from "../../../types";
 import styles from "../../../pages/RegistrationPage.module.css";
 import { ModalityCard } from "../ModalityCard";
 import { UnavailableModalityCard } from "../UnavailableModalityCard";
 import { ageLabel } from "../../../utils/format";
+
+function getCategory(name: string): string {
+  const lower = name.toLowerCase();
+  if (lower.includes("corrida") || lower.includes("caminhada") || lower.includes("circuito")) return "corrida";
+  if (lower.includes("futsal") || lower.includes("vôlei") || lower.includes("queimada") || lower.includes("basquete")) return "coletivo";
+  if (lower.includes("e-sports") || lower.includes("fifa") || lower.includes("lol") || lower.includes("cs")) return "esports";
+  return "individual";
+}
 
 interface ModalitiesStepProps {
   form: RegistrationFormData;
@@ -24,6 +33,11 @@ export function ModalitiesStep({
   form, age, availableMods, unavailableMods, loadingModalities, modalitiesError,
   blockedModality, themeColor, onToggleModality, onSetThemeColor, onDismissBlock, onNext,
 }: ModalitiesStepProps) {
+  const [activeFilter, setActiveFilter] = useState("all");
+
+  const filteredAvailable = availableMods.filter(m => activeFilter === "all" || getCategory(m.name) === activeFilter);
+  const filteredUnavailable = unavailableMods.filter(u => activeFilter === "all" || getCategory(u.modality.name) === activeFilter);
+
   return (
     <div
       className={styles.questionBlock}
@@ -33,6 +47,20 @@ export function ModalitiesStep({
       }}
     >
       <div className={styles.questionLabel}>Escolha as modalidades</div>
+      {(availableMods.length > 0 || unavailableMods.length > 0) && (
+        <div className={styles.filterTabs}>
+          {["all", "corrida", "coletivo", "esports", "individual"].map(f => (
+            <button
+              key={f}
+              className={`${styles.filterBtn} ${activeFilter === f ? styles.active : ""}`}
+              onClick={() => setActiveFilter(f)}
+            >
+              {f === "all" ? "Todas" : f === "coletivo" ? "Coletivos" : f === "individual" ? "Individual" : f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
+      )}
+
       {age !== null && (
         <div className={styles.participantSummary}>
           {form.fullName} · {age} anos ·{" "}
@@ -52,13 +80,15 @@ export function ModalitiesStep({
         </div>
       )}
 
-      {availableMods.length > 0 && (
+
+
+      {filteredAvailable.length > 0 && (
         <div className={styles.modalityGroup}>
           <div className={`${styles.modalityGroupLabel} ${styles.modalityGroupEligible}`}>
             ✓ Modalidades disponíveis para você
           </div>
           <div className={styles.modalitiesGrid}>
-            {availableMods.map((m) => (
+            {filteredAvailable.map((m) => (
               <ModalityCard
                 key={m.id}
                 modality={m}
@@ -73,13 +103,13 @@ export function ModalitiesStep({
         </div>
       )}
 
-      {unavailableMods.length > 0 && (
+      {filteredUnavailable.length > 0 && (
         <div className={styles.modalityGroup}>
           <div className={`${styles.modalityGroupLabel} ${styles.modalityGroupRestricted}`}>
             🔒 Modalidades indisponíveis
           </div>
           <div className={styles.modalitiesGrid}>
-            {unavailableMods.map(({ modality, reasons }) => (
+            {filteredUnavailable.map(({ modality, reasons }) => (
               <UnavailableModalityCard
                 key={modality.id}
                 modality={modality}
