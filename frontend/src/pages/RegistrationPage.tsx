@@ -6,6 +6,7 @@ import type { RegistrationFormData, Participant, MembershipStatus, Gender, Modal
 import { useModalities } from "../hooks/useModalities";
 import { calculateAge } from "../hooks/useAge";
 import { api } from "../services/api";
+import { useFormPersistence, loadPersistedState, clearPersistedState } from "../hooks/useFormPersistence";
 import styles from "./RegistrationPage.module.css";
 import { ProgressBar } from "../components/registration/ProgressBar";
 import { SuccessScreen } from "../components/registration/SuccessScreen";
@@ -62,17 +63,21 @@ const INITIAL_FORM: RegistrationFormData = {
 
 export default function RegistrationPage() {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<number>(S.DISCLAIMER_1);
+
+  const persisted = loadPersistedState();
+  const [currentStep, setCurrentStep] = useState<number>(persisted?.currentStep ?? S.DISCLAIMER_1);
   const [direction, setDirection] = useState(1);
-  const [form, setForm] = useState<RegistrationFormData>(INITIAL_FORM);
+  const [form, setForm] = useState<RegistrationFormData>(persisted?.form ?? INITIAL_FORM);
   const [blockedModality, setBlockedModality] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [registered, setRegistered] = useState<Participant | null>(null);
   const [termsStep, setTermsStep] = useState<number>(0);
-  const [paymentDisclaimerStep, setPaymentDisclaimerStep] = useState<number>(0);
+  const [paymentDisclaimerStep, setPaymentDisclaimerStep] = useState<number>(persisted?.paymentDisclaimerStep ?? 0);
   const [themeColor, setThemeColor] = useState("transparent");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
+
+  useFormPersistence({ form, currentStep, paymentDisclaimerStep });
 
   const { modalities, loading: loadingModalities, error: modalitiesError } = useModalities();
   const age = useMemo(() => calculateAge(form.birthDate), [form.birthDate]);
@@ -158,6 +163,7 @@ export default function RegistrationPage() {
     setSubmitError(null);
     try {
       const participant = await api.participants.register({ ...form, termsAccepted: true });
+      clearPersistedState();
       setRegistered(participant);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Erro ao enviar inscrição.");
@@ -359,9 +365,11 @@ export default function RegistrationPage() {
           <SuccessScreen
             participant={registered}
             onNewRegistration={() => {
+              clearPersistedState();
               setForm(INITIAL_FORM);
               setCurrentStep(S.DISCLAIMER_1);
               setTermsStep(0);
+              setPaymentDisclaimerStep(0);
               setRegistered(null);
             }}
             onGoHome={() => navigate("/")}
