@@ -48,7 +48,7 @@ const registrationLimiter = rateLimit({
 // Restrict CORS to the known frontend origins only.
 // CORS_ALLOWED_ORIGINS in Fly.io secrets can override (comma-separated list).
 const ALLOWED_ORIGINS = (
-  process.env.CORS_ALLOWED_ORIGINS ?? "https://olimpiedas-ibb-forms.vercel.app"
+  process.env.CORS_ALLOWED_ORIGINS ?? "https://olimpiedas-ibb-forms.vercel.app,https://www.olimpiadasibb.com.br,https://olimpiadasibb.com.br,http://localhost:5173"
 )
   .split(",")
   .map((o) => o.trim());
