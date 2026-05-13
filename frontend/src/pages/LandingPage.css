@@ -591,9 +591,29 @@
 .landing-page-container .footer-contact a:hover { color: var(--green); }
 .landing-page-container .footer-bottom {
   border-top: 1px solid rgba(255,255,255,0.04); padding-top: 24px;
-  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 24px;
+}
+.landing-page-container .footer-info {
+  display: flex; flex-direction: column; gap: 12px;
 }
 .landing-page-container .footer-bottom span { font-size: 13px; color: rgba(255,255,255,0.2); }
+.landing-page-container .dev-attribution {
+  font-size: 13px; color: rgba(255,255,255,0.4);
+}
+.landing-page-container .dev-attribution a {
+  color: var(--green); font-weight: 600; transition: opacity 0.2s;
+}
+.landing-page-container .dev-attribution a:hover { opacity: 0.8; }
+.landing-page-container .dev-contact {
+  display: flex; align-items: center; gap: 8px; margin-top: 4px;
+  font-size: 11px; color: rgba(255,255,255,0.25);
+}
+.landing-page-container .dev-contact a {
+  color: inherit; font-weight: normal;
+}
+.landing-page-container .dev-contact a:hover { color: rgba(255,255,255,0.5); }
+.landing-page-container .dev-contact .sep { opacity: 0.5; }
+
 .landing-page-container .admin-link {
   font-family: var(--font-display); font-weight: 600; font-size: 12px;
   letter-spacing: 2px; text-transform: uppercase;
