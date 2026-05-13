@@ -100,16 +100,18 @@ export async function updateParticipant(
     updateData.paidAt = paymentStatus === "PAGO" ? new Date() : null;
   }
 
-  if (modalityIds) {
-    await prisma.subscription.deleteMany({ where: { participantId: id } });
-    await prisma.subscription.createMany({
-      data: modalityIds.map((modalityId) => ({ participantId: id, modalityId })),
-    });
-  }
+  return prisma.$transaction(async (tx) => {
+    if (modalityIds) {
+      await tx.subscription.deleteMany({ where: { participantId: id } });
+      await tx.subscription.createMany({
+        data: modalityIds.map((modalityId) => ({ participantId: id, modalityId })),
+      });
+    }
 
-  return prisma.participant.update({
-    where: { id },
-    data: updateData,
-    include: { subscriptions: { include: { modality: true } } },
+    return tx.participant.update({
+      where: { id },
+      data: updateData,
+      include: { subscriptions: { include: { modality: true } } },
+    });
   });
 }

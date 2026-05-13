@@ -7,14 +7,7 @@ import {
 } from "../repositories/participant.repository";
 import { groupSubscriptionsByModality } from "../repositories/subscription.repository";
 import { findAllModalities } from "../repositories/modality.repository";
-
-function calcAge(birthDate: Date): number {
-  const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-  return age;
-}
+import { calculateAge } from "../utils/age";
 
 export async function getStats(isMember?: MembershipStatus, modalityId?: string) {
   const whereActive: Prisma.ParticipantWhereInput = {
@@ -73,7 +66,7 @@ export async function getStats(isMember?: MembershipStatus, modalityId?: string)
   const FEE = 15.09;
 
   for (const p of activeParticipants) {
-    const age = calcAge(new Date(p.birthDate));
+    const age = calculateAge(new Date(p.birthDate));
     const isExempt = age <= 8;
 
     if (!isExempt) estimatedRevenue += FEE;

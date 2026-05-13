@@ -1,14 +1,7 @@
 import ExcelJS from "exceljs";
 import { findModalitiesForExport } from "../repositories/modality.repository";
 import { findParticipantsForFinanceExport } from "../repositories/participant.repository";
-
-function calcAge(birthDate: Date): number {
-  const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-  return age;
-}
+import { calculateAge } from "../utils/age";
 
 const HEADER_STYLE: Partial<ExcelJS.Style> = {
   font: { bold: true, color: { argb: "FFFFFFFF" } },
@@ -65,7 +58,7 @@ export async function exportParticipantsToExcel(modalityId?: string): Promise<Ex
       sheet.addRow({
         fullName: p.fullName,
         parentName: p.parentName ?? "—",
-        age: calcAge(new Date(p.birthDate)),
+        age: calculateAge(new Date(p.birthDate)),
         gender: p.gender === "MASCULINO" ? "Masculino" : "Feminino",
         whatsapp: p.whatsapp,
         isMember: p.isMember,
@@ -108,7 +101,7 @@ export async function exportFinanceToExcel(): Promise<ExcelJS.Buffer> {
   await new Promise<void>((resolve) => setImmediate(resolve));
 
   for (const p of participants) {
-    const age = calcAge(new Date(p.birthDate));
+    const age = calculateAge(new Date(p.birthDate));
     const isExempt = age <= 8;
 
     sheet.addRow({
