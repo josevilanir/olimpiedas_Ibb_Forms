@@ -34,5 +34,5 @@ primary_region = 'gru'
     type = "http"
 
 [[vm]]
-  memory = '2gb'
-  cpus = 2
+  memory = '512mb'
+  cpus = 1
