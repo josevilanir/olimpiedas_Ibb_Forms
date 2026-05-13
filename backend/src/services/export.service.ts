@@ -34,6 +34,9 @@ export async function exportParticipantsToExcel(modalityId?: string): Promise<Ex
   };
 
   for (const modality of modalities) {
+    // Yield between sheets so pending HTTP requests can be processed
+    await new Promise<void>((resolve) => setImmediate(resolve));
+
     const sheetName = modality.name.replace(/[*?:/\\[\]]/g, "-").slice(0, 31).trim();
     const sheet = workbook.addWorksheet(sheetName);
 

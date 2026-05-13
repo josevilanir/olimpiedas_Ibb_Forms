@@ -45,7 +45,26 @@ const registrationLimiter = rateLimit({
   skipFailedRequests: true,    // Não conta requests que deram erro de validação
 });
 
-app.use(cors());
+// Restrict CORS to the known frontend origins only.
+// CORS_ALLOWED_ORIGINS in Fly.io secrets can override (comma-separated list).
+const ALLOWED_ORIGINS = (
+  process.env.CORS_ALLOWED_ORIGINS ?? "https://olimpiedas-ibb-forms.vercel.app"
+)
+  .split(",")
+  .map((o) => o.trim());
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no Origin header (server-to-server, Postman, health probes)
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: origin '${origin}' not allowed`));
+      }
+    },
+  })
+);
 app.use(express.json());
 
 // Metrics middleware — tracks active requests, slow requests, and periodic snapshots
