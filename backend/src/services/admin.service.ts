@@ -1,8 +1,8 @@
-import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Gender, MembershipStatus, PaymentStatus } from "../generated/prisma/client";
 import { AppError } from "../errors/AppError";
+import { findUserByEmail, findUserById } from "../repositories/user.repository";
 import {
   findParticipants,
   deleteParticipant,
@@ -11,7 +11,7 @@ import {
 import { findModalitiesWithParticipants } from "../repositories/modality.repository";
 
 export async function loginAdmin(email: string, password: string) {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await findUserByEmail(email);
   if (!user) throw new AppError("INVALID_CREDENTIALS", 401, "Credenciais inválidas.");
 
   const valid = await bcrypt.compare(password, user.password);
@@ -22,10 +22,7 @@ export async function loginAdmin(email: string, password: string) {
 }
 
 export async function getAdminById(id: string) {
-  const user = await prisma.user.findUnique({
-    where: { id },
-    select: { id: true, name: true, email: true },
-  });
+  const user = await findUserById(id);
   if (!user) throw new AppError("USER_NOT_FOUND", 404, "Usuário não encontrado.");
   return user;
 }

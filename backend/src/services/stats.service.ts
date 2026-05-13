@@ -1,5 +1,12 @@
-import { prisma } from "../lib/prisma";
-import { MembershipStatus, PaymentStatus } from "../generated/prisma/client";
+import { MembershipStatus, PaymentStatus, Prisma } from "../generated/prisma/client";
+import {
+  groupParticipantsByGender,
+  groupParticipantsByMember,
+  groupParticipantsByPayment,
+  findParticipantsMinimal,
+} from "../repositories/participant.repository";
+import { groupSubscriptionsByModality } from "../repositories/subscription.repository";
+import { findAllModalities } from "../repositories/modality.repository";
 
 function calcAge(birthDate: Date): number {
   const today = new Date();
@@ -10,15 +17,23 @@ function calcAge(birthDate: Date): number {
 }
 
 export async function getStats(isMember?: MembershipStatus, modalityId?: string) {
-  const whereActive = {
+  const whereActive: Prisma.ParticipantWhereInput = {
     paymentStatus: { not: "CANCELADO" as PaymentStatus },
     ...(isMember ? { isMember } : {}),
     ...(modalityId ? { subscriptions: { some: { modalityId } } } : {}),
   };
 
-  const whereAll = {
+  const whereAll: Prisma.ParticipantWhereInput = {
     ...(isMember ? { isMember } : {}),
     ...(modalityId ? { subscriptions: { some: { modalityId } } } : {}),
+  };
+
+  const whereSubscription: Prisma.SubscriptionWhereInput = {
+    participant: {
+      paymentStatus: { not: "CANCELADO" as PaymentStatus },
+      ...(isMember ? { isMember } : {}),
+    },
+    ...(modalityId ? { modalityId } : {}),
   };
 
   const [
@@ -29,45 +44,14 @@ export async function getStats(isMember?: MembershipStatus, modalityId?: string)
     subscriptionGroups,
     modalities,
   ] = await Promise.all([
-    // DB-level aggregation: gender distribution (active only)
-    prisma.participant.groupBy({
-      by: ["gender"],
-      where: whereActive,
-      _count: { gender: true },
-    }),
-    // DB-level aggregation: membership distribution (active only)
-    prisma.participant.groupBy({
-      by: ["isMember"],
-      where: whereActive,
-      _count: { isMember: true },
-    }),
-    // DB-level aggregation: payment status (all, including cancelled)
-    prisma.participant.groupBy({
-      by: ["paymentStatus"],
-      where: whereAll,
-      _count: { paymentStatus: true },
-    }),
-    // Minimal projection: only birthDate and paymentStatus for age/revenue calculation
-    prisma.participant.findMany({
-      where: whereActive,
-      select: { birthDate: true, paymentStatus: true },
-    }),
-    // DB-level aggregation: subscription counts per modality (active participants only)
-    prisma.subscription.groupBy({
-      by: ["modalityId"],
-      where: {
-        participant: {
-          paymentStatus: { not: "CANCELADO" as PaymentStatus },
-          ...(isMember ? { isMember } : {}),
-        },
-        ...(modalityId ? { modalityId } : {}),
-      },
-      _count: { modalityId: true },
-    }),
-    prisma.modality.findMany({ orderBy: { name: "asc" } }),
+    groupParticipantsByGender(whereActive),
+    groupParticipantsByMember(whereActive),
+    groupParticipantsByPayment(whereAll),
+    findParticipantsMinimal(whereActive),
+    groupSubscriptionsByModality(whereSubscription),
+    findAllModalities(),
   ]);
 
-  // Map DB results to flat objects
   const genderCount = { MASCULINO: 0, FEMININO: 0 };
   for (const g of genderGroups) {
     genderCount[g.gender] = g._count.gender;
@@ -83,7 +67,6 @@ export async function getStats(isMember?: MembershipStatus, modalityId?: string)
     paymentCount[p.paymentStatus] = p._count.paymentStatus;
   }
 
-  // Age groups and revenue — computed from minimal participant data
   const ageGroups = { "3-9": 0, "10-13": 0, "14-17": 0, "18+": 0 };
   let estimatedRevenue = 0;
   let actualRevenue = 0;
@@ -102,7 +85,6 @@ export async function getStats(isMember?: MembershipStatus, modalityId?: string)
     else ageGroups["18+"]++;
   }
 
-  // Map subscription groupBy results to modality stats
   const subCountMap = new Map<string, number>();
   for (const s of subscriptionGroups) {
     subCountMap.set(s.modalityId, s._count.modalityId);

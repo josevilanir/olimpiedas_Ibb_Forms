@@ -1,5 +1,6 @@
 import ExcelJS from "exceljs";
-import { prisma } from "../lib/prisma";
+import { findModalitiesForExport } from "../repositories/modality.repository";
+import { findParticipantsForFinanceExport } from "../repositories/participant.repository";
 
 function calcAge(birthDate: Date): number {
   const today = new Date();
@@ -9,29 +10,32 @@ function calcAge(birthDate: Date): number {
   return age;
 }
 
-export async function exportParticipantsToExcel(modalityId?: string): Promise<ExcelJS.Buffer> {
-  const modalities = await prisma.modality.findMany({
-    where: modalityId ? { id: modalityId } : undefined,
-    include: {
-      subscriptions: {
-        include: { participant: true },
-      },
-    },
-    orderBy: { name: "asc" },
+const HEADER_STYLE: Partial<ExcelJS.Style> = {
+  font: { bold: true, color: { argb: "FFFFFFFF" } },
+  fill: { type: "pattern", pattern: "solid", fgColor: { argb: "FF1A56DB" } },
+  alignment: { horizontal: "center", vertical: "middle" },
+  border: { bottom: { style: "thin", color: { argb: "FFCCCCCC" } } },
+};
+
+function applyZebraRows(sheet: ExcelJS.Worksheet) {
+  sheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return;
+    row.eachCell((cell) => {
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: rowNumber % 2 === 0 ? "FFF9FAFB" : "FFFFFFFF" },
+      };
+    });
   });
+}
+
+export async function exportParticipantsToExcel(modalityId?: string): Promise<ExcelJS.Buffer> {
+  const modalities = await findModalitiesForExport(modalityId);
 
   const workbook = new ExcelJS.Workbook();
   workbook.creator = "Olimpíadas IBB";
   workbook.created = new Date();
-
-  const headerStyle: Partial<ExcelJS.Style> = {
-    font: { bold: true, color: { argb: "FFFFFFFF" } },
-    fill: { type: "pattern", pattern: "solid", fgColor: { argb: "FF1A56DB" } },
-    alignment: { horizontal: "center", vertical: "middle" },
-    border: {
-      bottom: { style: "thin", color: { argb: "FFCCCCCC" } },
-    },
-  };
 
   for (const modality of modalities) {
     // Yield between sheets so pending HTTP requests can be processed
@@ -53,9 +57,7 @@ export async function exportParticipantsToExcel(modalityId?: string): Promise<Ex
       { header: "Data Inscrição", key: "createdAt", width: 18 },
     ];
 
-    sheet.getRow(1).eachCell((cell) => {
-      Object.assign(cell, headerStyle);
-    });
+    sheet.getRow(1).eachCell((cell) => { Object.assign(cell, HEADER_STYLE); });
     sheet.getRow(1).height = 20;
 
     for (const sub of modality.subscriptions) {
@@ -74,40 +76,20 @@ export async function exportParticipantsToExcel(modalityId?: string): Promise<Ex
       });
     }
 
-    // Zebra rows
-    sheet.eachRow((row, rowNumber) => {
-      if (rowNumber === 1) return;
-      row.eachCell((cell) => {
-        cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: rowNumber % 2 === 0 ? "FFF9FAFB" : "FFFFFFFF" },
-        };
-      });
-    });
+    applyZebraRows(sheet);
   }
 
   return workbook.xlsx.writeBuffer();
 }
 
 export async function exportFinanceToExcel(): Promise<ExcelJS.Buffer> {
-  const participants = await prisma.participant.findMany({
-    where: { paymentStatus: { not: "CANCELADO" } },
-    orderBy: { fullName: "asc" },
-  });
+  const participants = await findParticipantsForFinanceExport();
 
   const workbook = new ExcelJS.Workbook();
   workbook.creator = "Olimpíadas IBB";
   workbook.created = new Date();
 
   const sheet = workbook.addWorksheet("Controle Financeiro");
-
-  const headerStyle: Partial<ExcelJS.Style> = {
-    font: { bold: true, color: { argb: "FFFFFFFF" } },
-    fill: { type: "pattern", pattern: "solid", fgColor: { argb: "FF1A56DB" } },
-    alignment: { horizontal: "center", vertical: "middle" },
-    border: { bottom: { style: "thin", color: { argb: "FFCCCCCC" } } },
-  };
 
   sheet.columns = [
     { header: "Nome completo", key: "fullName", width: 32 },
@@ -116,11 +98,14 @@ export async function exportFinanceToExcel(): Promise<ExcelJS.Buffer> {
     { header: "Status Pagamento", key: "paymentStatus", width: 18 },
   ];
 
-  sheet.getRow(1).eachCell((cell) => { Object.assign(cell, headerStyle); });
+  sheet.getRow(1).eachCell((cell) => { Object.assign(cell, HEADER_STYLE); });
   sheet.getRow(1).height = 20;
 
   const FEE = 15.09;
   let confirmedCount = 0;
+
+  // Yield before the row-building loop so concurrent requests are not stalled
+  await new Promise<void>((resolve) => setImmediate(resolve));
 
   for (const p of participants) {
     const age = calcAge(new Date(p.birthDate));
@@ -138,18 +123,8 @@ export async function exportFinanceToExcel(): Promise<ExcelJS.Buffer> {
     }
   }
 
-  // Zebra rows
-  sheet.eachRow((row, rowNumber) => {
-    if (rowNumber === 1) return;
-    row.eachCell((cell) => {
-      cell.fill = {
-        type: "pattern", pattern: "solid",
-        fgColor: { argb: rowNumber % 2 === 0 ? "FFF9FAFB" : "FFFFFFFF" },
-      };
-    });
-  });
+  applyZebraRows(sheet);
 
-  // Linha em branco + resumo
   sheet.addRow({});
   const totalRevenue = (confirmedCount * FEE).toFixed(2);
   const summaryRow = sheet.addRow({

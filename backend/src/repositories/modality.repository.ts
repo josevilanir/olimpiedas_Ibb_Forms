@@ -16,3 +16,13 @@ export async function findModalitiesWithParticipants() {
     orderBy: { name: "asc" },
   });
 }
+
+export async function findModalitiesForExport(modalityId?: string) {
+  return prisma.modality.findMany({
+    where: modalityId ? { id: modalityId } : undefined,
+    include: {
+      subscriptions: { include: { participant: true } },
+    },
+    orderBy: { name: "asc" },
+  });
+}

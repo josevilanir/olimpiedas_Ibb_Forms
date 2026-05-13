@@ -67,6 +67,7 @@ model Participant {
 
   @@index([whatsapp])
   @@index([paymentStatus])
+  @@index([createdAt])
   @@map("participants")
 }
 

@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { Gender, MembershipStatus, PaymentStatus } from "../generated/prisma/client";
+import { Gender, MembershipStatus, PaymentStatus, Prisma } from "../generated/prisma/client";
 
 interface CreateParticipantData {
   isForChild: boolean;
@@ -44,6 +44,38 @@ export async function findParticipants(modalityId?: string) {
 export async function deleteParticipant(id: string) {
   return prisma.participant.delete({ where: { id } });
 }
+
+// ─── Stats queries ───────────────────────────────────────────────────────────
+
+export async function groupParticipantsByGender(where: Prisma.ParticipantWhereInput) {
+  return prisma.participant.groupBy({ by: ["gender"], where, _count: { gender: true } });
+}
+
+export async function groupParticipantsByMember(where: Prisma.ParticipantWhereInput) {
+  return prisma.participant.groupBy({ by: ["isMember"], where, _count: { isMember: true } });
+}
+
+export async function groupParticipantsByPayment(where: Prisma.ParticipantWhereInput) {
+  return prisma.participant.groupBy({ by: ["paymentStatus"], where, _count: { paymentStatus: true } });
+}
+
+export async function findParticipantsMinimal(where: Prisma.ParticipantWhereInput) {
+  return prisma.participant.findMany({
+    where,
+    select: { birthDate: true, paymentStatus: true },
+  });
+}
+
+// ─── Export queries ──────────────────────────────────────────────────────────
+
+export async function findParticipantsForFinanceExport() {
+  return prisma.participant.findMany({
+    where: { paymentStatus: { not: "CANCELADO" as PaymentStatus } },
+    orderBy: { fullName: "asc" },
+  });
+}
+
+// ─── CRUD ────────────────────────────────────────────────────────────────────
 
 export async function updateParticipant(
   id: string,
