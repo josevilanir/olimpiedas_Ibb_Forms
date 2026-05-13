@@ -77,7 +77,7 @@ export default function RegistrationPage() {
   const [themeColor, setThemeColor] = useState("transparent");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
 
-  useFormPersistence({ form, currentStep, paymentDisclaimerStep });
+  useFormPersistence({ form, currentStep, paymentDisclaimerStep }, !registered);
 
   const { modalities, loading: loadingModalities, error: modalitiesError } = useModalities();
   const age = useMemo(() => calculateAge(form.birthDate), [form.birthDate]);

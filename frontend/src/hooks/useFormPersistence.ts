@@ -23,11 +23,14 @@ export function clearPersistedState() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-export function useFormPersistence(state: PersistedState) {
+export function useFormPersistence(state: PersistedState, enabled: boolean = true) {
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    
+    if (!enabled) return;
+
     saveTimeout.current = setTimeout(() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }, 300);
@@ -35,5 +38,5 @@ export function useFormPersistence(state: PersistedState) {
     return () => {
       if (saveTimeout.current) clearTimeout(saveTimeout.current);
     };
-  }, [state]);
+  }, [state, enabled]);
 }
