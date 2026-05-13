@@ -2,20 +2,22 @@ import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Gender, MembershipStatus, PaymentStatus } from "../generated/prisma/client";
+import { AppError } from "../errors/AppError";
+import {
+  findParticipants,
+  deleteParticipant,
+  updateParticipant,
+} from "../repositories/participant.repository";
+import { findModalitiesWithParticipants } from "../repositories/modality.repository";
 
 export async function loginAdmin(email: string, password: string) {
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) throw new Error("INVALID_CREDENTIALS");
+  if (!user) throw new AppError("INVALID_CREDENTIALS", 401, "Credenciais inválidas.");
 
   const valid = await bcrypt.compare(password, user.password);
-  if (!valid) throw new Error("INVALID_CREDENTIALS");
+  if (!valid) throw new AppError("INVALID_CREDENTIALS", 401, "Credenciais inválidas.");
 
-  const token = jwt.sign(
-    { adminId: user.id },
-    process.env.JWT_SECRET ?? "",
-    { expiresIn: "8h" }
-  );
-
+  const token = jwt.sign({ adminId: user.id }, process.env.JWT_SECRET ?? "", { expiresIn: "8h" });
   return { token, admin: { id: user.id, name: user.name, email: user.email } };
 }
 
@@ -24,27 +26,19 @@ export async function getAdminById(id: string) {
     where: { id },
     select: { id: true, name: true, email: true },
   });
-  if (!user) throw new Error("USER_NOT_FOUND");
+  if (!user) throw new AppError("USER_NOT_FOUND", 404, "Usuário não encontrado.");
   return user;
 }
 
 export async function listParticipants(modalityId?: string) {
-  return prisma.participant.findMany({
-    where: modalityId
-      ? { subscriptions: { some: { modalityId } } }
-      : undefined,
-    include: {
-      subscriptions: { include: { modality: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  return findParticipants(modalityId);
 }
 
-export async function deleteParticipant(id: string) {
-  return prisma.participant.delete({ where: { id } });
+export async function deleteParticipantById(id: string) {
+  return deleteParticipant(id);
 }
 
-export async function updateParticipant(
+export async function updateParticipantById(
   id: string,
   data: Partial<{
     fullName: string;
@@ -58,42 +52,9 @@ export async function updateParticipant(
     modalityIds: string[];
   }>
 ) {
-  const { modalityIds, birthDate, ...rest } = data;
-
-  const updateData: Record<string, unknown> = { ...rest };
-  if (birthDate) updateData.birthDate = new Date(birthDate);
-
-  // Logic for paidAt
-  if (data.paymentStatus) {
-    if (data.paymentStatus === "PAGO") {
-      updateData.paidAt = new Date();
-    } else {
-      updateData.paidAt = null;
-    }
-  }
-
-  if (modalityIds) {
-    await prisma.subscription.deleteMany({ where: { participantId: id } });
-    await prisma.subscription.createMany({
-      data: modalityIds.map((modalityId) => ({ participantId: id, modalityId })),
-    });
-  }
-
-  return prisma.participant.update({
-    where: { id },
-    data: updateData,
-    include: { subscriptions: { include: { modality: true } } },
-  });
+  return updateParticipant(id, data);
 }
 
 export async function getParticipantsByModality() {
-  const modalities = await prisma.modality.findMany({
-    include: {
-      subscriptions: {
-        include: { participant: true },
-      },
-    },
-    orderBy: { name: "asc" },
-  });
-  return modalities;
+  return findModalitiesWithParticipants();
 }

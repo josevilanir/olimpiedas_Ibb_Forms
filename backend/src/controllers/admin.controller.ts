@@ -1,9 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
+import { z } from "zod";
 import {
   loginAdmin,
   listParticipants,
-  deleteParticipant,
-  updateParticipant,
+  deleteParticipantById,
+  updateParticipantById,
   getParticipantsByModality,
   getAdminById,
 } from "../services/admin.service";
@@ -11,82 +12,90 @@ import { exportParticipantsToExcel, exportFinanceToExcel } from "../services/exp
 import { getStats } from "../services/stats.service";
 import { MembershipStatus } from "../generated/prisma/client";
 import { AuthRequest } from "../middlewares/auth.middleware";
+import { AppError } from "../errors/AppError";
 import logger from "../lib/logger";
 
-export async function login(req: Request, res: Response) {
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
+
+export async function login(req: Request, res: Response, next: NextFunction) {
+  const result = loginSchema.safeParse(req.body);
+  if (!result.success) {
+    return next(new AppError("VALIDATION_ERROR", 400, "Email e senha são obrigatórios."));
+  }
+
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      res.status(400).json({ error: "Email e senha são obrigatórios." });
-      return;
-    }
-    const result = await loginAdmin(email, password);
-    res.json({ data: result });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "";
-    if (message === "INVALID_CREDENTIALS") {
-      res.status(401).json({ error: "Credenciais inválidas." });
-      return;
-    }
-    logger.error({ err: error }, "[login] unexpected error");
-    res.status(500).json({ error: "Erro interno do servidor." });
+    const data = await loginAdmin(result.data.email, result.data.password);
+    res.json({ data });
+  } catch (err) {
+    next(err);
   }
 }
 
-export async function getMe(req: AuthRequest, res: Response) {
+export async function getMe(req: AuthRequest, res: Response, next: NextFunction) {
   try {
-    const adminId = req.adminId!;
-    const admin = await getAdminById(adminId);
+    const admin = await getAdminById(req.adminId!);
     res.json({ data: admin });
-  } catch (error: unknown) {
-    logger.error({ err: error }, "[getMe] failed");
-    res.status(401).json({ error: "Sessão inválida." });
+  } catch (err) {
+    next(err);
   }
 }
 
-export async function getParticipants(req: Request, res: Response) {
-  const modalityId = Array.isArray(req.query.modalityId)
-    ? (req.query.modalityId[0] as string)
-    : (req.query.modalityId as string | undefined);
-  const participants = await listParticipants(modalityId);
-  res.json({ data: participants });
+export async function getParticipants(req: Request, res: Response, next: NextFunction) {
+  try {
+    const modalityId = Array.isArray(req.query.modalityId)
+      ? (req.query.modalityId[0] as string)
+      : (req.query.modalityId as string | undefined);
+    const participants = await listParticipants(modalityId);
+    res.json({ data: participants });
+  } catch (err) {
+    next(err);
+  }
 }
 
-export async function removeParticipant(req: Request, res: Response) {
+export async function removeParticipant(req: Request, res: Response, next: NextFunction) {
   try {
-    const id = req.params["id"] as string;
-    await deleteParticipant(id);
+    await deleteParticipantById(req.params["id"] as string);
     res.json({ message: "Inscrição removida com sucesso." });
-  } catch {
-    res.status(404).json({ error: "Inscrição não encontrada." });
+  } catch (err) {
+    next(new AppError("NOT_FOUND", 404, "Inscrição não encontrada."));
   }
 }
 
-export async function editParticipant(req: Request, res: Response) {
+export async function editParticipant(req: Request, res: Response, next: NextFunction) {
   try {
-    const id = req.params["id"] as string;
-    const participant = await updateParticipant(id, req.body);
+    const participant = await updateParticipantById(req.params["id"] as string, req.body);
     res.json({ data: participant });
-  } catch {
-    res.status(404).json({ error: "Inscrição não encontrada." });
+  } catch (err) {
+    next(new AppError("NOT_FOUND", 404, "Inscrição não encontrada."));
   }
 }
 
-export async function getByModality(_req: Request, res: Response) {
-  const data = await getParticipantsByModality();
-  res.json({ data });
+export async function getByModality(_req: Request, res: Response, next: NextFunction) {
+  try {
+    const data = await getParticipantsByModality();
+    res.json({ data });
+  } catch (err) {
+    next(err);
+  }
 }
 
-export async function stats(req: Request, res: Response) {
-  const isMember = req.query.isMember as MembershipStatus | undefined;
-  const modalityId = Array.isArray(req.query.modalityId)
-    ? (req.query.modalityId[0] as string)
-    : (req.query.modalityId as string | undefined);
-  const data = await getStats(isMember, modalityId);
-  res.json({ data });
+export async function stats(req: Request, res: Response, next: NextFunction) {
+  try {
+    const isMember = req.query.isMember as MembershipStatus | undefined;
+    const modalityId = Array.isArray(req.query.modalityId)
+      ? (req.query.modalityId[0] as string)
+      : (req.query.modalityId as string | undefined);
+    const data = await getStats(isMember, modalityId);
+    res.json({ data });
+  } catch (err) {
+    next(err);
+  }
 }
 
-export async function exportExcel(req: Request, res: Response) {
+export async function exportExcel(req: Request, res: Response, next: NextFunction) {
   try {
     const modalityId = Array.isArray(req.query.modalityId)
       ? (req.query.modalityId[0] as string)
@@ -94,25 +103,24 @@ export async function exportExcel(req: Request, res: Response) {
 
     const buffer = await exportParticipantsToExcel(modalityId);
     const filename = `inscritos_olimpiadas_ibb_${Date.now()}.xlsx`;
-
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.send(Buffer.from(buffer as ArrayBuffer));
-  } catch (error) {
-    logger.error({ err: error }, "[exportExcel] failed");
-    res.status(500).json({ error: "Erro ao gerar planilha." });
+  } catch (err) {
+    logger.error({ err }, "[exportExcel] failed");
+    next(err);
   }
 }
 
-export async function exportFinance(_req: Request, res: Response) {
+export async function exportFinance(_req: Request, res: Response, next: NextFunction) {
   try {
     const buffer = await exportFinanceToExcel();
     const filename = `financeiro_olimpiadas_ibb_${Date.now()}.xlsx`;
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.send(Buffer.from(buffer as ArrayBuffer));
-  } catch (error) {
-    logger.error({ err: error }, "[exportFinance] failed");
-    res.status(500).json({ error: "Erro ao gerar planilha financeira." });
+  } catch (err) {
+    logger.error({ err }, "[exportFinance] failed");
+    next(err);
   }
 }

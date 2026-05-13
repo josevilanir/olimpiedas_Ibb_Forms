@@ -1,8 +1,10 @@
-import { prisma } from "../lib/prisma";
 import { MembershipStatus, Gender } from "../generated/prisma/client";
 import { calculateAge, isEligibleForModality } from "../utils/age";
+import { AppError } from "../errors/AppError";
+import { findModalitiesByIds } from "../repositories/modality.repository";
+import { createParticipant } from "../repositories/participant.repository";
 
-interface CreateParticipantInput {
+export interface CreateParticipantInput {
   isForChild: boolean;
   isMember: MembershipStatus;
   birthDate: string;
@@ -15,11 +17,41 @@ interface CreateParticipantInput {
   modalityIds: string[];
 }
 
-export async function createParticipant(input: CreateParticipantInput) {
-  const {
+export async function registerParticipant(input: CreateParticipantInput) {
+  const { isForChild, isMember, birthDate, fullName, parentName, whatsapp, gender, healthIssues, termsAccepted, modalityIds } = input;
+
+  if (!termsAccepted) {
+    throw new AppError("TERMS_NOT_ACCEPTED", 422, "Você precisa aceitar os termos para se inscrever.");
+  }
+
+  if (modalityIds.length === 0) {
+    throw new AppError("NO_MODALITY_SELECTED", 422, "Selecione ao menos uma modalidade.");
+  }
+
+  const parsedBirthDate = new Date(birthDate);
+  if (isNaN(parsedBirthDate.getTime())) {
+    throw new AppError("INVALID_BIRTH_DATE", 422, "Data de nascimento inválida.");
+  }
+
+  const age = calculateAge(parsedBirthDate);
+  const memberIsValid = isMember === "SIM" || isMember === "GR";
+
+  const modalities = await findModalitiesByIds(modalityIds);
+  if (modalities.length !== modalityIds.length) {
+    throw new AppError("INVALID_MODALITY", 422, "Modalidade inválida selecionada.");
+  }
+
+  for (const modality of modalities) {
+    const eligible = isEligibleForModality(age, memberIsValid, modality.minAge, modality.maxAge, modality.requiresMembership);
+    if (!eligible) {
+      throw new AppError(`NOT_ELIGIBLE:${modality.name}`, 422, `Você não atende aos requisitos para a modalidade: ${modality.name}.`);
+    }
+  }
+
+  return createParticipant({
     isForChild,
     isMember,
-    birthDate,
+    birthDate: parsedBirthDate,
     fullName,
     parentName,
     whatsapp,
@@ -27,65 +59,5 @@ export async function createParticipant(input: CreateParticipantInput) {
     healthIssues,
     termsAccepted,
     modalityIds,
-  } = input;
-
-  if (!termsAccepted) {
-    throw new Error("TERMS_NOT_ACCEPTED");
-  }
-
-  if (modalityIds.length === 0) {
-    throw new Error("NO_MODALITY_SELECTED");
-  }
-
-  const parsedBirthDate = new Date(birthDate);
-  if (isNaN(parsedBirthDate.getTime())) {
-    throw new Error("INVALID_BIRTH_DATE");
-  }
-
-  const age = calculateAge(parsedBirthDate);
-  const memberIsValid = isMember === "SIM" || isMember === "GR";
-
-  // Validate each selected modality
-  const modalities = await prisma.modality.findMany({
-    where: { id: { in: modalityIds } },
   });
-
-  if (modalities.length !== modalityIds.length) {
-    throw new Error("INVALID_MODALITY");
-  }
-
-  for (const modality of modalities) {
-    const eligible = isEligibleForModality(
-      age,
-      memberIsValid,
-      modality.minAge,
-      modality.maxAge,
-      modality.requiresMembership
-    );
-    if (!eligible) {
-      throw new Error(`NOT_ELIGIBLE:${modality.name}`);
-    }
-  }
-
-  const participant = await prisma.participant.create({
-    data: {
-      isForChild,
-      isMember,
-      birthDate: parsedBirthDate,
-      fullName,
-      parentName,
-      whatsapp,
-      gender,
-      healthIssues,
-      termsAccepted,
-      subscriptions: {
-        create: modalityIds.map((modalityId) => ({ modalityId })),
-      },
-    },
-    include: {
-      subscriptions: { include: { modality: true } },
-    },
-  });
-
-  return participant;
 }

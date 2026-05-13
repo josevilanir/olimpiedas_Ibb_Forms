@@ -1,8 +1,8 @@
-import { prisma } from "../lib/prisma";
+import { findAllModalities } from "../repositories/modality.repository";
 
 let cachedModalities: unknown[] | null = null;
 let cacheTimestamp = 0;
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
 export async function getAllModalities() {
   const now = Date.now();
@@ -10,10 +10,7 @@ export async function getAllModalities() {
     return cachedModalities;
   }
 
-  const modalities = await prisma.modality.findMany({
-    orderBy: { name: "asc" },
-  });
-
+  const modalities = await findAllModalities();
   cachedModalities = modalities;
   cacheTimestamp = now;
   return modalities;
