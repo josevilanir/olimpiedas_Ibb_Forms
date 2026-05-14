@@ -16,7 +16,7 @@ export function AboutSection() {
     if (!autoCycleEnabled || isPaused) return;
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % galleryImages.length);
-    }, 3500);
+    }, 1500);
     return () => clearInterval(interval);
   }, [autoCycleEnabled, isPaused]);
 
