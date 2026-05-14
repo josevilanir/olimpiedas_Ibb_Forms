@@ -13,9 +13,9 @@ const modalities = [
   { name: "Tênis de Mesa",            cat: "individual",age: "9+ anos",    icon: "🏓", tag: "member", coord: "Lucas Santos" },
   { name: "Circuito Adulto",          cat: "corrida",   age: "14+ anos",   icon: "🏋️", tag: "member", sub: "Obstáculos", coord: "Fran Missionário" },
   { name: "Circuito Kids",            cat: "corrida",   age: "09–13 anos", icon: "🏋️", tag: "member", sub: "Obstáculos", coord: "Fran Missionário" },
-  { name: "E-Sports FIFA",            cat: "esports",   age: "9+ anos",    icon: "🎮", tag: "member", coord: "Gustavo Felipe e Davi Severiano" },
-  { name: "E-Sports CS",              cat: "esports",   age: "9+ anos",    icon: "🎮", tag: "member", sub: "Counter-Strike", coord: "Gustavo Felipe e Davi Severiano" },
-  { name: "E-Sports LoL",             cat: "esports",   age: "9+ anos",    icon: "🎮", tag: "member", sub: "League of Legends", coord: "Gustavo Felipe e Davi Severiano" },
+  { name: "E-Sports FIFA",            cat: "esports",   age: "9+ anos",    icon: "🎮", tag: "member", coord: "Gustavo Felipe" },
+  { name: "E-Sports CS",              cat: "esports",   age: "9+ anos",    icon: "🎮", tag: "member", sub: "Counter-Strike", coord: "Gustavo Felipe" },
+  { name: "E-Sports LoL",             cat: "esports",   age: "9+ anos",    icon: "🎮", tag: "member", sub: "League of Legends", coord: "Gustavo Felipe" },
   { name: "Treino Funcional",         cat: "individual",age: "Livre",      icon: "💪", tag: "member", sub: "Não competitivo", coord: "Jonatas Silveira (Jow)" },
 ];
 

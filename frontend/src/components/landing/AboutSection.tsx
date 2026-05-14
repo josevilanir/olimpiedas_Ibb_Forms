@@ -1,8 +1,8 @@
-import galery1 from "../../assets/galery/20250531_154713.jpg";
-import galery2 from "../../assets/galery/20250601_092812.jpg";
-import galery3 from "../../assets/galery/DSC06671.jpeg";
-import galery4 from "../../assets/galery/IMG_7160.jpg";
-import galery5 from "../../assets/galery/IMG_7650.jpg";
+import galery1 from "../../assets/galery/Natacao.jpeg";
+import galery2 from "../../assets/galery/volei.jpeg";
+import galery3 from "../../assets/galery/queimada.jpeg";
+import galery4 from "../../assets/galery/Corrida.jpg";
+import galery5 from "../../assets/galery/kids.png";
 
 const galleryImages = [galery1, galery2, galery3, galery4, galery5];
 

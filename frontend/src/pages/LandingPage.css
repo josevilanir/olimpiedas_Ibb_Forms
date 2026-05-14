@@ -384,11 +384,23 @@
 .landing-page-container .sobre-gallery-item:hover {
   flex: 4.5;
 }
+.landing-page-container .sobre-gallery-item:nth-child(5):hover {
+  flex: 12; /* Expandindo ao máximo no hover para mostrar a horizontal */
+}
 .landing-page-container .sobre-gallery-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: filter 0.4s ease;
+}
+.landing-page-container .sobre-gallery-item:nth-child(3) img {
+  object-position: 78% center;
+}
+.landing-page-container .sobre-gallery-item:nth-child(1) img {
+  object-position: 20% center;
+}
+.landing-page-container .sobre-gallery-item:nth-child(4) img {
+  object-position: 68% center;
 }
 .landing-page-container .sobre-gallery:hover .sobre-gallery-item:not(:hover) img {
   filter: brightness(0.5) grayscale(60%);
