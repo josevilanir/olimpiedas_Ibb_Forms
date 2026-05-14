@@ -45,7 +45,7 @@ export function ModalitiesSection({ activeFilter, onFilterChange }: ModalitiesSe
               className={`mod-btn ${activeFilter === f ? "active" : ""}`}
               onClick={() => onFilterChange(f)}
             >
-              {f === "all" ? "Todas" : f === "coletivo" ? "Coletivos" : f === "individual" ? "Individual" : f.charAt(0).toUpperCase() + f.slice(1)}
+              {f === "all" ? "Todas" : f === "coletivo" ? "Coletivos" : f === "individual" ? "Individual" : f === "esports" ? "E-Sports" : f.charAt(0).toUpperCase() + f.slice(1)}
             </button>
           ))}
         </div>

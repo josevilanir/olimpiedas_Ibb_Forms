@@ -49,7 +49,7 @@ export function AboutSection() {
         <div className="sobre-text">
           <div className="section-eyebrow reveal">Sobre o Evento</div>
           <h2 className="section-title reveal reveal-delay-1">Esporte,<br />fé &amp;<br />comunidade</h2>
-          <p className="reveal reveal-delay-2">As Olimpíadas IBB reúnem membros e convidados da Igreja Batista Bereana em diversas modalidades esportivas e recreativas — de corridas a e-sports, passando por futebol, vôlei, natação e muito mais.</p>
+          <p className="reveal reveal-delay-2">As Olimpíadas IBB reúnem membros e convidados da Igreja Batista Bereana em diversas modalidades esportivas e recreativas — de corridas a E-Sports, passando por futebol, vôlei, natação e muito mais.</p>
           <p className="reveal reveal-delay-3">Um evento para todas as idades. Desde os pequenos de 3 anos nas provas Kids até os adultos no circuito de obstáculos — há uma modalidade para cada membro da família IBB.</p>
           <p className="reveal reveal-delay-3">Incentivando a realização de atividades físicas em ambientes seguros e saudáveis através da comunhão entre os irmãos.</p>
           <div className="sobre-stats reveal reveal-delay-4">

@@ -67,7 +67,7 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
         >
           <div>
             <p className="hero-sub">
-              <strong>18 modalidades.</strong> Corridas, esportes coletivos, e-sports e muito mais — para toda a família da IBB.
+              <strong>18 modalidades.</strong> Corridas, esportes coletivos, E-Sports e muito mais — para toda a família da IBB.
             </p>
           </div>
 

@@ -55,7 +55,7 @@ export function ModalitiesStep({
               className={`${styles.filterBtn} ${activeFilter === f ? styles.active : ""}`}
               onClick={() => setActiveFilter(f)}
             >
-              {f === "all" ? "Todas" : f === "coletivo" ? "Coletivos" : f === "individual" ? "Individual" : f.charAt(0).toUpperCase() + f.slice(1)}
+              {f === "all" ? "Todas" : f === "coletivo" ? "Coletivos" : f === "individual" ? "Individual" : f === "esports" ? "E-Sports" : f.charAt(0).toUpperCase() + f.slice(1)}
             </button>
           ))}
         </div>
