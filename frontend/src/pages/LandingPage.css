@@ -381,11 +381,13 @@
   position: relative;
   cursor: pointer;
 }
-.landing-page-container .sobre-gallery-item:hover {
+.landing-page-container .sobre-gallery-item:hover,
+.landing-page-container .sobre-gallery-item.active {
   flex: 4.5;
 }
-.landing-page-container .sobre-gallery-item:nth-child(5):hover {
-  flex: 12; /* Expandindo ao máximo no hover para mostrar a horizontal */
+.landing-page-container .sobre-gallery-item:nth-child(5):hover,
+.landing-page-container .sobre-gallery-item:nth-child(5).active {
+  flex: 12; /* Expandindo ao máximo no hover/active para mostrar a horizontal */
 }
 .landing-page-container .sobre-gallery-item img {
   width: 100%;
@@ -402,7 +404,9 @@
 .landing-page-container .sobre-gallery-item:nth-child(4) img {
   object-position: 68% center;
 }
-.landing-page-container .sobre-gallery:hover .sobre-gallery-item:not(:hover) img {
+/* Efeito de destaque (dimming) apenas quando há algo focado (hover ou ciclo ativo) */
+.landing-page-container .sobre-gallery:hover .sobre-gallery-item:not(:hover) img,
+.landing-page-container .sobre-gallery.is-cycling:not(:hover) .sobre-gallery-item:not(.active) img {
   filter: brightness(0.5) grayscale(60%);
 }
 .landing-page-container .sobre-badge {

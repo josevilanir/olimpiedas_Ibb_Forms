@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import galery1 from "../../assets/galery/Natacao.jpeg";
 import galery2 from "../../assets/galery/volei.jpeg";
 import galery3 from "../../assets/galery/queimada.jpeg";
@@ -7,14 +8,34 @@ import galery5 from "../../assets/galery/kids.png";
 const galleryImages = [galery1, galery2, galery3, galery4, galery5];
 
 export function AboutSection() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [autoCycleEnabled, setAutoCycleEnabled] = useState(true);
+
+  useEffect(() => {
+    if (!autoCycleEnabled || isPaused) return;
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % galleryImages.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [autoCycleEnabled, isPaused]);
+
   return (
     <section id="sobre">
       <div className="sobre-grid">
         <div className="sobre-img-block reveal">
           <div className="sobre-img">
-            <div className="sobre-gallery">
+            <div 
+              className={`sobre-gallery ${autoCycleEnabled ? "is-cycling" : ""}`}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              onClick={() => setAutoCycleEnabled(false)}
+            >
               {galleryImages.map((src, idx) => (
-                <div key={idx} className="sobre-gallery-item">
+                <div 
+                  key={idx} 
+                  className={`sobre-gallery-item ${autoCycleEnabled && activeIndex === idx && !isPaused ? "active" : ""}`}
+                >
                   <img src={src} alt={`galeria-${idx}`} loading="lazy" decoding="async" />
                 </div>
               ))}
