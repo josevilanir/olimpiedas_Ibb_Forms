@@ -13,8 +13,10 @@ export function requireAuth(req: AuthRequest, res: Response, next: NextFunction)
   }
 
   const token = authHeader.slice(7);
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) throw new Error("JWT_SECRET env var is required");
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET ?? "") as { adminId: string };
+    const payload = jwt.verify(token, jwtSecret) as { adminId: string };
     req.adminId = payload.adminId;
     next();
   } catch {

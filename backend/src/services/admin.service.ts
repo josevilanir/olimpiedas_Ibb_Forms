@@ -17,7 +17,9 @@ export async function loginAdmin(email: string, password: string) {
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) throw new AppError("INVALID_CREDENTIALS", 401, "Credenciais inválidas.");
 
-  const token = jwt.sign({ adminId: user.id }, process.env.JWT_SECRET ?? "", { expiresIn: "8h" });
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) throw new Error("JWT_SECRET env var is required");
+  const token = jwt.sign({ adminId: user.id }, jwtSecret, { expiresIn: "8h" });
   return { token, admin: { id: user.id, name: user.name, email: user.email } };
 }
 

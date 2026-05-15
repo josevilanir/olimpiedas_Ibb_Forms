@@ -63,14 +63,14 @@ export async function getStats(isMember?: MembershipStatus, modalityId?: string)
   const ageGroups = { "3-9": 0, "10-13": 0, "14-17": 0, "18+": 0 };
   let estimatedRevenue = 0;
   let actualRevenue = 0;
-  const FEE = 15.09;
+  const REGISTRATION_FEE = Number(process.env.REGISTRATION_FEE ?? "15.09");
 
   for (const p of activeParticipants) {
     const age = calculateAge(new Date(p.birthDate));
     const isExempt = age <= 8;
 
-    if (!isExempt) estimatedRevenue += FEE;
-    if (p.paymentStatus === "PAGO" && !isExempt) actualRevenue += FEE;
+    if (!isExempt) estimatedRevenue += REGISTRATION_FEE;
+    if (p.paymentStatus === "PAGO" && !isExempt) actualRevenue += REGISTRATION_FEE;
 
     if (age <= 9) ageGroups["3-9"]++;
     else if (age <= 13) ageGroups["10-13"]++;
