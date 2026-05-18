@@ -814,7 +814,7 @@
     margin-top: 0;
     margin-left: 0;
     max-height: 290px; /* Increased by another 15% */
-    transform: translate(clamp(-70px, -16vw, -45px), clamp(50px, 11svh, 100px)); /* Perfectly responsive fluid alignment */
+    transform: translate(clamp(-90px, -20vw, -65px), clamp(50px, 11svh, 100px)); /* Perfectly responsive fluid alignment */
     margin-bottom: 16px;
   }
   .landing-page-container .sobre-grid { grid-template-columns: 1fr; }
@@ -822,10 +822,12 @@
   .landing-page-container .pix-box { padding: 24px; }
   .landing-page-container footer { padding: 40px 20px 24px; }
   .landing-page-container .hero-sub {
-    max-width: 250px;
+    max-width: 230px;
     text-align: center;
     align-self: center;
     width: 100%;
+    font-size: 13.5px;
+    line-height: 1.5;
   }
   .landing-page-container .hero-man { 
     width: 100%; 
@@ -839,7 +841,7 @@
     background-size: auto 75svh; 
     background-repeat: no-repeat;
     /* Centered within the shifted container, vertical maintained */
-    background-position: center 40%; /* Moved 5% up as requested */
+    background-position: center 25%; 
   }
   .landing-page-container .sobre-stats {
     gap: 1px;
@@ -867,6 +869,19 @@
   .landing-page-container .countdown {
     align-self: center;
   }
+  .landing-page-container .cd-unit {
+    min-width: clamp(42px, 12vw, 68px);
+    padding: clamp(5px, 1.5svh, 9px) clamp(6px, 1.5vw, 15px);
+  }
+  .landing-page-container .cd-num {
+    font-size: clamp(20px, 5vw, 32px);
+  }
+  .landing-page-container .cd-sep {
+    font-size: 18px;
+  }
+  .landing-page-container .cd-label {
+    font-size: clamp(8px, 2.5vw, 10px);
+  }
   .landing-page-container .hero-actions {
     align-items: center;
     width: 100%;
@@ -879,14 +894,14 @@
   }
   .landing-page-container .btn-primary,
   .landing-page-container .btn-ghost {
-    padding: 10px 12px;
-    font-size: 12px;
+    padding: 8px 10px;
+    font-size: 11px;
     flex: 1;
     white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
   }
   .landing-page-container .logo-img {
     height: 220px;
@@ -895,14 +910,14 @@
 
 @media (max-width: 480px) {
   .landing-page-container .cd-unit {
-    min-width: clamp(50px, 15vw, 80px);
-    padding: clamp(6px, 2svh, 12px) clamp(8px, 2vw, 20px);
+    min-width: clamp(42px, 12vw, 68px);
+    padding: clamp(5px, 1.5svh, 9px) clamp(6px, 1.5vw, 15px);
   }
   .landing-page-container .cd-num {
-    font-size: clamp(24px, 6vw, 40px);
+    font-size: clamp(20px, 5vw, 32px);
   }
   .landing-page-container .cd-sep {
-    font-size: 22px;
+    font-size: 18px;
   }
   .landing-page-container .steps-grid {
     grid-template-columns: 1fr;
