@@ -808,13 +808,13 @@
   }
   .landing-page-container .hero-logo-img {
     width: 100%;
-    max-width: clamp(145px, 40vw, 185px);
+    max-width: clamp(230px, 64vw, 300px); /* Increased by another 15% */
     height: auto;
     object-fit: contain;
     margin-top: 0;
     margin-left: 0;
-    max-height: 180px;
-    transform: none;
+    max-height: 290px; /* Increased by another 15% */
+    transform: translate(clamp(-70px, -16vw, -45px), clamp(50px, 11svh, 100px)); /* Perfectly responsive fluid alignment */
     margin-bottom: 16px;
   }
   .landing-page-container .sobre-grid { grid-template-columns: 1fr; }
@@ -969,7 +969,7 @@
   }
   .landing-page-container .hero-logo-img {
     margin-top: 12px;
-    max-height: clamp(80px, 20svh, 130px);
+    max-height: clamp(125px, 32svh, 205px); /* Increased by another 15% */
   }
 }
 
