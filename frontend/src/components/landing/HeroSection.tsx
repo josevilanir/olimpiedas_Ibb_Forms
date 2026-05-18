@@ -47,15 +47,6 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
             <span className="accent">IBB 2026</span>
           </motion.h1>
 
-          <motion.div 
-            className="hero-logo-mobile show-on-mobile"
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false, amount: 0.1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <img src={logoImg} alt="Olimpíadas IBB" className="hero-logo-img" />
-          </motion.div>
         </div>
 
         <motion.div 
@@ -66,6 +57,16 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.5 }}
         >
           <div>
+            <motion.div 
+              className="hero-logo-mobile show-on-mobile"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: false, amount: 0.1 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              <img src={logoImg} alt="Olimpíadas IBB" className="hero-logo-img" />
+            </motion.div>
+
             <p className="hero-sub">
               <strong>18 modalidades.</strong> Corridas, esportes coletivos, E-Sports e muito mais — para toda a família da IBB.
             </p>
