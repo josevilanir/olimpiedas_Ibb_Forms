@@ -718,7 +718,7 @@
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
   }
   .landing-page-container #hero {
-    padding: clamp(20px, 3svh, 30px) 20px 60px;
+    padding: clamp(10px, 3svh, 30px) 20px 60px;
     justify-content: flex-start;
     min-height: 100svh;
     min-height: 100dvh;
@@ -769,7 +769,7 @@
     font-size: clamp(48px, 12vw, 64px);
     color: #ffffff !important;
     line-height: 0.85;
-    margin-top: clamp(55px, 7svh, 65px);
+    margin-top: clamp(44px, 5.5svh, 54px); /* Perfect mathematical middle ground */
     text-transform: uppercase;
     text-shadow: 0 4px 20px rgba(0,0,0,0.5);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -794,7 +794,7 @@
   .landing-page-container nav:not(.scrolled) .nav-cta {
     position: absolute;
     left: 20px;
-    top: clamp(185px, 23svh, 205px);
+    top: clamp(160px, 20svh, 178px); /* Perfect mathematical middle ground */
     margin-left: 0;
     z-index: 102;
   }
