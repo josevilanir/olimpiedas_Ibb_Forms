@@ -817,7 +817,7 @@
     margin-top: 0;
     margin-left: 0;
     max-height: 290px; /* Increased by another 15% */
-    transform: translate(clamp(-85px, -18vw, -55px), clamp(-140px, -16svh, -60px)); /* Perfectly responsive fluid alignment, matching the -70px horizontal layout */
+    transform: translate(clamp(-85px, -18vw, -55px), clamp(-50px, -6svh, -10px)); /* Shifted down to prevent overlapping the Inscreva-se button */
     margin-bottom: 16px;
   }
   .landing-page-container .sobre-grid { grid-template-columns: 1fr; }
