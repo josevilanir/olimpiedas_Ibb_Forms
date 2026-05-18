@@ -715,7 +715,7 @@
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
   }
   .landing-page-container #hero {
-    padding: clamp(95px, 11svh, 110px) 20px 60px;
+    padding: clamp(20px, 3svh, 30px) 20px 60px;
     justify-content: flex-start;
     min-height: 100svh;
     min-height: 100dvh;
@@ -766,7 +766,7 @@
     font-size: clamp(48px, 12vw, 64px);
     color: #ffffff !important;
     line-height: 0.85;
-    margin-top: clamp(115px, 13svh, 130px);
+    margin-top: clamp(55px, 7svh, 65px);
     text-transform: uppercase;
     text-shadow: 0 4px 20px rgba(0,0,0,0.5);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -788,6 +788,13 @@
     margin-left: auto;
     transition: all 0.3s ease;
   }
+  .landing-page-container nav:not(.scrolled) .nav-cta {
+    position: absolute;
+    left: 20px;
+    top: clamp(185px, 23svh, 205px);
+    margin-left: 0;
+    z-index: 102;
+  }
   .landing-page-container nav.scrolled .nav-cta {
     padding: 8px 16px;
     font-size: 12px;
@@ -798,7 +805,7 @@
     max-width: 450px;
     height: auto;
     object-fit: contain;
-    margin-top: clamp(130px, 16svh, 170px);
+    margin-top: clamp(180px, 23svh, 220px);
     margin-left: 0;
     max-height: clamp(250px, 35svh, 400px);
     transform: scale(1.2);
