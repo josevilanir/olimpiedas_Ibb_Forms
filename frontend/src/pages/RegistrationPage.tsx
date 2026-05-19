@@ -216,7 +216,7 @@ export default function RegistrationPage() {
             title="Regras de participação"
             content={
               <>
-                <p>🏅 Com exceção das modalidades de <strong>CORRIDA</strong> (Longa e Curtas) e <strong>CAMINHADA</strong>, para participar das demais você precisa ser:</p>
+                <p>🏅 Com exceção das modalidades de <strong>CORRIDA LONGA (5km)</strong> e <strong>CAMINHADA</strong>, para participar das demais você precisa ser:</p>
                 <ul style={{ marginTop: "var(--space-2)", paddingLeft: "var(--space-5)", display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
                   <li>Membro IBB, <strong>ou</strong></li>
                   <li>Frequentador de algum GR (Grupo de Relacionamento) da IBB.</li>
