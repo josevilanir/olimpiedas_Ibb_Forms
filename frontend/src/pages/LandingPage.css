@@ -458,6 +458,9 @@
   display: flex; align-items: flex-end; justify-content: space-between;
   margin-bottom: 48px; flex-wrap: wrap; gap: 24px;
 }
+.landing-page-container .mod-header-right {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 16px;
+}
 .landing-page-container .mod-filter {
   display: flex; gap: 4px; flex-wrap: wrap;
 }
@@ -472,52 +475,320 @@
   background: var(--green); color: #fff; border-color: var(--green);
 }
 
-.landing-page-container .mod-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2px;
+/* Slider nav arrows */
+.landing-page-container .slider-nav-btns {
+  display: flex; gap: 8px;
 }
-.landing-page-container .mod-card {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.06);
-  padding: 24px; cursor: pointer; position: relative;
-  transition: all 0.25s; overflow: hidden;
+.landing-page-container .slider-nav-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s, color 0.2s;
 }
-.landing-page-container .mod-card::before {
-  content: ''; position: absolute;
-  bottom: 0; left: 0; right: 0; height: 0;
+.landing-page-container .slider-nav-btn:hover {
   background: var(--green);
-  transition: height 0.25s;
+  border-color: var(--green);
+  color: #fff;
+  transform: scale(1.08);
 }
-.landing-page-container .mod-card:hover { background: rgba(10,157,143,0.05); border-color: rgba(10,157,143,0.3); }
-.landing-page-container .mod-card:hover::before { height: 3px; }
+.landing-page-container .slider-nav-btn:active { transform: scale(0.95); }
+
+/* Carousel grid */
+.landing-page-container .mod-grid {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 16px;
+  /* hide scrollbar visually */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.landing-page-container .mod-grid::-webkit-scrollbar { display: none; }
+
+/* 3D card container */
+.landing-page-container .mod-card-container {
+  flex: 0 0 260px;
+  height: 300px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+/* Inner wrapper — flips in 3D */
+.landing-page-container .mod-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.landing-page-container .mod-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+/* Shared face styles — glassmorphism */
+.landing-page-container .mod-card {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  padding: 24px;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* Glass */
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07);
+  transition: box-shadow 0.25s, border-color 0.25s;
+}
+
+/* Front face */
+.landing-page-container .mod-card-front {
+  z-index: 1;
+}
+
+/* Custom Category Gradients (Option 1) */
+.landing-page-container .mod-cat-corrida .mod-card-front {
+  background: radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.08) 0%, rgba(5, 26, 54, 0.4) 100%);
+  border-color: rgba(239, 68, 68, 0.15);
+}
+.landing-page-container .mod-cat-corrida:hover .mod-card-front {
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 12px 40px rgba(239, 68, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.landing-page-container .mod-cat-coletivo .mod-card-front {
+  background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.08) 0%, rgba(5, 26, 54, 0.4) 100%);
+  border-color: rgba(59, 130, 246, 0.15);
+}
+.landing-page-container .mod-cat-coletivo:hover .mod-card-front {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.landing-page-container .mod-cat-esports .mod-card-front {
+  background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, rgba(5, 26, 54, 0.4) 100%);
+  border-color: rgba(16, 185, 129, 0.15);
+}
+.landing-page-container .mod-cat-esports:hover .mod-card-front {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 12px 40px rgba(16, 185, 129, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.landing-page-container .mod-cat-individual .mod-card-front {
+  background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.08) 0%, rgba(5, 26, 54, 0.4) 100%);
+  border-color: rgba(245, 158, 11, 0.15);
+}
+.landing-page-container .mod-cat-individual:hover .mod-card-front {
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 12px 40px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* Decorative tech lines (Option 4) */
+.landing-page-container .mod-card-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: 
+    linear-gradient(217deg, rgba(255,255,255, 0.01), rgba(255,255,255,0) 70.71%),
+    linear-gradient(127deg, rgba(255,255,255, 0.02), rgba(255,255,255,0) 70.71%);
+  opacity: 0.6;
+  z-index: 0;
+  transition: opacity 0.3s;
+  border-radius: 4px;
+}
+.landing-page-container .mod-card-lines::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%; width: 200%; height: 200%;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 12px,
+    rgba(255, 255, 255, 0.015) 12px,
+    rgba(255, 255, 255, 0.015) 13px
+  );
+  transform: rotate(-15deg);
+  transition: transform 0.8s ease;
+}
+.landing-page-container .mod-card-container:hover .mod-card-lines::before {
+  transform: rotate(-10deg) scale(1.05);
+}
+
+/* Back face — rotated 180deg */
+.landing-page-container .mod-card-back {
+  transform: rotateY(180deg);
+  background: rgba(10,157,143,0.08);
+  border-color: rgba(10,157,143,0.2);
+}
+
+/* Accent line at bottom */
+.landing-page-container .mod-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--green), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.landing-page-container .mod-cat-corrida .mod-card::after {
+  background: linear-gradient(90deg, #ef4444, transparent);
+}
+.landing-page-container .mod-cat-coletivo .mod-card::after {
+  background: linear-gradient(90deg, #3b82f6, transparent);
+}
+.landing-page-container .mod-cat-esports .mod-card::after {
+  background: linear-gradient(90deg, #10b981, transparent);
+}
+.landing-page-container .mod-cat-individual .mod-card::after {
+  background: linear-gradient(90deg, #f59e0b, transparent);
+}
+.landing-page-container .mod-card-container:hover .mod-card-front::after { opacity: 1; }
+.landing-page-container .mod-card-back::after { opacity: 0.6; }
+
+/* Shared inner elements */
 .landing-page-container .mod-cat {
   font-family: var(--font-display); font-weight: 600; font-size: 11px;
   letter-spacing: 2px; text-transform: uppercase;
   color: var(--green); margin-bottom: 8px;
+  z-index: 1;
 }
+.landing-page-container .mod-cat-corrida .mod-cat { color: #ef4444; }
+.landing-page-container .mod-cat-coletivo .mod-cat { color: #3b82f6; }
+.landing-page-container .mod-cat-esports .mod-cat { color: #10b981; }
+.landing-page-container .mod-cat-individual .mod-cat { color: #f59e0b; }
+
 .landing-page-container .mod-name {
-  font-family: var(--font-display); font-weight: 800; font-size: 22px;
-  text-transform: uppercase; color: var(--white); line-height: 1.1;
+  font-family: var(--font-display); font-weight: 800; font-size: 19px;
+  text-transform: uppercase; color: var(--white); line-height: 1.15;
+  z-index: 1;
+}
+.landing-page-container .mod-desc {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.45;
+  margin-top: 10px;
+  z-index: 1;
 }
 .landing-page-container .mod-age {
   font-size: 13px; color: rgba(255,255,255,0.3); margin-top: 8px;
   font-family: var(--font-display); letter-spacing: 1px;
 }
+
+/* Modality Icon positioned in top right corner */
 .landing-page-container .mod-icon {
   position: absolute; top: 20px; right: 20px;
-  font-size: 24px; opacity: 0.2;
+  font-size: 28px; opacity: 0.15;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 1;
 }
+.landing-page-container .mod-card-container:hover .mod-card-front .mod-icon {
+  opacity: 0.25;
+  transform: scale(1.1);
+}
+
+/* Back face icon position */
+.landing-page-container .mod-icon-back {
+  position: absolute; top: 12px; right: 16px;
+  font-size: 22px; opacity: 0.2;
+}
+
 .landing-page-container .mod-coord {
   font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 6px;
   font-family: var(--font-display); letter-spacing: 0.5px;
 }
 .landing-page-container .mod-tag {
-  display: inline-block; margin-top: 10px;
+  display: inline-block;
   font-family: var(--font-display); font-size: 10px; font-weight: 700;
   letter-spacing: 1.5px; text-transform: uppercase;
   padding: 3px 8px; border-radius: 2px;
+  align-self: flex-start;
+  margin-top: auto;
+  z-index: 1;
+}
+.landing-page-container .mod-card-back .mod-tag {
+  align-self: flex-start;
 }
 .landing-page-container .mod-tag.open { background: rgba(10,157,143,0.15); color: var(--green); }
+.landing-page-container .mod-cat-corrida .mod-tag.open { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.landing-page-container .mod-cat-coletivo .mod-tag.open { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.landing-page-container .mod-cat-esports .mod-tag.open { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.landing-page-container .mod-cat-individual .mod-tag.open { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
 .landing-page-container .mod-tag.member { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+
+/* Animated neon pulsing keyframes (Option 1 categories) */
+@keyframes neonPulseCorrida {
+  0%, 100% { text-shadow: 0 0 2px rgba(239, 68, 68, 0.3); color: rgba(239, 68, 68, 0.8); }
+  50% { text-shadow: 0 0 8px rgba(239, 68, 68, 0.8), 0 0 15px rgba(239, 68, 68, 0.3); color: #ff8888; }
+}
+@keyframes neonPulseColetivo {
+  0%, 100% { text-shadow: 0 0 2px rgba(59, 130, 246, 0.3); color: rgba(59, 130, 246, 0.8); }
+  50% { text-shadow: 0 0 8px rgba(59, 130, 246, 0.8), 0 0 15px rgba(59, 130, 246, 0.3); color: #88b8ff; }
+}
+@keyframes neonPulseEsports {
+  0%, 100% { text-shadow: 0 0 2px rgba(16, 185, 129, 0.3); color: rgba(16, 185, 129, 0.8); }
+  50% { text-shadow: 0 0 8px rgba(16, 185, 129, 0.8), 0 0 15px rgba(16, 185, 129, 0.3); color: #88ffd0; }
+}
+@keyframes neonPulseIndividual {
+  0%, 100% { text-shadow: 0 0 2px rgba(245, 158, 11, 0.3); color: rgba(245, 158, 11, 0.8); }
+  50% { text-shadow: 0 0 8px rgba(245, 158, 11, 0.8), 0 0 15px rgba(245, 158, 11, 0.3); color: #ffd888; }
+}
+
+.landing-page-container .mod-flip-hint {
+  font-family: var(--font-display); font-size: 10px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-top: 12px;
+  display: flex; align-items: center; gap: 4px;
+  transition: color 0.25s, opacity 0.25s, text-shadow 0.25s;
+  opacity: 0.85;
+}
+.landing-page-container .mod-cat-corrida .mod-card-front .mod-flip-hint {
+  animation: neonPulseCorrida 2.5s ease-in-out infinite;
+}
+.landing-page-container .mod-cat-coletivo .mod-card-front .mod-flip-hint {
+  animation: neonPulseColetivo 2.5s ease-in-out infinite;
+}
+.landing-page-container .mod-cat-esports .mod-card-front .mod-flip-hint {
+  animation: neonPulseEsports 2.5s ease-in-out infinite;
+}
+.landing-page-container .mod-cat-individual .mod-card-front .mod-flip-hint {
+  animation: neonPulseIndividual 2.5s ease-in-out infinite;
+}
+
+.landing-page-container .mod-card-container:hover .mod-flip-hint {
+  opacity: 1;
+}
+.landing-page-container .mod-flip-hint.return {
+  color: rgba(255, 255, 255, 0.4);
+  animation: none !important;
+  text-shadow: none !important;
+}
+.landing-page-container .mod-flip-hint.return:hover {
+  color: #fff;
+}
+
+/* Card back layout */
+.landing-page-container .mod-back-title {
+  font-family: var(--font-display); font-weight: 800; font-size: 17px;
+  text-transform: uppercase; color: var(--white); margin-bottom: 14px;
+  line-height: 1.1;
+}
+.landing-page-container .mod-back-section {
+  display: flex; flex-direction: column; margin-bottom: 8px;
+}
+.landing-page-container .mod-back-label {
+  font-family: var(--font-display); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--green);
+}
+.landing-page-container .mod-back-value {
+  font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.4; margin-top: 2px;
+}
 
 /* ─── INSCRIÇÃO ─── */
 .landing-page-container #inscricao {
@@ -852,9 +1123,8 @@
   .landing-page-container .sobre-stats {
     gap: 1px;
   }
-  .landing-page-container .mod-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
+  .landing-page-container .slider-nav-btns { display: none; }
+  .landing-page-container .mod-card-container { flex: 0 0 220px; height: 280px; }
   .landing-page-container .hero-bottom {
     flex-direction: column;
     align-items: center;
@@ -946,9 +1216,7 @@
   .landing-page-container .pix-box > div:nth-child(2) {
     text-align: center !important;
   }
-  .landing-page-container .mod-grid {
-    grid-template-columns: 1fr;
-  }
+  .landing-page-container .mod-card-container { flex: 0 0 200px; height: 265px; }
   .landing-page-container .section-title {
     font-size: clamp(28px, 8vw, 40px);
   }
