@@ -2,7 +2,7 @@ const modalities = [
   { name: "Corrida Longa 5km",        cat: "corrida",   age: "Livre",      icon: "🏃", tag: "open",   coord: "Emicarlo Souza e Carlos Mora" },
   { name: "Caminhada 2,5km",          cat: "corrida",   age: "Livre",      icon: "🚶", tag: "open",   coord: "Emicarlo Souza e Carlos Mora" },
   { name: "Corrida Curta Adulta",     cat: "corrida",   age: "14+ anos",   icon: "⚡", tag: "member", sub: "100m · 200m", coord: "Emicarlo Souza e Carlos Mora" },
-  { name: "Corrida Curta Pré-Teens",  cat: "corrida",   age: "09–13 anos", icon: "⚡", tag: "member", sub: "100m", coord: "Emicarlo Souza e Carlos Mora" },
+  { name: "Corrida Curta Pré-Teens",  cat: "corrida",   age: "09–13 anos", icon: "⚡", tag: "member", sub: "100m · 200m", coord: "Emicarlo Souza e Carlos Mora" },
   { name: "Corrida Curta Kids",       cat: "corrida",   age: "03–08 anos", icon: "⚡", tag: "member", sub: "10m · 20m · 30m", coord: "Emicarlo Souza e Carlos Mora" },
   { name: "Futsal",                   cat: "coletivo",  age: "14+ anos",   icon: "⚽", tag: "member", coord: "Jonatas Silveira (Jow) e Fran Missionário" },
   { name: "Futsal Pré-Teens",         cat: "coletivo",  age: "10–13 anos", icon: "⚽", tag: "member", coord: "Jonatas Silveira (Jow) e Fran Missionário" },

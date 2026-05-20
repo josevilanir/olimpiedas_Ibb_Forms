@@ -24,7 +24,7 @@ const prisma = new PrismaClient({ adapter });
 const APPROVED_MODALITIES = [
   "Corrida Longa (5km)",
   "Corrida Curta Adulta (tiros de 100m e 200m)",
-  "Corrida Curta Pré Teens (tiros de 100m)",
+  "Corrida Curta Pré Teens (tiros de 100m e 200m)",
   "Corrida Curta Kids (tiros de 10m, 20m e 30m)",
   "Caminhada (2,5km)",
   "Futsal",

@@ -22,7 +22,7 @@ const modalities = [
     coordinatorName: "Emicarlo Souza e Carlos Mora",
   },
   {
-    name: "Corrida Curta Pré Teens (tiros de 100m)",
+    name: "Corrida Curta Pré Teens (tiros de 100m e 200m)",
     minAge: 9,
     maxAge: 13,
     requiresMembership: true,
