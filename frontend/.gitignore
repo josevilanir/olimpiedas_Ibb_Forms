@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Env files (VITE_* values bundle into client code — keep .env out of git)
+.env
+.env.local
+.env.*.local
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -1,7 +1,11 @@
 import { motion } from "framer-motion";
 import type { Participant } from "../../types";
 import styles from "../../pages/RegistrationPage.module.css";
-import { generateComprovantePdf } from "../../utils/generatePdf";
+
+async function downloadPdf(participant: Participant) {
+  const { generateComprovantePdf } = await import("../../utils/generatePdf");
+  generateComprovantePdf(participant);
+}
 
 interface SuccessScreenProps {
   participant: Participant;
@@ -38,7 +42,7 @@ export function SuccessScreen({ participant, onNewRegistration, onGoHome }: Succ
       <div style={{ display: "flex", gap: "var(--space-3)", flexWrap: "wrap", justifyContent: "center" }}>
         <motion.button
           className="btn btn-primary"
-          onClick={() => generateComprovantePdf(participant)}
+          onClick={() => downloadPdf(participant)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
