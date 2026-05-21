@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import styles from "../../pages/RegistrationPage.module.css";
 
 interface ProgressBarProps {
@@ -10,10 +11,21 @@ export function ProgressBar({ step, total }: ProgressBarProps) {
   return (
     <div className={styles.progressWrapper}>
       <div className={styles.progressTrack}>
-        <div className={styles.progressFill} style={{ width: `${pct}%` }} />
-        <span className={styles.progressRunner} style={{ left: `calc(${pct}% - 14px)` }}>
+        <motion.div 
+          className={styles.progressFill} 
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: pct / 100 }}
+          transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
+          style={{ width: "100%", transformOrigin: "left" }}
+        />
+        <motion.span 
+          className={styles.progressRunner} 
+          initial={{ left: 0 }}
+          animate={{ left: `calc(${pct}% - 14px)` }}
+          transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
+        >
           🏃‍♂️
-        </span>
+        </motion.span>
         <span className={styles.progressFlag}>🏁</span>
       </div>
       <p className={styles.progressLabel}>Etapa {step + 1} de {total}</p>

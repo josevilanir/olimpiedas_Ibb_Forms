@@ -29,9 +29,9 @@ export function UnavailableModalityCard({ modality, reasons, ageRangeLabel }: Un
       <AnimatePresence>
         {expanded && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className={styles.unavailableReasons}
           >
             <div className={styles.reasonsTitle}>Motivo(s) da indisponibilidade:</div>

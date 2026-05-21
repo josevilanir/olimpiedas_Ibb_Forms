@@ -47,6 +47,10 @@ vi.mock('framer-motion', async (importOriginal) => {
         const { custom, variants, initial, animate, exit, transition, whileHover, whileTap, layout, onHoverStart, onHoverEnd, ...rest } = props;
         return <button {...rest}>{children}</button>;
       },
+      span: ({ children, ...props }: any) => {
+        const { custom, variants, initial, animate, exit, transition, whileHover, whileTap, layout, onHoverStart, onHoverEnd, ...rest } = props;
+        return <span {...rest}>{children}</span>;
+      },
     },
   };
 });

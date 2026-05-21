@@ -46,6 +46,7 @@ ul, ol { list-style: none; }
   cursor: pointer;
   border: none;
   letter-spacing: 0.5px;
+  will-change: transform, box-shadow;
 }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none !important; }
 .btn-primary { 
