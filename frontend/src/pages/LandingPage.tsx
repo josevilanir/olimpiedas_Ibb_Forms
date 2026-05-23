@@ -33,7 +33,7 @@ export default function LandingPage() {
     }, { threshold: 0 });
     document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
 
-    const EVENT_DATE = new Date(2026, 6, 4, 8, 0, 0);
+    const EVENT_DATE = new Date(2026, 6, 11, 8, 0, 0);
     const updateCountdown = () => {
       const now = new Date();
       const diff = EVENT_DATE.getTime() - now.getTime();
