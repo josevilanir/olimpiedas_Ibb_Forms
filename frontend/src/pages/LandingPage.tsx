@@ -6,6 +6,7 @@ import { HeroSection } from "../components/landing/HeroSection";
 import { AboutSection } from "../components/landing/AboutSection";
 import { ModalitiesSection, modalities } from "../components/landing/ModalitiesSection";
 import { RegistrationSteps } from "../components/landing/RegistrationSteps";
+import { SponsorsSection } from "../components/landing/SponsorsSection";
 import { Footer } from "../components/landing/Footer";
 
 export default function LandingPage() {
@@ -66,6 +67,7 @@ export default function LandingPage() {
       <AboutSection />
       <ModalitiesSection activeFilter={activeFilter} onFilterChange={setActiveFilter} />
       <RegistrationSteps onGoToRegistration={onGoToRegistration} />
+      <SponsorsSection />
       <Footer onGoToAdmin={onGoToAdmin} />
     </div>
   );

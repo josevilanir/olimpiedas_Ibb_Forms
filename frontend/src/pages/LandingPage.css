@@ -1272,3 +1272,132 @@
     display: none !important;
   }
 }
+
+/* ─── SEÇÃO DE PATROCINADORES ─── */
+.landing-page-container .sponsors-section {
+  background-color: #03142e;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(10, 157, 143, 0.06) 0%, transparent 70%),
+    linear-gradient(160deg, rgba(3, 14, 35, 0.95) 0%, rgba(2, 10, 28, 0.98) 100%),
+    url('../assets/background.png');
+  background-size: cover, cover, cover;
+  background-position: center;
+  padding: 100px 48px;
+}
+
+.landing-page-container .sponsors-subtitle {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 17px;
+  line-height: 1.75;
+  margin-bottom: 56px;
+  max-width: 600px;
+}
+
+.landing-page-container .sponsors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  margin-top: 40px;
+  align-items: center;
+  justify-items: center;
+}
+
+.landing-page-container .sponsor-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 170px;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.landing-page-container .sponsor-logo {
+  max-width: 95%;
+  max-height: 95%;
+  object-fit: contain;
+  filter: grayscale(0%) opacity(100%) drop-shadow(0 0 16px rgba(10, 157, 143, 0.6));
+  transform: scale(1.5);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Efeito de Ampliação Adicional no Hover (Desktop) e Click/Toque (Mobile) */
+.landing-page-container .sponsor-card:hover .sponsor-logo,
+.landing-page-container .sponsor-card:active .sponsor-logo,
+.landing-page-container .sponsor-card:focus-within .sponsor-logo {
+  filter: grayscale(0%) opacity(100%) drop-shadow(0 0 24px rgba(10, 157, 143, 0.85));
+  transform: scale(1.62);
+}
+
+.landing-page-container .sponsor-card:hover,
+.landing-page-container .sponsor-card:active {
+  transform: translateY(-6px);
+}
+
+@media (max-width: 768px) {
+  .landing-page-container .sponsors-section {
+    padding: 80px 24px;
+  }
+
+  .landing-page-container .sponsors-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas no tablet */
+    gap: 28px;
+  }
+
+  .landing-page-container .sponsor-card {
+    height: 140px;
+  }
+  
+  .landing-page-container .sponsor-logo {
+    filter: grayscale(0%) opacity(100%) drop-shadow(0 0 12px rgba(10, 157, 143, 0.5));
+    transform: scale(1.5);
+  }
+
+  /* Ajusta o glow e tamanho no toque mobile */
+  .landing-page-container .sponsor-card:active .sponsor-logo {
+    filter: grayscale(0%) opacity(100%) drop-shadow(0 0 18px rgba(10, 157, 143, 0.7));
+    transform: scale(1.57);
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-page-container .sponsors-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas no mobile para ficar mais compacto e maior */
+    gap: 20px;
+  }
+
+  .landing-page-container .sponsor-card {
+    height: 120px;
+  }
+}
+
+/* ─── AJUSTE ESPECÍFICO PARA REDUZIR LOGOS 13 E 14 (RETORNO AO PADRÃO ORIGINAL) ─── */
+.landing-page-container .sponsor-card-13 .sponsor-logo,
+.landing-page-container .sponsor-card-14 .sponsor-logo {
+  transform: scale(1.0);
+}
+
+.landing-page-container .sponsor-card-13:hover .sponsor-logo,
+.landing-page-container .sponsor-card-13:active .sponsor-logo,
+.landing-page-container .sponsor-card-13:focus-within .sponsor-logo,
+.landing-page-container .sponsor-card-14:hover .sponsor-logo,
+.landing-page-container .sponsor-card-14:active .sponsor-logo,
+.landing-page-container .sponsor-card-14:focus-within .sponsor-logo {
+  transform: scale(1.08);
+}
+
+@media (max-width: 768px) {
+  .landing-page-container .sponsor-card-13 .sponsor-logo,
+  .landing-page-container .sponsor-card-14 .sponsor-logo {
+    transform: scale(1.0);
+  }
+  
+  .landing-page-container .sponsor-card-13:active .sponsor-logo,
+  .landing-page-container .sponsor-card-14:active .sponsor-logo {
+    transform: scale(1.05);
+  }
+}
