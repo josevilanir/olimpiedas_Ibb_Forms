@@ -21,6 +21,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   }
 
   if (res.status === 401) {
+    if (path === "/admin/login") {
+      const body = await res.json() as { data?: T; error?: string };
+      throw new Error(body.error ?? "Credenciais inválidas.");
+    }
     onUnauthorized?.();
     throw new Error("Sessão expirada. Por favor, faça login novamente.");
   }
