@@ -221,6 +221,26 @@
 }
 .landing-page-container .btn-ghost:hover { color: var(--white); border-color: rgba(255,255,255,0.5); }
 
+/* ─── EVENT DATES ─── */
+.landing-page-container .hero-dates {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.landing-page-container .hero-dates::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--green);
+}
+
 /* ─── COUNTDOWN ─── */
 .landing-page-container .countdown {
   display: flex; gap: 4px;

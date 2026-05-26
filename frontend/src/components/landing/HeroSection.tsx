@@ -67,12 +67,17 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
               <img src={logoImg} alt="Olimpíadas IBB" className="hero-logo-img" />
             </motion.div>
 
+            <div className="hero-dates show-on-mobile" style={{ marginBottom: "4px", alignSelf: "center" }}>
+              11 e 12/07 & 25 e 26/07
+            </div>
+
             <p className="hero-sub">
               <strong>18 modalidades.</strong> Corridas, esportes coletivos<br className="hero-sub-br" />E-Sports e muito mais — para toda a família da IBB.
             </p>
           </div>
 
           <div className="hero-actions">
+            <div className="hero-dates hide-on-mobile">11 e 12/07 & 25 e 26/07</div>
             <div className="countdown">
               <div className="cd-unit"><div className="cd-num">{countdown.d}</div><div className="cd-label">Dias</div></div>
               <div className="cd-sep">:</div>
