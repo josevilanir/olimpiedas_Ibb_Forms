@@ -1108,8 +1108,8 @@
     margin-top: 0;
     margin-left: 0;
     max-height: 290px; /* Increased by another 15% */
-    transform: translate(clamp(-85px, -18vw, -55px), clamp(-50px, -6svh, -10px)); /* Shifted down to prevent overlapping the Inscreva-se button */
-    margin-bottom: 16px;
+    transform: translate(clamp(-85px, -18vw, -55px), clamp(0px, 2svh, 25px)); /* Shifted down to compensate for the dates insertion */
+    margin-bottom: 4px;
   }
   .landing-page-container .sobre-grid { grid-template-columns: 1fr; }
   .landing-page-container .steps-grid { grid-template-columns: 1fr 1fr; }
