@@ -5,14 +5,7 @@ import styles from "../../../pages/RegistrationPage.module.css";
 import { ModalityCard } from "../ModalityCard";
 import { UnavailableModalityCard } from "../UnavailableModalityCard";
 import { ageLabel } from "../../../utils/format";
-
-function getCategory(name: string): string {
-  const lower = name.toLowerCase();
-  if (lower.includes("corrida") || lower.includes("caminhada") || lower.includes("circuito")) return "corrida";
-  if (lower.includes("futsal") || lower.includes("vôlei") || lower.includes("queimada") || lower.includes("basquete")) return "coletivo";
-  if (lower.includes("e-sports") || lower.includes("fifa") || lower.includes("lol") || lower.includes("cs")) return "esports";
-  return "individual";
-}
+import { getModalityCategory } from "../../../utils/modalityGrouping";
 
 interface ModalitiesStepProps {
   form: RegistrationFormData;
@@ -35,8 +28,8 @@ export function ModalitiesStep({
 }: ModalitiesStepProps) {
   const [activeFilter, setActiveFilter] = useState("all");
 
-  const filteredAvailable = availableMods.filter(m => activeFilter === "all" || getCategory(m.name) === activeFilter);
-  const filteredUnavailable = unavailableMods.filter(u => activeFilter === "all" || getCategory(u.modality.name) === activeFilter);
+  const filteredAvailable = availableMods.filter(m => activeFilter === "all" || getModalityCategory(m.name) === activeFilter);
+  const filteredUnavailable = unavailableMods.filter(u => activeFilter === "all" || getModalityCategory(u.modality.name) === activeFilter);
 
   return (
     <div
