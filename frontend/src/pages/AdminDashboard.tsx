@@ -388,6 +388,13 @@ export default function AdminDashboard() {
         />
       )}
 
+      {view === "all_participants" && (
+        <PrintLayout
+          modality={null}
+          participants={filteredAndSortedParticipants}
+        />
+      )}
+
       {deleteId && (
         <DeleteConfirmModal
           onConfirm={() => handleDelete(deleteId)}

@@ -5,18 +5,20 @@ import logoIbb from "../../assets/logibb (1).png";
 import { calcAge } from "../../utils/age";
 
 interface PrintLayoutProps {
-  modality: Modality;
+  modality: Modality | null;
   participants: Participant[];
 }
 
 export function PrintLayout({ modality, participants }: PrintLayoutProps) {
+  const isAllView = modality === null;
+
   return (
     <div className={styles.printLayout}>
       <div className={styles.printHeader}>
         <img src={logoImg} alt="Olimpíadas" className={styles.printLogo} />
         <div>
           <h1 className={styles.printMainTitle}>Olimpíadas IBB 2026</h1>
-          <h2>Lista de Chamada — {modality.name}</h2>
+          <h2>{isAllView ? "Todas as Inscrições" : `Lista de Chamada — ${modality.name}`}</h2>
           <p className={styles.printParticipantCount}>Total: {participants.length} inscrito{participants.length !== 1 ? "s" : ""}</p>
           <p className={styles.printDate}>Gerado em: {new Date().toLocaleDateString("pt-BR")}</p>
         </div>
@@ -29,6 +31,7 @@ export function PrintLayout({ modality, participants }: PrintLayoutProps) {
             <th>Idade</th>
             <th>Vínculo</th>
             <th>WhatsApp</th>
+            {isAllView && <th>Modalidades</th>}
             <th>Assinatura / Obs</th>
           </tr>
         </thead>
@@ -39,6 +42,7 @@ export function PrintLayout({ modality, participants }: PrintLayoutProps) {
               <td>{calcAge(p.birthDate)} anos</td>
               <td>{p.isMember}</td>
               <td>{p.whatsapp}</td>
+              {isAllView && <td>{p.subscriptions.map((s) => s.modality.name).join(", ") || "—"}</td>}
               <td></td>
             </tr>
           ))}
