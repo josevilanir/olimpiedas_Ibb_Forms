@@ -1266,3 +1266,47 @@ svg:focus, .recharts-surface:focus, .recharts-wrapper:focus {
 .table th:hover {
   color: #0aad9f;
 }
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding: var(--space-4) 0;
+}
+
+.paginationBtn {
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(10, 157, 143, 0.25);
+  color: rgba(200, 230, 225, 0.8);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.paginationBtn:hover:not(:disabled) {
+  background: rgba(10, 157, 143, 0.15);
+  border-color: #0aad9f;
+  color: #0aad9f;
+}
+
+.paginationBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.paginationInfo {
+  font-size: var(--font-size-sm);
+  color: rgba(200, 230, 225, 0.6);
+}
+
+.paginationInfo strong {
+  color: #0aad9f;
+}
+

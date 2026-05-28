@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import type { Modality, Participant, PaymentStatus, SortKey, SortDir, PaymentFilter } from "../../types";
 import styles from "../../pages/AdminDashboard.module.css";
 import { calcAge, isAgeOutOfRange } from "../../utils/age";
@@ -35,7 +36,21 @@ export function ParticipantsTable({
   onEdit, onDelete, onUpdatePayment,
 }: ParticipantsTableProps) {
   const isAllView = modality === null;
-  const filtered = participants;
+  
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset page when filtering or sorting changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, paymentFilter, sortKey, sortDir]);
+
+  const itemsPerPage = 15;
+  const totalItems = participants.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const filtered = isAllView ? participants.slice(startIndex, endIndex) : participants;
 
   function sortIndicator(key: SortKey) {
     if (sortKey !== key) return " ↕";
@@ -152,6 +167,28 @@ export function ParticipantsTable({
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {isAllView && totalPages > 1 && (
+        <div className={`${styles.pagination} ${styles.noPrint}`}>
+          <button
+            className={styles.paginationBtn}
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          >
+            Anterior
+          </button>
+          <span className={styles.paginationInfo}>
+            Página <strong>{currentPage}</strong> de {totalPages}
+          </span>
+          <button
+            className={styles.paginationBtn}
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          >
+            Próxima
+          </button>
         </div>
       )}
     </div>
