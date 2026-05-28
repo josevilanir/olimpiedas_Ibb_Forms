@@ -11,6 +11,7 @@ interface SidebarProps {
   onStatsClick: () => void;
   onFinanceClick: () => void;
   onParticipantsClick: () => void;
+  onAllParticipantsClick: () => void;
   onLogout: () => void;
   onToggle: () => void;
   onCloseSidebar: () => void;
@@ -18,7 +19,7 @@ interface SidebarProps {
 
 export function Sidebar({
   view, selectedModality, adminName, isSidebarOpen,
-  onViewChange, onStatsClick, onFinanceClick, onParticipantsClick,
+  onViewChange, onStatsClick, onFinanceClick, onParticipantsClick, onAllParticipantsClick,
   onLogout, onToggle, onCloseSidebar,
 }: SidebarProps) {
   return (
@@ -53,6 +54,12 @@ export function Sidebar({
             onClick={() => { onStatsClick(); onCloseSidebar(); }}
           >
             Estatísticas
+          </button>
+          <button
+            className={`${styles.navBtn} ${view === "all_participants" ? styles.navBtnActive : ""}`}
+            onClick={() => { onAllParticipantsClick(); onCloseSidebar(); }}
+          >
+            Todas as Inscrições
           </button>
           <button
             className={`${styles.navBtn} ${view === "finance" ? styles.navBtnActive : ""}`}

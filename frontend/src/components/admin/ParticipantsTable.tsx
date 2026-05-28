@@ -4,7 +4,7 @@ import { calcAge, isAgeOutOfRange } from "../../utils/age";
 import { formatDate } from "../../utils/format";
 
 interface ParticipantsTableProps {
-  modality: Modality;
+  modality: Modality | null;
   participants: Participant[];
   loading: boolean;
   searchQuery: string;
@@ -16,7 +16,7 @@ interface ParticipantsTableProps {
   onSort: (key: SortKey) => void;
   onBack: () => void;
   onPrint: () => void;
-  onExport: (modalityId: string) => void;
+  onExport: (modalityId?: string) => void;
   onEdit: (p: Participant) => void;
   onDelete: (id: string) => void;
   onUpdatePayment: (p: Participant, status: PaymentStatus) => void;
@@ -34,6 +34,7 @@ export function ParticipantsTable({
   onSearchChange, onPaymentFilterChange, onSort, onBack, onPrint, onExport,
   onEdit, onDelete, onUpdatePayment,
 }: ParticipantsTableProps) {
+  const isAllView = modality === null;
   const filtered = participants;
 
   function sortIndicator(key: SortKey) {
@@ -46,12 +47,12 @@ export function ParticipantsTable({
       <div className={styles.pageHeader}>
         <div>
           <button className={styles.backBtn} onClick={onBack}>← Voltar</button>
-          <h2>{modality.name}</h2>
+          <h2>{isAllView ? "Todas as Inscrições" : modality.name}</h2>
           <p className={styles.participantCount}>{participants.length} inscrito{participants.length !== 1 ? "s" : ""}</p>
         </div>
         <div className={styles.participantActions}>
           <button className="btn btn-secondary" onClick={onPrint}>🖨️ Imprimir lista</button>
-          <button className="btn btn-secondary" onClick={() => onExport(modality.id)}>Exportar Excel</button>
+          <button className="btn btn-secondary" onClick={() => onExport(modality?.id)}>Exportar Excel</button>
         </div>
       </div>
 
@@ -93,6 +94,7 @@ export function ParticipantsTable({
                 <th>Sexo</th>
                 <th onClick={() => onSort("isMember")} style={{ cursor: "pointer" }}>Membro{sortIndicator("isMember")}</th>
                 <th onClick={() => onSort("paymentStatus")} style={{ cursor: "pointer" }}>Pagamento{sortIndicator("paymentStatus")}</th>
+                {isAllView && <th>Modalidades inscritas</th>}
                 <th>Inf. Saúde</th>
                 <th onClick={() => onSort("createdAt")} style={{ cursor: "pointer" }}>Inscrito em{sortIndicator("createdAt")}</th>
                 <th>Ações</th>
@@ -100,7 +102,7 @@ export function ParticipantsTable({
             </thead>
             <tbody>
               {filtered.map((p) => {
-                const ageAlert = isAgeOutOfRange(p.birthDate, modality);
+                const ageAlert = !isAllView && isAgeOutOfRange(p.birthDate, modality!);
                 return (
                   <tr key={p.id}>
                     <td>
@@ -134,6 +136,9 @@ export function ParticipantsTable({
                         </p>
                       )}
                     </td>
+                    {isAllView && (
+                      <td>{p.subscriptions.map((s) => s.modality.name).join(", ") || "—"}</td>
+                    )}
                     <td className={styles.healthCell}>{p.healthIssues || "—"}</td>
                     <td>{formatDate(p.createdAt)}</td>
                     <td>

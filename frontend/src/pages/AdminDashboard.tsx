@@ -111,6 +111,16 @@ export default function AdminDashboard() {
       .finally(() => setLoadingPart(false));
   }, [token]);
 
+  const loadAllParticipants = useCallback(() => {
+    setSelectedModality(null);
+    setView("all_participants");
+    setSearchQuery("");
+    setLoadingPart(true);
+    api.admin.getParticipants(token)
+      .then(setParticipants)
+      .finally(() => setLoadingPart(false));
+  }, [token]);
+
   async function handleDelete(id: string) {
     await api.admin.deleteParticipant(token, id);
     setParticipants((prev) => prev.filter((p) => p.id !== id));
@@ -262,6 +272,7 @@ export default function AdminDashboard() {
         onViewChange={(v) => setView(v)}
         onStatsClick={() => { loadStats(); setPieMode("gender"); }}
         onFinanceClick={() => { loadStats(); setView("finance"); }}
+        onAllParticipantsClick={loadAllParticipants}
         onParticipantsClick={() => setView("participants")}
         onLogout={onLogout}
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -324,6 +335,36 @@ export default function AdminDashboard() {
             onBack={() => setView("modalities")}
             onPrint={() => window.print()}
             onExport={(id) => handleExport(id)}
+            onEdit={(p) => setEditState({
+              participant: p,
+              fullName: p.fullName,
+              whatsapp: p.whatsapp,
+              healthIssues: p.healthIssues ?? "",
+              gender: p.gender,
+              isMember: p.isMember,
+              birthDate: p.birthDate.slice(0, 10),
+              modalityIds: p.subscriptions.map((s) => s.modalityId),
+            })}
+            onDelete={(id) => setDeleteId(id)}
+            onUpdatePayment={handleUpdatePaymentStatus}
+          />
+        )}
+
+        {view === "all_participants" && (
+          <ParticipantsTable
+            modality={null}
+            participants={filteredAndSortedParticipants}
+            loading={loadingPart}
+            searchQuery={searchQuery}
+            paymentFilter={paymentFilter}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSearchChange={setSearchQuery}
+            onPaymentFilterChange={setPaymentFilter}
+            onSort={handleSort}
+            onBack={() => setView("modalities")}
+            onPrint={() => window.print()}
+            onExport={() => handleExport()}
             onEdit={(p) => setEditState({
               participant: p,
               fullName: p.fullName,

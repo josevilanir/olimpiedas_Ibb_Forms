@@ -2,7 +2,7 @@ export type MembershipStatus = "SIM" | "NAO" | "GR";
 export type Gender = "MASCULINO" | "FEMININO";
 export type PaymentStatus = "PENDENTE" | "PAGO" | "CANCELADO";
 
-export type View = "modalities" | "participants" | "stats" | "finance";
+export type View = "modalities" | "participants" | "stats" | "finance" | "all_participants";
 export type MemberFilter = "ALL" | "SIM" | "NAO" | "GR";
 export type ChartMode = "ageGroups" | "modalities";
 export type PaymentFilter = "ALL" | PaymentStatus;
