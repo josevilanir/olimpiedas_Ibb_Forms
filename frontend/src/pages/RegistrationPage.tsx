@@ -2,11 +2,23 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
-import type { RegistrationFormData, Participant, MembershipStatus, Gender, Modality } from "../types";
+import type {
+  RegistrationFormData,
+  Participant,
+  MembershipStatus,
+  Gender,
+  Modality,
+} from "../types";
 import { useModalities } from "../hooks/useModalities";
 import { calculateAge } from "../hooks/useAge";
+import { useCountdown } from "../hooks/useCountdown";
+import { Countdown } from "../components/shared/Countdown";
 import { api } from "../services/api";
-import { useFormPersistence, loadPersistedState, clearPersistedState } from "../hooks/useFormPersistence";
+import {
+  useFormPersistence,
+  loadPersistedState,
+  clearPersistedState,
+} from "../hooks/useFormPersistence";
 import styles from "./RegistrationPage.module.css";
 import { ProgressBar } from "../components/registration/ProgressBar";
 import { SuccessScreen } from "../components/registration/SuccessScreen";
@@ -45,7 +57,7 @@ const PAYMENT_DISCLAIMER_TOTAL = 8;
 const slideVariants = {
   initial: (dir: number) => ({ x: dir * 300, opacity: 0 }),
   animate: { x: 0, opacity: 1 },
-  exit:    (dir: number) => ({ x: dir * -300, opacity: 0 }),
+  exit: (dir: number) => ({ x: dir * -300, opacity: 0 }),
 };
 
 const INITIAL_FORM: RegistrationFormData = {
@@ -61,41 +73,88 @@ const INITIAL_FORM: RegistrationFormData = {
   modalityIds: [],
 };
 
+const REGISTRATION_CLOSED = true;
+
+interface ClosedScreenProps {
+  onGoHome: () => void;
+}
+
+function ClosedScreen({ onGoHome }: ClosedScreenProps) {
+  const countdown = useCountdown();
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.closedWrapper}>
+        <div className={styles.closedCard}>
+          <div className={styles.closedTrophy}>🏆</div>
+          <span className={styles.closedBadge}>Inscrições encerradas</span>
+          <h1 className={styles.closedTitle}>
+            Obrigado a todos que se inscreveram!
+          </h1>
+          <div className={styles.closedDivider} />
+          <p className={styles.closedCountdownLabel}>Faltam para os jogos</p>
+          <Countdown countdown={countdown} />
+          <button className={styles.closedHomeBtn} onClick={onGoHome}>
+            ← Voltar para o início
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function RegistrationPage() {
   const navigate = useNavigate();
 
   const persisted = loadPersistedState();
-  const [currentStep, setCurrentStep] = useState<number>(persisted?.currentStep ?? S.DISCLAIMER_1);
+  const [currentStep, setCurrentStep] = useState<number>(
+    persisted?.currentStep ?? S.DISCLAIMER_1,
+  );
   const [direction, setDirection] = useState(1);
-  const [form, setForm] = useState<RegistrationFormData>(persisted?.form ?? INITIAL_FORM);
+  const [form, setForm] = useState<RegistrationFormData>(
+    persisted?.form ?? INITIAL_FORM,
+  );
   const [blockedModality, setBlockedModality] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [registered, setRegistered] = useState<Participant | null>(null);
   const [termsStep, setTermsStep] = useState<number>(0);
-  const [paymentDisclaimerStep, setPaymentDisclaimerStep] = useState<number>(persisted?.paymentDisclaimerStep ?? 0);
+  const [paymentDisclaimerStep, setPaymentDisclaimerStep] = useState<number>(
+    persisted?.paymentDisclaimerStep ?? 0,
+  );
   const [themeColor, setThemeColor] = useState("transparent");
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
 
   useFormPersistence({ form, currentStep, paymentDisclaimerStep }, !registered);
 
-  const { modalities, loading: loadingModalities, error: modalitiesError } = useModalities();
+  const {
+    modalities,
+    loading: loadingModalities,
+    error: modalitiesError,
+  } = useModalities();
   const age = useMemo(() => calculateAge(form.birthDate), [form.birthDate]);
   const isMember = form.isMember === "SIM" || form.isMember === "GR";
 
   const { availableMods, unavailableMods } = useMemo(() => {
     if (age === null)
-      return { availableMods: modalities, unavailableMods: [] as { modality: Modality; reasons: string[] }[] };
+      return {
+        availableMods: modalities,
+        unavailableMods: [] as { modality: Modality; reasons: string[] }[],
+      };
 
     const availableMods: Modality[] = [];
     const unavailableMods: { modality: Modality; reasons: string[] }[] = [];
 
     for (const m of modalities) {
       const reasons: string[] = [];
-      const ageOk = (m.minAge === null || age >= m.minAge) && (m.maxAge === null || age <= m.maxAge);
+      const ageOk =
+        (m.minAge === null || age >= m.minAge) &&
+        (m.maxAge === null || age <= m.maxAge);
       const memberOk = !m.requiresMembership || isMember;
-      if (!ageOk) reasons.push(`Sua idade (${age} anos) não atende a faixa exigida.`);
-      if (!memberOk) reasons.push(`Modalidade exclusiva para membros IBB ou GR.`);
+      if (!ageOk)
+        reasons.push(`Sua idade (${age} anos) não atende a faixa exigida.`);
+      if (!memberOk)
+        reasons.push(`Modalidade exclusiva para membros IBB ou GR.`);
       if (reasons.length === 0) availableMods.push(m);
       else unavailableMods.push({ modality: m, reasons });
     }
@@ -105,11 +164,30 @@ export default function RegistrationPage() {
   useEffect(() => {
     if (!registered) return;
     confetti({ particleCount: 160, spread: 80, origin: { y: 0.55 } });
-    setTimeout(() => confetti({ particleCount: 80, spread: 60, origin: { y: 0.45, x: 0.25 } }), 350);
-    setTimeout(() => confetti({ particleCount: 80, spread: 60, origin: { y: 0.45, x: 0.75 } }), 600);
+    setTimeout(
+      () =>
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          origin: { y: 0.45, x: 0.25 },
+        }),
+      350,
+    );
+    setTimeout(
+      () =>
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          origin: { y: 0.45, x: 0.75 },
+        }),
+      600,
+    );
   }, [registered]);
 
-  function setField<K extends keyof RegistrationFormData>(key: K, value: RegistrationFormData[K]) {
+  function setField<K extends keyof RegistrationFormData>(
+    key: K,
+    value: RegistrationFormData[K],
+  ) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
@@ -153,20 +231,27 @@ export default function RegistrationPage() {
 
   function handleModalityToggle(modality: Modality) {
     if (form.modalityIds.includes(modality.id))
-      setField("modalityIds", form.modalityIds.filter((id) => id !== modality.id));
-    else
-      setField("modalityIds", [...form.modalityIds, modality.id]);
+      setField(
+        "modalityIds",
+        form.modalityIds.filter((id) => id !== modality.id),
+      );
+    else setField("modalityIds", [...form.modalityIds, modality.id]);
   }
 
   async function handleSubmit() {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      const participant = await api.participants.register({ ...form, termsAccepted: true });
+      const participant = await api.participants.register({
+        ...form,
+        termsAccepted: true,
+      });
       clearPersistedState();
       setRegistered(participant);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Erro ao enviar inscrição.");
+      setSubmitError(
+        err instanceof Error ? err.message : "Erro ao enviar inscrição.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -180,8 +265,13 @@ export default function RegistrationPage() {
             title="Antes de começar — leia com atenção"
             content={
               <>
-                <p>📋 A inscrição é <strong>individual</strong>.</p>
-                <p>Cada integrante da sua família deve preencher este formulário individualmente para se inscrever.</p>
+                <p>
+                  📋 A inscrição é <strong>individual</strong>.
+                </p>
+                <p>
+                  Cada integrante da sua família deve preencher este formulário
+                  individualmente para se inscrever.
+                </p>
               </>
             }
             checkboxLabel="Entendi — estou fazendo minha inscrição individual."
@@ -198,8 +288,15 @@ export default function RegistrationPage() {
             title="Sobre o valor da inscrição"
             content={
               <>
-                <p>💰 O valor da inscrição é <strong>por pessoa e não por modalidade</strong>.</p>
-                <p>Você pode se inscrever em <strong>quantas modalidades quiser</strong> pagando apenas uma vez.</p>
+                <p>
+                  💰 O valor da inscrição é{" "}
+                  <strong>por pessoa e não por modalidade</strong>.
+                </p>
+                <p>
+                  Você pode se inscrever em{" "}
+                  <strong>quantas modalidades quiser</strong> pagando apenas uma
+                  vez.
+                </p>
               </>
             }
             checkboxLabel="Entendi — pago uma vez e escolho várias modalidades."
@@ -216,10 +313,27 @@ export default function RegistrationPage() {
             title="Regras de participação"
             content={
               <>
-                <p>🏅 Com exceção das modalidades de <strong>CORRIDA LONGA (5km)</strong> e <strong>CAMINHADA</strong>, para participar das demais você precisa ser:</p>
-                <ul style={{ marginTop: "var(--space-2)", paddingLeft: "var(--space-5)", display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
-                  <li>Membro IBB, <strong>ou</strong></li>
-                  <li>Frequentador de algum GR (Grupo de Relacionamento) da IBB.</li>
+                <p>
+                  🏅 Com exceção das modalidades de{" "}
+                  <strong>CORRIDA LONGA (5km)</strong> e{" "}
+                  <strong>CAMINHADA</strong>, para participar das demais você
+                  precisa ser:
+                </p>
+                <ul
+                  style={{
+                    marginTop: "var(--space-2)",
+                    paddingLeft: "var(--space-5)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "var(--space-1)",
+                  }}
+                >
+                  <li>
+                    Membro IBB, <strong>ou</strong>
+                  </li>
+                  <li>
+                    Frequentador de algum GR (Grupo de Relacionamento) da IBB.
+                  </li>
                 </ul>
               </>
             }
@@ -234,8 +348,14 @@ export default function RegistrationPage() {
       case S.PROFILE:
         return (
           <ProfileStep
-            onSelectAdult={() => { setField("isForChild", false); goNext(false); }}
-            onSelectChild={() => { setField("isForChild", true); goNext(true); }}
+            onSelectAdult={() => {
+              setField("isForChild", false);
+              goNext(false);
+            }}
+            onSelectChild={() => {
+              setField("isForChild", true);
+              goNext(true);
+            }}
           />
         );
 
@@ -247,14 +367,16 @@ export default function RegistrationPage() {
             placeholder="Nome completo do responsável"
             onChange={(v) => setField("parentName", v)}
             onNext={() => goNext()}
-            canProceed={!!(form.parentName?.trim())}
+            canProceed={!!form.parentName?.trim()}
           />
         );
 
       case S.FULL_NAME:
         return (
           <TextInputStep
-            label={form.isForChild ? "Nome completo da criança" : "Seu nome completo"}
+            label={
+              form.isForChild ? "Nome completo da criança" : "Seu nome completo"
+            }
             value={form.fullName}
             placeholder="Nome e sobrenome"
             onChange={(v) => setField("fullName", v)}
@@ -266,7 +388,11 @@ export default function RegistrationPage() {
       case S.BIRTH_DATE:
         return (
           <DateInputStep
-            label={form.isForChild ? "Data de nascimento do seu filho(a)" : "Sua data de nascimento"}
+            label={
+              form.isForChild
+                ? "Data de nascimento do seu filho(a)"
+                : "Sua data de nascimento"
+            }
             value={form.birthDate}
             age={age}
             onChange={(v) => setField("birthDate", v)}
@@ -291,24 +417,37 @@ export default function RegistrationPage() {
         return (
           <GenderStep
             label={form.isForChild ? "Sexo do seu filho(a)" : "Seu sexo"}
-            onSelect={(g: Gender) => { setField("gender", g); goNext(); }}
+            onSelect={(g: Gender) => {
+              setField("gender", g);
+              goNext();
+            }}
           />
         );
 
       case S.MEMBER:
         return (
           <MemberStep
-            onSelect={(s: MembershipStatus) => { setField("isMember", s); goNext(); }}
+            onSelect={(s: MembershipStatus) => {
+              setField("isMember", s);
+              goNext();
+            }}
           />
         );
 
       case S.HEALTH:
         return (
           <HealthStep
-            label={form.isForChild ? "Problemas de saúde do seu filho(a)" : "Seus problemas de saúde"}
+            label={
+              form.isForChild
+                ? "Problemas de saúde do seu filho(a)"
+                : "Seus problemas de saúde"
+            }
             value={form.healthIssues ?? ""}
             onChange={(v) => setField("healthIssues", v)}
-            onSkip={() => { setField("healthIssues", "Não informado"); goNext(); }}
+            onSkip={() => {
+              setField("healthIssues", "Não informado");
+              goNext();
+            }}
             onNext={() => goNext()}
           />
         );
@@ -379,6 +518,10 @@ export default function RegistrationPage() {
     );
   }
 
+  if (REGISTRATION_CLOSED) {
+    return <ClosedScreen onGoHome={() => navigate("/")} />;
+  }
+
   return (
     <div className={styles.page}>
       <ProgressBar step={currentStep} total={TOTAL_STEPS} />
@@ -401,7 +544,11 @@ export default function RegistrationPage() {
         )}
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
-            key={currentStep === S.PAYMENT_DISCLAIMER ? `payment-${paymentDisclaimerStep}` : currentStep}
+            key={
+              currentStep === S.PAYMENT_DISCLAIMER
+                ? `payment-${paymentDisclaimerStep}`
+                : currentStep
+            }
             custom={direction}
             variants={slideVariants}
             initial="initial"

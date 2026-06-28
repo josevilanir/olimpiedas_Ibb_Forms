@@ -1,0 +1,97 @@
+.countdown {
+  display: flex;
+  gap: 4px;
+}
+
+.cdUnit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 20px;
+  min-width: 80px;
+  position: relative;
+}
+
+.cdUnit::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s;
+}
+
+.cdUnit:hover::after {
+  transform: scaleX(1);
+}
+
+.cdNum {
+  font-family: var(--font-family-display);
+  font-weight: 900;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--color-white);
+  min-width: 2ch;
+  text-align: center;
+}
+
+.cdLabel {
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+}
+
+.cdSep {
+  font-family: var(--font-family-display);
+  font-weight: 900;
+  font-size: 32px;
+  color: var(--color-primary);
+  align-self: center;
+  padding-bottom: 16px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .cdUnit {
+    padding: 10px 14px;
+    min-width: 60px;
+  }
+  .cdNum {
+    font-size: 28px;
+  }
+  .cdSep {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cdUnit {
+    min-width: clamp(42px, 12vw, 68px);
+    padding: clamp(5px, 1.5svh, 9px) clamp(6px, 1.5vw, 15px);
+  }
+  .cdNum {
+    font-size: clamp(20px, 5vw, 32px);
+  }
+  .cdSep {
+    font-size: 18px;
+  }
+  .cdLabel {
+    font-size: clamp(8px, 2.5vw, 10px);
+  }
+}

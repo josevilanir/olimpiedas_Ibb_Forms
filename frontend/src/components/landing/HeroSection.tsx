@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import logoImg from "../../assets/olimpiedas_logo-removebg-preview.png";
+import { Countdown } from "../shared/Countdown";
 
 interface HeroSectionProps {
   countdown: { d: string; h: string; m: string; s: string };
@@ -7,13 +8,17 @@ interface HeroSectionProps {
   onGoToRegistration: () => void;
 }
 
-export function HeroSection({ countdown, tickerItems, onGoToRegistration }: HeroSectionProps) {
+export function HeroSection({
+  countdown,
+  tickerItems,
+  onGoToRegistration,
+}: HeroSectionProps) {
   const trackItems = [...tickerItems, ...tickerItems];
 
   return (
     <section id="hero">
       <div className="hero-bg"></div>
-      <motion.div 
+      <motion.div
         className="hero-man"
         initial={{ opacity: 0, y: 40, scale: 0.98 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
@@ -26,7 +31,7 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
 
       <div className="hero-content">
         <div className="hero-top">
-          <motion.div 
+          <motion.div
             className="hero-eyebrow"
             initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -35,21 +40,21 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
           >
             Igreja Batista Bereana · Natal/RN
           </motion.div>
-  
-          <motion.h1 
+
+          <motion.h1
             className="hero-title hide-on-mobile"
             initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.1 }}
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.35 }}
           >
-            OLIMPÍADAS<br />
+            OLIMPÍADAS
+            <br />
             <span className="accent">IBB 2026</span>
           </motion.h1>
-
         </div>
 
-        <motion.div 
+        <motion.div
           className="hero-bottom"
           initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -57,45 +62,66 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.5 }}
         >
           <div>
-            <motion.div 
+            <motion.div
               className="hero-logo-mobile show-on-mobile"
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: false, amount: 0.1 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <img src={logoImg} alt="Olimpíadas IBB" className="hero-logo-img" />
+              <img
+                src={logoImg}
+                alt="Olimpíadas IBB"
+                className="hero-logo-img"
+              />
             </motion.div>
 
-            <div className="hero-dates show-on-mobile" style={{ marginBottom: "4px", alignSelf: "center" }}>
+            <div
+              className="hero-dates show-on-mobile"
+              style={{ marginBottom: "4px", alignSelf: "center" }}
+            >
               11 e 12/07 & 25 e 26/07
             </div>
 
             <p className="hero-sub">
-              <strong>18 modalidades.</strong> Corridas, esportes coletivos<br className="hero-sub-br" />E-Sports e muito mais — para toda a família da IBB.
+              <strong>18 modalidades.</strong> Corridas, esportes coletivos
+              <br className="hero-sub-br" />
+              E-Sports e muito mais — para toda a família da IBB.
             </p>
           </div>
 
           <div className="hero-actions">
-            <div className="hero-dates hide-on-mobile">11 e 12/07 & 25 e 26/07</div>
-            <div className="countdown">
-              <div className="cd-unit"><div className="cd-num">{countdown.d}</div><div className="cd-label">Dias</div></div>
-              <div className="cd-sep">:</div>
-              <div className="cd-unit"><div className="cd-num">{countdown.h}</div><div className="cd-label">Horas</div></div>
-              <div className="cd-sep">:</div>
-              <div className="cd-unit"><div className="cd-num">{countdown.m}</div><div className="cd-label">Min</div></div>
-              <div className="cd-sep">:</div>
-              <div className="cd-unit"><div className="cd-num">{countdown.s}</div><div className="cd-label">Seg</div></div>
+            <div className="hero-dates hide-on-mobile">
+              11 e 12/07 & 25 e 26/07
             </div>
+            <Countdown countdown={countdown} />
             <div className="hero-cta-group">
-              <button className="btn-primary" onClick={onGoToRegistration}>Quero participar →</button>
-              <button className="btn-ghost" onClick={() => document.getElementById("modalidades")?.scrollIntoView({ behavior: "smooth" })}>Ver modalidades</button>
+              <button className="btn-primary" onClick={onGoToRegistration}>
+                Quero participar →
+              </button>
+              <button
+                className="btn-ghost"
+                onClick={() =>
+                  document
+                    .getElementById("modalidades")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                Ver modalidades
+              </button>
             </div>
           </div>
         </motion.div>
       </div>
 
-      <div className="scroll-hint" onClick={() => document.getElementById("sobre")?.scrollIntoView({ behavior: "smooth" })}>
+      <div
+        className="scroll-hint"
+        onClick={() =>
+          document
+            .getElementById("sobre")
+            ?.scrollIntoView({ behavior: "smooth" })
+        }
+      >
         <span className="scroll-chevron">❯</span>
         <span className="scroll-chevron">❯</span>
       </div>
@@ -103,7 +129,10 @@ export function HeroSection({ countdown, tickerItems, onGoToRegistration }: Hero
       <div className="ticker hero-ticker">
         <div className="ticker-track">
           {trackItems.map((item, i) => (
-            <span key={i} className="ticker-item">{item}<span className="sep">✦</span></span>
+            <span key={i} className="ticker-item">
+              {item}
+              <span className="sep">✦</span>
+            </span>
           ))}
         </div>
       </div>
