@@ -16,10 +16,30 @@ const registerSchema = z.object({
   modalityIds: z.array(z.string().min(1)),
 });
 
-export async function registerParticipantController(req: Request, res: Response, next: NextFunction) {
+export async function registerParticipantController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  if (process.env.REGISTRATION_CLOSED === "true") {
+    return next(
+      new AppError(
+        "REGISTRATION_CLOSED",
+        403,
+        "As inscrições estão encerradas.",
+      ),
+    );
+  }
+
   const result = registerSchema.safeParse(req.body);
   if (!result.success) {
-    return next(new AppError("VALIDATION_ERROR", 422, "Dados inválidos: " + result.error.issues[0].message));
+    return next(
+      new AppError(
+        "VALIDATION_ERROR",
+        422,
+        "Dados inválidos: " + result.error.issues[0].message,
+      ),
+    );
   }
 
   try {
