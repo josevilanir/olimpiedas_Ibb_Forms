@@ -1415,9 +1415,46 @@
   .landing-page-container .sponsor-card-14 .sponsor-logo {
     transform: scale(1.0);
   }
-  
+
   .landing-page-container .sponsor-card-13:active .sponsor-logo,
   .landing-page-container .sponsor-card-14:active .sponsor-logo {
     transform: scale(1.05);
   }
+}
+
+/* ─── AVISO OVERLAY ─── */
+.aviso-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 5vw, 48px);
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: all;
+}
+
+.aviso-frame {
+  max-width: min(100%, 480px);
+  max-height: 100%;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 6px rgba(255, 255, 255, 0.08),
+    0 8px 48px rgba(0, 0, 0, 0.7),
+    0 0 80px rgba(255, 200, 0, 0.12);
+  overflow: hidden;
+  user-select: none;
+}
+
+.aviso-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: calc(100svh - clamp(40px, 10vw, 96px));
+  object-fit: contain;
 }
