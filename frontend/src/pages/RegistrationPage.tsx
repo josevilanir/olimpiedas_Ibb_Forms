@@ -73,7 +73,7 @@ const INITIAL_FORM: RegistrationFormData = {
   modalityIds: [],
 };
 
-const REGISTRATION_CLOSED = true;
+const REGISTRATION_CLOSED = false;
 
 interface ClosedScreenProps {
   onGoHome: () => void;

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import "./LandingPage.css";
-import avisoImg from "../assets/AVISO.PNG";
 import { Navbar } from "../components/landing/Navbar";
 import { HeroSection } from "../components/landing/HeroSection";
 import { AboutSection } from "../components/landing/AboutSection";
@@ -50,11 +49,6 @@ export default function LandingPage() {
 
   return (
     <div className="landing-page-container">
-      <div className="aviso-overlay" role="alertdialog" aria-modal="true" aria-label="Aviso importante">
-        <div className="aviso-frame">
-          <img src={avisoImg} alt="Aviso: Olimpíadas adiadas" draggable={false} />
-        </div>
-      </div>
       <Navbar scrolled={scrolled} onGoToRegistration={onGoToRegistration} />
       <HeroSection
         countdown={countdown}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const EVENT_DATE = new Date(2026, 6, 11, 8, 0, 0);
+const EVENT_DATE = new Date(2026, 8, 19, 8, 0, 0);
 
 export function useCountdown() {
   const [countdown, setCountdown] = useState({

@@ -80,7 +80,7 @@ export function HeroSection({
               className="hero-dates show-on-mobile"
               style={{ marginBottom: "4px", alignSelf: "center" }}
             >
-              11 e 12/07 & 25 e 26/07
+              19 e 20/09 & 25 e 26/09
             </div>
 
             <p className="hero-sub">
@@ -92,7 +92,7 @@ export function HeroSection({
 
           <div className="hero-actions">
             <div className="hero-dates hide-on-mobile">
-              11 e 12/07 & 25 e 26/07
+              19 e 20/09 & 25 e 26/09
             </div>
             <Countdown countdown={countdown} />
             <div className="hero-cta-group">
